@@ -651,32 +651,86 @@ function showError(msg) {
   $error.classList.add('active');
 }
 
-/* ── Export PNG ──────────────────────────────────────────────────────────────── */
+/* ── Export PNG (client-side canvas — no native libs required) ──────────────── */
+async function _arrayBufToBase64(buf) {
+  const bytes = new Uint8Array(buf);
+  let b = '';
+  for (let i = 0; i < bytes.length; i += 8192)
+    b += String.fromCharCode(...bytes.subarray(i, i + 8192));
+  return btoa(b);
+}
+
+async function _inlineFonts(svgStr) {
+  /* Fetch Google Fonts CSS, base64-encode every font file, replace URLs inline.
+     This makes the SVG self-contained so the canvas won't be cross-origin tainted. */
+  try {
+    const css = await (await fetch(
+      'https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap'
+    )).text();
+    let embedded = css;
+    for (const [, rawUrl] of css.matchAll(/url\((['"]?)(https?[^)'"]+)\1\)/g)) {
+      try {
+        const buf  = await (await fetch(rawUrl)).arrayBuffer();
+        const b64  = await _arrayBufToBase64(buf);
+        const mime = rawUrl.includes('woff2') ? 'font/woff2' : 'font/woff';
+        embedded   = embedded.split(rawUrl).join(`data:${mime};base64,${b64}`);
+      } catch { /* skip individual font on network error */ }
+    }
+    return svgStr.replace(
+      /<defs>[\s\S]*?<\/defs>/,
+      `<defs><style>${embedded}</style></defs>`
+    );
+  } catch(e) {
+    console.warn('[export] Font embedding failed, using system fonts:', e);
+    return svgStr;
+  }
+}
+
 $expBtn.addEventListener('click', async () => {
   $expBtn.textContent = 'Generating…';
   $expStat.textContent = '';
   try {
+    // 1. Get full 1920×1080 SVG from server
     const params = buildParams();
-    const res    = await fetch('/export', {
+    const res  = await fetch('/preview', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(params),
     });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({error: 'Export failed'}));
-      $expStat.textContent = err.error || 'Export failed';
-      return;
-    }
-    const blob = await res.blob();
-    const url  = URL.createObjectURL(blob);
-    const a    = document.createElement('a');
-    a.href = url;
-    const cd = res.headers.get('Content-Disposition') || '';
-    const match = cd.match(/filename="?([^"]+)"?/);
-    a.download = match ? match[1] : 'etkm_visual.png';
-    a.click();
-    URL.revokeObjectURL(url);
-    $expStat.textContent = '✓ Saved';
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || 'SVG generation failed');
+
+    // 2. Embed fonts as base64 so canvas stays un-tainted
+    $expStat.textContent = 'Embedding fonts…';
+    const svgStr = await _inlineFonts(data.svg);
+
+    // 3. Render SVG → canvas
+    $expStat.textContent = 'Rendering…';
+    const canvas = document.createElement('canvas');
+    canvas.width = 1920; canvas.height = 1080;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, 1920, 1080);
+
+    const blobUrl = URL.createObjectURL(new Blob([svgStr], {type: 'image/svg+xml'}));
+    await new Promise((ok, fail) => {
+      const img = new Image();
+      img.onload = () => { ctx.drawImage(img, 0, 0, 1920, 1080); URL.revokeObjectURL(blobUrl); ok(); };
+      img.onerror = (e) => { URL.revokeObjectURL(blobUrl); fail(new Error('SVG render failed')); };
+      img.src = blobUrl;
+    });
+
+    // 4. Download PNG
+    canvas.toBlob(pngBlob => {
+      const slug = (params.title || params.diagram_type || 'visual')
+        .slice(0, 30).replace(/\s+/g, '_').toLowerCase();
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(pngBlob);
+      a.download = `etkm_${slug}.png`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+      $expStat.textContent = '✓ Saved';
+    }, 'image/png');
+
   } catch(e) {
     $expStat.textContent = String(e);
   } finally {
