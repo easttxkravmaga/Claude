@@ -49,16 +49,13 @@ def preview():
 
 @app.route('/export', methods=['POST'])
 def export():
-    """Return transparent PNG via CairoSVG."""
+    """Return transparent PNG via CairoSVG, SVG fallback if Cairo unavailable."""
+    params = request.get_json(force=True)
+    params.setdefault('settings', {})
+    params['_mode'] = 'export'
     try:
         import cairosvg
-        params = request.get_json(force=True)
-        params.setdefault('settings', {})
-        # Force export-mode SVG (local font paths)
-        params['_mode'] = 'export'
-
         svg = generate_diagram(params)
-        # CairoSVG: background_color=None → transparent
         png_bytes = cairosvg.svg2png(
             bytestring=svg.encode('utf-8'),
             background_color=None,
@@ -72,8 +69,8 @@ def export():
         return send_file(buf, mimetype='image/png',
                          as_attachment=True,
                          download_name=filename)
-    except ImportError:
-        # Fallback: serve SVG if cairosvg not available
+    except (ImportError, OSError):
+        # Cairo native library not installed — fall back to SVG download
         return _export_svg_fallback(params)
     except Exception:
         return jsonify({'ok': False, 'error': traceback.format_exc()}), 500
