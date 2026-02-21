@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>ETKM Visual Aide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+/* ── Reset ────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+
+/* ── Layout ───────────────────────────────────────── */
+body{
+  display:flex;flex-direction:column;
+  background:#000;color:#fff;
+  font-family:'Inter',sans-serif;font-size:13px;
+}
+#topbar{
+  flex:0 0 48px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;
+  border-bottom:1px solid #222;
+  background:#000;
+}
+#topbar h1{
+  font-family:'Anton',sans-serif;
+  font-size:22px;letter-spacing:1px;color:#fff;font-weight:400;
+}
+#topbar .badge{
+  font-size:10px;color:#575757;letter-spacing:2px;text-transform:uppercase;
+}
+#main{
+  flex:1;display:flex;min-height:0;
+}
+
+/* ── Sidebar ──────────────────────────────────────── */
+#sidebar{
+  flex:0 0 300px;
+  background:#0a0a0a;
+  border-right:1px solid #1a1a1a;
+  overflow-y:auto;
+  display:flex;flex-direction:column;
+}
+#sidebar::-webkit-scrollbar{width:4px}
+#sidebar::-webkit-scrollbar-thumb{background:#222}
+
+.section{
+  padding:16px 18px;
+  border-bottom:1px solid #1a1a1a;
+}
+.section-title{
+  font-size:9px;letter-spacing:2.5px;text-transform:uppercase;
+  color:#575757;margin-bottom:10px;
+}
+
+label{
+  display:block;font-size:11px;color:#888;margin-bottom:4px;margin-top:10px;
+}
+label:first-of-type{margin-top:0}
+
+input[type=text],textarea,select{
+  width:100%;background:#111;border:1px solid #222;
+  color:#fff;font-family:'Inter',sans-serif;font-size:12px;
+  padding:7px 9px;border-radius:4px;outline:none;
+  transition:border-color .15s;
+}
+input[type=text]:focus,textarea:focus,select:focus{border-color:#ff0000}
+textarea{resize:vertical;min-height:52px;line-height:1.5}
+select option{background:#111}
+
+input[type=range]{
+  width:100%;accent-color:#ff0000;margin-top:4px;
+}
+.range-row{display:flex;justify-content:space-between;align-items:center}
+.range-val{font-size:11px;color:#ff0000;font-weight:700;min-width:32px;text-align:right}
+
+/* Radio / pill toggles */
+.toggle-group{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+.toggle-group label{
+  margin:0;flex:1;min-width:60px;
+  cursor:pointer;
+}
+.toggle-group input{display:none}
+.toggle-group label span{
+  display:block;padding:6px 8px;
+  border:1px solid #222;border-radius:4px;
+  font-size:10px;text-align:center;text-transform:uppercase;letter-spacing:1px;
+  color:#575757;transition:all .15s;cursor:pointer;
+}
+.toggle-group input:checked + span{
+  border-color:#ff0000;color:#ff0000;background:#1a0000;
+}
+
+/* Dynamic element inputs */
+#elements-section .el-row{
+  background:#111;border:1px solid #1c1c1c;border-radius:4px;
+  padding:10px;margin-bottom:8px;position:relative;
+}
+#elements-section .el-row .el-num{
+  font-size:9px;color:#575757;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;
+}
+#elements-section .el-row .rm-btn{
+  position:absolute;top:8px;right:8px;
+  background:none;border:none;color:#333;cursor:pointer;font-size:14px;
+  line-height:1;transition:color .15s;
+}
+#elements-section .el-row .rm-btn:hover{color:#ff0000}
+
+/* Color chip pickers */
+.color-row{display:flex;align-items:center;gap:8px;margin-top:6px}
+.color-row input[type=color]{
+  width:32px;height:26px;border:none;border-radius:3px;
+  cursor:pointer;padding:0;background:none;
+}
+.color-row span{font-size:10px;color:#575757}
+
+/* Buttons */
+.btn{
+  display:block;width:100%;padding:10px;
+  font-family:'Inter',sans-serif;font-size:12px;font-weight:700;
+  letter-spacing:1.5px;text-transform:uppercase;
+  border:none;border-radius:4px;cursor:pointer;transition:all .15s;
+}
+.btn-primary{background:#ff0000;color:#fff}
+.btn-primary:hover{background:#cc0000}
+.btn-secondary{background:#1a1a1a;color:#fff;border:1px solid #333}
+.btn-secondary:hover{border-color:#ff0000;color:#ff0000}
+.btn-sm{padding:6px 10px;font-size:10px;width:auto;display:inline-block}
+
+/* Collapsible */
+.collapse-header{
+  display:flex;justify-content:space-between;align-items:center;
+  cursor:pointer;user-select:none;
+}
+.collapse-arrow{color:#575757;transition:transform .2s;font-size:10px}
+.collapsed .collapse-arrow{transform:rotate(-90deg)}
+.collapse-body{overflow:hidden;transition:max-height .25s ease}
+
+/* Add element button */
+#add-element-btn{
+  background:none;border:1px dashed #333;color:#575757;
+  width:100%;padding:7px;border-radius:4px;cursor:pointer;
+  font-size:11px;letter-spacing:1px;text-transform:uppercase;
+  margin-top:4px;transition:all .15s;
+}
+#add-element-btn:hover{border-color:#ff0000;color:#ff0000}
+
+/* ── Preview area ─────────────────────────────────── */
+#preview-area{
+  flex:1;display:flex;flex-direction:column;
+  background:#111;min-width:0;
+}
+#preview-bar{
+  flex:0 0 40px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;border-bottom:1px solid #1a1a1a;
+  background:#0a0a0a;
+}
+#preview-bar .hint{font-size:10px;color:#333;letter-spacing:1px;text-transform:uppercase}
+#preview-actions{display:flex;gap:8px}
+#preview-wrap{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  padding:24px;overflow:hidden;position:relative;
+}
+#preview-wrap.bg-white{background:#e8e8e8}
+#preview-wrap.bg-black{background:#111}
+#preview-wrap.bg-transparent{
+  background-image:
+    linear-gradient(45deg,#1c1c1c 25%,transparent 25%),
+    linear-gradient(-45deg,#1c1c1c 25%,transparent 25%),
+    linear-gradient(45deg,transparent 75%,#1c1c1c 75%),
+    linear-gradient(-45deg,transparent 75%,#1c1c1c 75%);
+  background-size:16px 16px;
+  background-position:0 0,0 8px,8px -8px,-8px 0;
+}
+#svg-display{
+  max-width:100%;max-height:100%;
+  width:auto;height:auto;
+}
+#svg-display svg{
+  max-width:100%;height:auto;display:block;
+}
+#loading{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-size:10px;color:#333;letter-spacing:3px;text-transform:uppercase;
+  display:none;
+}
+#loading.active{display:block}
+
+/* Error notice */
+#error-notice{
+  position:absolute;bottom:12px;left:50%;transform:translateX(-50%);
+  background:#1a0000;border:1px solid #ff0000;border-radius:4px;
+  padding:8px 14px;font-size:10px;color:#ff0000;
+  max-width:80%;display:none;
+}
+#error-notice.active{display:block}
+</style>
+</head>
+<body>
+
+<!-- ── Top bar ──────────────────────────────────────────────────────────── -->
+<div id="topbar">
+  <h1>ETKM VISUAL AIDE</h1>
+  <span class="badge">Brand-Enforced Visual System</span>
+</div>
+
+<!-- ── Main layout ──────────────────────────────────────────────────────── -->
+<div id="main">
+
+  <!-- ── SIDEBAR ─────────────────────────────────────────────────────────── -->
+  <div id="sidebar">
+
+    <!-- Diagram Type -->
+    <div class="section">
+      <div class="section-title">Diagram Type</div>
+      <select id="diagram-type">
+        {% for key, label in diagram_labels.items() %}
+        <option value="{{ key }}">{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- Content -->
+    <div class="section">
+      <div class="section-title">Content</div>
+      <label>Title</label>
+      <input type="text" id="title" value="PROCESS TITLE" placeholder="MAIN TITLE"/>
+      <label>Subtitle</label>
+      <input type="text" id="subtitle" value="Your subtitle here" placeholder="Subtitle text"/>
+      <div id="extra-fields"></div>
+    </div>
+
+    <!-- Elements -->
+    <div class="section" id="elements-section">
+      <div class="section-title">Elements</div>
+      <div id="elements-list"></div>
+      <button id="add-element-btn">+ Add Element</button>
+    </div>
+
+    <!-- Visual Controls -->
+    <div class="section">
+      <div class="section-title">Visual Controls</div>
+
+      <label>Color Scheme</label>
+      <div class="toggle-group">
+        <label><input type="radio" name="color_scheme" value="brand" checked/><span>Brand</span></label>
+        <label><input type="radio" name="color_scheme" value="bw"/><span>B&amp;W</span></label>
+        <label><input type="radio" name="color_scheme" value="inverted"/><span>Inverted</span></label>
+      </div>
+
+      <label style="margin-top:14px">Background</label>
+      <div class="toggle-group">
+        <label><input type="radio" name="background" value="transparent" checked/><span>Clear</span></label>
+        <label><input type="radio" name="background" value="white"/><span>White</span></label>
+        <label><input type="radio" name="background" value="black"/><span>Black</span></label>
+      </div>
+
+      <label style="margin-top:14px">Red Emphasis — Element #</label>
+      <div class="range-row">
+        <input type="range" id="emphasis-index" min="0" max="7" value="1"/>
+        <span class="range-val" id="emphasis-val">1</span>
+      </div>
+
+      <label style="margin-top:14px">Text Scale</label>
+      <div class="range-row">
+        <input type="range" id="text-scale" min="0.6" max="1.4" step="0.05" value="1.0"/>
+        <span class="range-val" id="scale-val">1.0×</span>
+      </div>
+
+      <label style="margin-top:14px">Accent Color Override</label>
+      <div class="color-row">
+        <input type="color" id="accent-color" value="#FF0000"/>
+        <span>Overrides red (use sparingly)</span>
+      </div>
+
+      <label style="margin-top:10px">Primary Color Override</label>
+      <div class="color-row">
+        <input type="color" id="primary-color" value="#000000"/>
+        <span>Overrides primary black</span>
+      </div>
+    </div>
+
+    <!-- Export -->
+    <div class="section">
+      <div class="section-title">Export</div>
+      <button class="btn btn-primary" id="export-btn" style="margin-bottom:8px">
+        Export PNG (Transparent)
+      </button>
+      <button class="btn btn-secondary btn-sm" id="export-svg-btn">
+        Export SVG
+      </button>
+      <div id="export-status" style="font-size:10px;color:#575757;margin-top:8px;text-align:center"></div>
+    </div>
+
+  </div><!-- /sidebar -->
+
+  <!-- ── PREVIEW ──────────────────────────────────────────────────────────── -->
+  <div id="preview-area">
+    <div id="preview-bar">
+      <span class="hint">Live Preview — 1920 × 1080</span>
+      <div id="preview-actions">
+        <button class="btn btn-secondary btn-sm" id="bg-toggle">Toggle BG</button>
+        <button class="btn btn-secondary btn-sm" id="refresh-btn">Refresh</button>
+      </div>
+    </div>
+    <div id="preview-wrap" class="bg-transparent">
+      <div id="svg-display"></div>
+      <div id="loading">Rendering…</div>
+      <div id="error-notice"></div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+/* ── State ─────────────────────────────────────────────────────────────────── */
+const state = {
+  diagramType: 'chevron_flow',
+  title: 'PROCESS TITLE',
+  subtitle: 'Your subtitle here',
+  elements: [],
+  settings: {
+    color_scheme: 'brand',
+    background: 'transparent',
+    emphasis_index: 1,
+    text_scale: 1.0,
+    accent_color_override: null,
+    primary_color_override: null,
+  },
+  extraFields: {},
+};
+
+/* ── Element schemas per diagram type ──────────────────────────────────────── */
+const SCHEMAS = {
+  chevron_flow: {
+    defaultElements: [
+      {label:'STEP 1', sub_label:'MILESTONE 01', body:'Description for this stage.'},
+      {label:'STEP 2', sub_label:'MILESTONE 02', body:'Description for this stage.'},
+      {label:'STEP 3', sub_label:'MILESTONE 03', body:'Description for this stage.'},
+    ],
+    fields: [
+      {key:'label',     label:'Stage / Year Label', type:'text'},
+      {key:'sub_label', label:'Milestone Heading',  type:'text'},
+      {key:'body',      label:'Body Text',           type:'textarea'},
+    ],
+    extraFields: [],
+  },
+  pyramid: {
+    defaultElements: [
+      {label:'KIT',     body:'Foundation equipment and tools.'},
+      {label:'SKILLS',  body:'Core techniques built through repetition.'},
+      {label:'TACTICS', body:'Strategic decision-making under pressure.'},
+      {label:'MINDSET', body:'Mental toughness and situational awareness.'},
+    ],
+    fields: [
+      {key:'label', label:'Level Label', type:'text'},
+      {key:'body',  label:'Body Text',   type:'textarea'},
+    ],
+    extraFields: [
+      {key:'pyramid_color', label:'Pyramid Color', type:'color', default:'#FF0000'},
+    ],
+  },
+  mind_map: {
+    defaultElements: [
+      {label:'Target',    body:'Primary objective and key result area.'},
+      {label:'Strategy',  body:'Planned approach and decision framework.'},
+      {label:'Execution', body:'Implementation steps and tactical actions.'},
+      {label:'Review',    body:'Performance assessment and adjustment loop.'},
+      {label:'Growth',    body:'Continuous development and skill building.'},
+      {label:'Culture',   body:'Team values, standards, shared identity.'},
+    ],
+    fields: [
+      {key:'label', label:'Segment Label', type:'text'},
+      {key:'body',  label:'Body Text',     type:'textarea'},
+    ],
+    extraFields: [
+      {key:'center_label', label:'Center Label', type:'text', default:'FOCUS'},
+    ],
+  },
+  matrix_grid: {
+    defaultElements: [],
+    fields: [],
+    extraFields: [
+      {key:'x_label',  label:'X-Axis Title',     type:'text', default:'POTENTIAL ASSESSMENT'},
+      {key:'y_label',  label:'Y-Axis Title',      type:'text', default:'PERFORMANCE ASSESSMENT'},
+      {key:'x_values', label:'Column Labels (comma-separated)', type:'text', default:'LOW, MODERATE, HIGH'},
+      {key:'y_values', label:'Row Labels (comma-separated)',    type:'text', default:'HIGH, MODERATE, LOW'},
+    ],
+  },
+  price_table: {
+    defaultElements: [
+      {name:'SILVER',   price:'$1.99',  period:'/month', features:'Feature One\nFeature Two\nFeature Three\nFeature Four', button:'SIGN UP'},
+      {name:'GOLD',     price:'$4.99',  period:'/month', features:'Feature One\nFeature Two\nFeature Three\nFeature Four', button:'SIGN UP'},
+      {name:'PLATINUM', price:'$9.99',  period:'/month', features:'Feature One\nFeature Two\nFeature Three\nFeature Four', button:'SIGN UP'},
+      {name:'DIAMOND',  price:'$19.99', period:'/month', features:'Feature One\nFeature Two\nFeature Three\nFeature Four', button:'SIGN UP'},
+    ],
+    fields: [
+      {key:'name',     label:'Tier Name',            type:'text'},
+      {key:'price',    label:'Price',                 type:'text'},
+      {key:'period',   label:'Period (e.g. /month)', type:'text'},
+      {key:'features', label:'Features (one per line)', type:'textarea'},
+      {key:'button',   label:'Button Text',           type:'text'},
+    ],
+    extraFields: [],
+  },
+  decision_tree: {
+    defaultElements: [
+      {label:'Option A', leaves:[{label:'Result 1', body:''}, {label:'Result 2', body:''}]},
+      {label:'Option B', leaves:[{label:'Result 3', body:''}, {label:'Result 4', body:''}]},
+      {label:'Option C', leaves:[{label:'Result 5', body:''}, {label:'Result 6', body:''}]},
+    ],
+    fields: [
+      {key:'label', label:'Branch Label', type:'text'},
+    ],
+    extraFields: [
+      {key:'root_label', label:'Root Node Label', type:'text', default:'START'},
+    ],
+  },
+  flowchart: {
+    defaultElements: [],
+    fields: [],
+    extraFields: [
+      {key:'split_layout', label:'Split Layout (dark left panel)', type:'checkbox', default:false},
+    ],
+  },
+  journey_map: {
+    defaultElements: [],
+    fields: [],
+    extraFields: [
+      {key:'x_values', label:'Stage Columns (comma-separated)', type:'text',
+       default:'AWARENESS, ENGAGEMENT, EVALUATION, PURCHASE, POST-PURCHASE'},
+      {key:'y_values', label:'Phase Rows (comma-separated)', type:'text',
+       default:'ACTIONS, QUESTIONS, TOUCH POINTS, OPPORTUNITIES, CONTENT'},
+    ],
+  },
+};
+
+/* ── DOM refs ───────────────────────────────────────────────────────────────── */
+const $type     = document.getElementById('diagram-type');
+const $title    = document.getElementById('title');
+const $subtitle = document.getElementById('subtitle');
+const $elList   = document.getElementById('elements-list');
+const $addBtn   = document.getElementById('add-element-btn');
+const $extra    = document.getElementById('extra-fields');
+const $preview  = document.getElementById('svg-display');
+const $loading  = document.getElementById('loading');
+const $error    = document.getElementById('error-notice');
+const $expBtn   = document.getElementById('export-btn');
+const $expSvg   = document.getElementById('export-svg-btn');
+const $expStat  = document.getElementById('export-status');
+const $pvWrap   = document.getElementById('preview-wrap');
+const $empSlide = document.getElementById('emphasis-index');
+const $empVal   = document.getElementById('emphasis-val');
+const $scaleSlide = document.getElementById('text-scale');
+const $scaleVal = document.getElementById('scale-val');
+const $accentColor  = document.getElementById('accent-color');
+const $primaryColor = document.getElementById('primary-color');
+
+/* ── Build params from state ────────────────────────────────────────────────── */
+function buildParams() {
+  const schema  = SCHEMAS[state.diagramType] || SCHEMAS.chevron_flow;
+  const params  = {
+    diagram_type: state.diagramType,
+    title:    $title.value,
+    subtitle: $subtitle.value,
+    settings: {
+      color_scheme:    document.querySelector('input[name=color_scheme]:checked')?.value || 'brand',
+      background:      document.querySelector('input[name=background]:checked')?.value || 'transparent',
+      emphasis_index:  parseInt($empSlide.value),
+      text_scale:      parseFloat($scaleSlide.value),
+    },
+  };
+
+  // Accent/primary color overrides
+  const accentHex  = $accentColor.value;
+  const primaryHex = $primaryColor.value;
+  if (accentHex !== '#ff0000') params.settings.accent_color_override = accentHex;
+  if (primaryHex !== '#000000') params.settings.primary_color_override = primaryHex;
+
+  // Extra fields
+  if (schema.extraFields) {
+    schema.extraFields.forEach(ef => {
+      const el = document.getElementById('ef-' + ef.key);
+      if (!el) return;
+      if (ef.type === 'checkbox') {
+        params.settings[ef.key] = el.checked;
+      } else if (ef.type === 'color') {
+        params[ef.key] = el.value;
+      } else if (ef.key === 'x_values' || ef.key === 'y_values') {
+        params[ef.key] = el.value.split(',').map(v => v.trim()).filter(Boolean);
+      } else {
+        params[ef.key] = el.value;
+        // Also pass center_label etc. directly
+      }
+    });
+  }
+
+  // Elements
+  const rows = $elList.querySelectorAll('.el-row');
+  const elements = [];
+  rows.forEach(row => {
+    const obj = {};
+    schema.fields?.forEach(f => {
+      const inp = row.querySelector(`[data-key="${f.key}"]`);
+      if (!inp) return;
+      if (f.key === 'features') {
+        obj[f.key] = inp.value.split('\n').map(s => s.trim()).filter(Boolean);
+      } else {
+        obj[f.key] = inp.value;
+      }
+    });
+    elements.push(obj);
+  });
+  if (elements.length) params.elements = elements;
+
+  return params;
+}
+
+/* ── Render extra fields ────────────────────────────────────────────────────── */
+function renderExtraFields() {
+  const schema = SCHEMAS[state.diagramType] || {};
+  $extra.innerHTML = '';
+  (schema.extraFields || []).forEach(ef => {
+    const lbl = document.createElement('label');
+    lbl.textContent = ef.label;
+    $extra.appendChild(lbl);
+
+    if (ef.type === 'checkbox') {
+      const inp = document.createElement('input');
+      inp.type = 'checkbox'; inp.id = 'ef-' + ef.key;
+      inp.checked = ef.default || false;
+      inp.style.accentColor = '#ff0000';
+      inp.addEventListener('change', debounceRefresh);
+      $extra.appendChild(inp);
+    } else if (ef.type === 'color') {
+      const row = document.createElement('div'); row.className = 'color-row';
+      const inp = document.createElement('input');
+      inp.type = 'color'; inp.id = 'ef-' + ef.key; inp.value = ef.default || '#FF0000';
+      inp.addEventListener('input', debounceRefresh);
+      row.appendChild(inp);
+      $extra.appendChild(row);
+    } else {
+      const inp = document.createElement('input');
+      inp.type = 'text'; inp.id = 'ef-' + ef.key;
+      inp.value = ef.default || '';
+      inp.addEventListener('input', debounceRefresh);
+      $extra.appendChild(inp);
+    }
+  });
+}
+
+/* ── Render element list ────────────────────────────────────────────────────── */
+function renderElements() {
+  const schema = SCHEMAS[state.diagramType] || {};
+  $elList.innerHTML = '';
+  const els = state.elements;
+  els.forEach((el, i) => {
+    const row = document.createElement('div'); row.className = 'el-row';
+    const num = document.createElement('div'); num.className = 'el-num';
+    num.textContent = `Element ${i + 1}`;
+    row.appendChild(num);
+
+    const rmBtn = document.createElement('button'); rmBtn.className = 'rm-btn';
+    rmBtn.textContent = '×'; rmBtn.title = 'Remove';
+    rmBtn.addEventListener('click', () => {
+      state.elements.splice(i, 1);
+      renderElements();
+      debounceRefresh();
+    });
+    row.appendChild(rmBtn);
+
+    (schema.fields || []).forEach(f => {
+      const lbl = document.createElement('label'); lbl.textContent = f.label;
+      row.appendChild(lbl);
+      let inp;
+      if (f.type === 'textarea') {
+        inp = document.createElement('textarea');
+        inp.rows = 2;
+      } else {
+        inp = document.createElement('input'); inp.type = 'text';
+      }
+      inp.setAttribute('data-key', f.key);
+      inp.value = el[f.key] !== undefined ? el[f.key] : '';
+      inp.addEventListener('input', debounceRefresh);
+      row.appendChild(inp);
+    });
+
+    $elList.appendChild(row);
+  });
+
+  $addBtn.style.display = (schema.fields && schema.fields.length > 0) ? 'block' : 'none';
+}
+
+/* ── Switch diagram type ────────────────────────────────────────────────────── */
+function switchType(type) {
+  state.diagramType = type;
+  const schema = SCHEMAS[type] || {};
+  state.elements = JSON.parse(JSON.stringify(schema.defaultElements || []));
+  renderExtraFields();
+  renderElements();
+
+  // Update emphasis slider max
+  const maxEl = Math.max(0, (state.elements.length || 8) - 1);
+  $empSlide.max = maxEl;
+  $empSlide.value = Math.min(parseInt($empSlide.value), maxEl);
+  $empVal.textContent = $empSlide.value;
+}
+
+/* ── Fetch + render SVG ──────────────────────────────────────────────────────── */
+let _debTimer = null;
+function debounceRefresh(delay = 400) {
+  clearTimeout(_debTimer);
+  _debTimer = setTimeout(refresh, typeof delay === 'number' ? delay : 400);
+}
+
+async function refresh() {
+  $loading.classList.add('active');
+  $error.classList.remove('active');
+  try {
+    const params = buildParams();
+    const res    = await fetch('/preview', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(params),
+    });
+    const data = await res.json();
+    if (data.ok) {
+      $preview.innerHTML = data.svg;
+      // Fix SVG sizing for preview
+      const svgEl = $preview.querySelector('svg');
+      if (svgEl) {
+        svgEl.style.maxWidth = '100%';
+        svgEl.style.maxHeight = 'calc(100vh - 100px)';
+        svgEl.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+      }
+    } else {
+      showError(data.error || 'Unknown error');
+    }
+  } catch(e) {
+    showError(String(e));
+  } finally {
+    $loading.classList.remove('active');
+  }
+}
+
+function showError(msg) {
+  $error.textContent = msg.split('\n').slice(-1)[0];
+  $error.classList.add('active');
+}
+
+/* ── Export PNG ──────────────────────────────────────────────────────────────── */
+$expBtn.addEventListener('click', async () => {
+  $expBtn.textContent = 'Generating…';
+  $expStat.textContent = '';
+  try {
+    const params = buildParams();
+    const res    = await fetch('/export', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(params),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({error: 'Export failed'}));
+      $expStat.textContent = err.error || 'Export failed';
+      return;
+    }
+    const blob = await res.blob();
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url;
+    const cd = res.headers.get('Content-Disposition') || '';
+    const match = cd.match(/filename="?([^"]+)"?/);
+    a.download = match ? match[1] : 'etkm_visual.png';
+    a.click();
+    URL.revokeObjectURL(url);
+    $expStat.textContent = '✓ Saved';
+  } catch(e) {
+    $expStat.textContent = String(e);
+  } finally {
+    $expBtn.textContent = 'Export PNG (Transparent)';
+  }
+});
+
+/* ── Export SVG ──────────────────────────────────────────────────────────────── */
+$expSvg.addEventListener('click', () => {
+  const svgEl = $preview.querySelector('svg');
+  if (!svgEl) return;
+  const blob = new Blob([svgEl.outerHTML], {type:'image/svg+xml'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = 'etkm_visual.svg'; a.click();
+  URL.revokeObjectURL(url);
+});
+
+/* ── Background toggle ───────────────────────────────────────────────────────── */
+const BG_CLASSES = ['bg-transparent','bg-white','bg-black'];
+let _bgIdx = 0;
+document.getElementById('bg-toggle').addEventListener('click', () => {
+  $pvWrap.classList.remove(...BG_CLASSES);
+  _bgIdx = (_bgIdx + 1) % BG_CLASSES.length;
+  $pvWrap.classList.add(BG_CLASSES[_bgIdx]);
+});
+
+/* ── Sync background radio → preview bg ─────────────────────────────────────── */
+document.querySelectorAll('input[name=background]').forEach(r => {
+  r.addEventListener('change', () => {
+    const v = r.value;
+    $pvWrap.classList.remove(...BG_CLASSES);
+    $pvWrap.classList.add('bg-' + v);
+    debounceRefresh();
+  });
+});
+
+/* ── Event wiring ────────────────────────────────────────────────────────────── */
+$type.addEventListener('change', () => { switchType($type.value); debounceRefresh(100); });
+$title.addEventListener('input', debounceRefresh);
+$subtitle.addEventListener('input', debounceRefresh);
+
+document.querySelectorAll('input[name=color_scheme]').forEach(r =>
+  r.addEventListener('change', debounceRefresh));
+
+$empSlide.addEventListener('input', () => {
+  $empVal.textContent = $empSlide.value;
+  debounceRefresh();
+});
+$scaleSlide.addEventListener('input', () => {
+  $scaleVal.textContent = parseFloat($scaleSlide.value).toFixed(2) + '×';
+  debounceRefresh();
+});
+$accentColor.addEventListener('input', debounceRefresh);
+$primaryColor.addEventListener('input', debounceRefresh);
+
+$addBtn.addEventListener('click', () => {
+  const schema = SCHEMAS[state.diagramType] || {};
+  const defaults = schema.defaultElements?.[0] || {};
+  const newEl = {};
+  (schema.fields || []).forEach(f => { newEl[f.key] = ''; });
+  Object.assign(newEl, defaults);
+  state.elements.push({...newEl});
+  renderElements();
+  debounceRefresh();
+});
+
+document.getElementById('refresh-btn').addEventListener('click', () => refresh());
+
+/* ── Init ────────────────────────────────────────────────────────────────────── */
+switchType('chevron_flow');
+refresh();
+</script>
+</body>
+</html>
