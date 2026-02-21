@@ -8,6 +8,7 @@ Reference: column headers (stages) as gray rounded-rect cells,
 """
 
 from .base import (
+    W_BLACK, W_BOLD, W_REGULAR,
     W, H, MARGIN, FONT_TITLE, FONT_BODY,
     get_scheme, fs,
     rect_el, line_el, text_el, multiline_el,
@@ -42,7 +43,7 @@ def generate(params):
     # ── Title ─────────────────────────────────────────────────────────────────
     el.append(text_el(W / 2, 68, title,
                       fs('h1', scale), scheme['accent'],
-                      weight='400', family=FONT_TITLE))
+                      weight=W_BLACK, family=FONT_TITLE))
 
     # ── Grid layout ───────────────────────────────────────────────────────────
     row_hdr_w = 220          # width of row header column

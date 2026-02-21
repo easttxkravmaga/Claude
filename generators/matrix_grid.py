@@ -10,17 +10,18 @@ Supports 2×2 through 4×4 grids.
 
 import math
 from .base import (
+    W_BLACK, W_BOLD, W_REGULAR,
     W, H, MARGIN, FONT_TITLE, FONT_BODY,
     get_scheme, fs,
     rect_el, line_el, text_el, multiline_el,
     BLACK, WHITE, RED, GRAY, LITE_GRAY, build_svg, wrap
 )
 
-# Layout constants
-GRID_LEFT   = 230    # left edge of grid (room for y-axis labels)
+# Layout constants — extra left margin for rotated y-axis title + row labels
+GRID_LEFT   = 310    # left edge of grid
 GRID_RIGHT  = W - MARGIN
 GRID_TOP    = 200    # top edge of grid
-GRID_BOT    = H - 140  # bottom edge (room for x-axis label)
+GRID_BOT    = H - 130  # bottom edge (room for x-axis label)
 
 
 def generate(params):
@@ -51,7 +52,7 @@ def generate(params):
     # ── Title (RED) ───────────────────────────────────────────────────────────
     el.append(text_el(W / 2, 88, title,
                       fs('h1', scale), scheme['accent'],
-                      weight='400', family=FONT_TITLE))
+                      weight=W_BLACK, family=FONT_TITLE))
 
     # ── Grid dimensions ───────────────────────────────────────────────────────
     gw      = GRID_RIGHT - GRID_LEFT
@@ -108,7 +109,7 @@ def generate(params):
                       weight='700', family=FONT_BODY))
 
     # ── Y-axis title (rotated) ────────────────────────────────────────────────
-    y_axis_cx = GRID_LEFT - 120
+    y_axis_cx = GRID_LEFT - 170   # moved left; row labels at GRID_LEFT-20
     y_axis_cy = GRID_TOP + gh / 2
     el.append(text_el(
         y_axis_cx, y_axis_cy, y_label,

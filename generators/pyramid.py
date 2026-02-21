@@ -9,6 +9,7 @@ Supports 2–6 levels.
 
 import math
 from .base import (
+    W_BLACK, W_BOLD, W_REGULAR,
     W, H, MARGIN, FONT_TITLE, FONT_BODY,
     get_scheme, fs,
     polygon_el, line_el, text_el, multiline_el, rect_el,
@@ -78,7 +79,7 @@ def generate(params):
     title_cx = W / 2
     el.append(text_el(title_cx, 68, title,
                       fs('h1', scale), scheme['primary'],
-                      weight='400', family=FONT_TITLE))
+                      weight=W_BLACK, family=FONT_TITLE))
     el.append(text_el(title_cx, 68 + fs('h1', scale) * 0.72 + 8, subtitle,
                       fs('h2', scale), scheme['secondary'],
                       weight='700', family=FONT_BODY))
@@ -103,7 +104,7 @@ def generate(params):
         label = items[i].get('label', f'LEVEL {i+1}').upper()
         el.append(text_el(PYRAMID_CX, y_mid, label,
                           fs('label', scale), WHITE,
-                          weight='400', family=FONT_TITLE))
+                          weight=W_BLACK, family=FONT_TITLE))
 
     # ── Bullet list ───────────────────────────────────────────────────────────
     bullet_r  = 9

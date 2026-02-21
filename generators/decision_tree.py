@@ -9,6 +9,7 @@ Supports 2–4 branches (total nodes: 1 + N + N*2).
 
 import math
 from .base import (
+    W_BLACK, W_BOLD, W_REGULAR,
     W, H, MARGIN, FONT_TITLE, FONT_BODY,
     get_scheme, fs,
     rect_el, line_el, text_el, multiline_el,
@@ -65,7 +66,7 @@ def generate(params):
     title_y = 68
     el.append(text_el(W / 2, title_y, title,
                       fs('h1', scale), scheme['primary'],
-                      weight='400', family=FONT_TITLE))
+                      weight=W_BLACK, family=FONT_TITLE))
     sub_y = title_y + fs('h1', scale) * 0.72 + 10
     el.append(text_el(W / 2, sub_y, subtitle,
                       fs('h2', scale), scheme['secondary'],
@@ -81,10 +82,13 @@ def generate(params):
     node_h  = round(node_w * 0.45)
 
     # 3 columns: root, mid, leaves
+    # Leaf nodes shifted left so body text fits to their right without clipping
+    body_w   = int(W * 0.20)  # max width for body text block
+    leaf_cx_x = W - MARGIN - node_w * 0.5 - body_w
     col_xs   = [
         MARGIN + node_w * 0.5,
-        W * 0.42,
-        W - MARGIN - node_w * 0.5,
+        W * 0.38,
+        leaf_cx_x,
     ]
 
     total_leaves = nb * 2
@@ -138,17 +142,21 @@ def generate(params):
                             leaf.get('label', f'Leaf {bi*2+li+1}'), '',
                             scheme, scale))
 
-            # Body text to the right (if canvas allows)
+            # Body text to the right of leaf node (clamped to canvas)
             body = leaf.get('body', '')
             if body:
-                lines = wrap(body, max_chars=24)
-                for j, ln in enumerate(lines):
-                    el.append(text_el(
-                        leaf_cx + node_w / 2 + 16,
-                        leaf_cy - fs('body', scale) * 0.4 + j * fs('body', scale) * 1.4,
-                        ln, fs('body', scale), scheme['secondary'],
-                        weight='400', family=FONT_BODY, anchor='start'
-                    ))
+                text_x  = leaf_cx + node_w / 2 + 14
+                max_x   = W - MARGIN
+                if text_x < max_x - 20:
+                    chars = max(10, round((max_x - text_x) / (fs('body', scale) * 0.6)))
+                    lines = wrap(body, max_chars=chars)
+                    for j, ln in enumerate(lines):
+                        el.append(text_el(
+                            text_x,
+                            leaf_cy - fs('body', scale) * 0.4 + j * fs('body', scale) * 1.4,
+                            ln, fs('body', scale), scheme['secondary'],
+                            weight=W_REGULAR, family=FONT_BODY, anchor='start'
+                        ))
 
     mode = params.get('_mode', 'preview')
     return build_svg(el, bg=bg if bg != 'transparent' else scheme['bg'], mode=mode)

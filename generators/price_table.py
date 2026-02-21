@@ -12,6 +12,7 @@ Supports 2–5 columns.
 """
 
 from .base import (
+    W_BLACK, W_BOLD, W_REGULAR,
     W, H, MARGIN, FONT_TITLE, FONT_BODY,
     get_scheme, fs,
     rect_el, polygon_el, text_el, multiline_el, line_el,
@@ -75,7 +76,7 @@ def generate(params):
     # ── Title block ───────────────────────────────────────────────────────────
     el.append(text_el(W / 2, 72, title,
                       fs('h1', scale), scheme['accent'],
-                      weight='400', family=FONT_TITLE))
+                      weight=W_BLACK, family=FONT_TITLE))
     el.append(text_el(W / 2, 72 + fs('h1', scale) * 0.72 + 10, subtitle,
                       fs('h2', scale), scheme['primary'],
                       weight='700', family=FONT_BODY))
@@ -105,34 +106,40 @@ def generate(params):
                           weight='700', family=FONT_BODY))
 
         # ── Red icon ──────────────────────────────────────────────────────────
-        icon_y = card_top + header_h + 42
+        icon_r = fs('label', scale) * 0.68
+        icon_y = card_top + header_h + icon_r + 30
         el.append(_icon_placeholder(cx_card + card_w / 2, icon_y,
-                                    fs('label', scale) * 0.72, scheme['accent']))
+                                    icon_r, scheme['accent']))
 
         # ── Price ─────────────────────────────────────────────────────────────
-        price_y = icon_y + fs('label', scale) + 28
+        price_size = fs('huge', scale * 0.70)
+        price_y    = icon_y + icon_r + 28 + price_size * 0.5
         el.append(text_el(cx_card + card_w / 2, price_y,
                           item.get('price', '$0.00'),
-                          fs('huge', scale * 0.72), scheme['primary'],
-                          weight='400', family=FONT_TITLE))
-        el.append(text_el(cx_card + card_w / 2, price_y + fs('huge', scale * 0.72) * 0.55,
+                          price_size, scheme['primary'],
+                          weight=W_BLACK, family=FONT_TITLE))
+        period_y = price_y + price_size * 0.58
+        el.append(text_el(cx_card + card_w / 2, period_y,
                           item.get('period', '/month'),
                           fs('body', scale), scheme['secondary'],
-                          weight='400', family=FONT_BODY))
+                          weight=W_REGULAR, family=FONT_BODY))
 
-        # ── Feature list ──────────────────────────────────────────────────────
+        # ── Feature list — evenly fill space between period and button ─────────
         features = item.get('features', [])
-        feat_y   = price_y + fs('huge', scale * 0.72) + 36
-        lh       = fs('body', scale) * 1.7
-        for j, feat in enumerate(features[:6]):
-            el.append(text_el(cx_card + card_w / 2,
-                              feat_y + j * lh,
+        btn_h    = round(card_h * 0.090)
+        btn_y    = card_bot - btn_h - 50
+        feat_area_top = period_y + fs('body', scale)
+        feat_area_h   = btn_y - feat_area_top - 20
+        nf   = min(len(features), 6)
+        lh   = feat_area_h / max(nf, 1)
+        for j, feat in enumerate(features[:nf]):
+            fy = feat_area_top + (j + 0.5) * lh
+            el.append(text_el(cx_card + card_w / 2, fy,
                               feat, fs('body', scale),
-                              scheme['primary'], weight='400', family=FONT_BODY))
+                              scheme['primary'], weight=W_REGULAR, family=FONT_BODY))
 
         # ── CTA button ────────────────────────────────────────────────────────
-        btn_h  = round(card_h * 0.092)
-        btn_y  = card_bot - btn_h - 52
+        btn_rx = 10
         btn_rx = 10
         el.append(rect_el(cx_card + 16, btn_y, card_w - 32, btn_h,
                           fill=scheme['primary'], rx=btn_rx))

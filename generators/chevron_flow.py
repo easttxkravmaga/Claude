@@ -7,6 +7,7 @@ Supports 2–8 elements.
 """
 
 from .base import (
+    W_BLACK, W_BOLD, W_REGULAR,
     W, H, MARGIN, FONT_TITLE, FONT_BODY,
     get_scheme, chevron_color, fs, SIZES,
     chevron_el, text_el, multiline_el, h_rule, bg_rect,
@@ -39,7 +40,7 @@ def generate(params):
     subtitle_y = title_y + fs('h1', scale) * 0.72
     el.append(text_el(W / 2, title_y, title,
                       fs('h1', scale), scheme['primary'],
-                      weight='400', family=FONT_TITLE))
+                      weight=W_BLACK, family=FONT_TITLE))
     el.append(text_el(W / 2, subtitle_y + 12, subtitle,
                       fs('h2', scale), scheme['secondary'],
                       weight='700', family=FONT_BODY))
@@ -66,7 +67,7 @@ def generate(params):
         text_color = scheme['on_dark'] if fill != WHITE else scheme['on_light']
         el.append(text_el(cx, cy, label,
                           fs('large', scale * 0.75), text_color,
-                          weight='400', family=FONT_TITLE))
+                          weight=W_BLACK, family=FONT_TITLE))
 
     # ── Content below chevrons ────────────────────────────────────────────────
     if show_sub:

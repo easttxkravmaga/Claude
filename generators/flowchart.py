@@ -8,6 +8,7 @@ Shapes: oval (start/end), rectangle (process), diamond (decision), parallelogram
 
 import math
 from .base import (
+    W_BLACK, W_BOLD, W_REGULAR,
     W, H, MARGIN, FONT_TITLE, FONT_BODY,
     get_scheme, fs,
     rect_el, line_el, text_el, multiline_el, polygon_el,
@@ -114,7 +115,7 @@ def generate(params):
         # Title on left panel
         el.append(text_el(panel_w / 2, 80, title,
                           fs('h1', scale * 0.72), WHITE,
-                          weight='400', family=FONT_TITLE))
+                          weight=W_BLACK, family=FONT_TITLE))
         el.append(text_el(panel_w / 2, 80 + fs('h1', scale * 0.72) * 0.72 + 10, subtitle,
                           fs('h2', scale * 0.80), LITE_GRAY,
                           weight='400', family=FONT_BODY))
@@ -143,7 +144,7 @@ def generate(params):
         # Full-width title at top
         el.append(text_el(W / 2, 68, title.upper(),
                           fs('h1', scale), scheme['primary'],
-                          weight='400', family=FONT_TITLE))
+                          weight=W_BLACK, family=FONT_TITLE))
         el.append(text_el(W / 2, 68 + fs('h1', scale) * 0.72 + 10, subtitle,
                           fs('h2', scale), scheme['secondary'],
                           weight='400', family=FONT_BODY))

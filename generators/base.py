@@ -22,8 +22,15 @@ H      = 1080
 MARGIN = 80
 
 # ── Font Families ─────────────────────────────────────────────────────────────
-FONT_TITLE = 'Anton'   # ultra-bold condensed — headings, labels, chevrons
-FONT_BODY  = 'Inter'   # humanist sans — body text, subtitles
+# Primary: Helvetica Now Display (commercial — place TTF files in fonts/ dir).
+# Fallback chain used when files are not present.
+FONT_TITLE   = 'Helvetica Now Display'
+FONT_BODY    = 'Inter'
+
+# Font weight constants — used consistently across all generators
+W_BLACK  = '900'   # Helvetica Now Display Black — titles, numbers in shapes
+W_BOLD   = '700'   # Bold — section labels, headings
+W_REGULAR= '400'   # Regular — body text, subtitles
 
 # ── Base Font Sizes (at scale 1.0) ───────────────────────────────────────────
 SIZES = {
@@ -93,26 +100,50 @@ def chevron_color(i, n, emphasis_i, scheme):
 # ── Fonts / SVG Defs ──────────────────────────────────────────────────────────
 FONTS_DIR = os.path.join(os.path.dirname(__file__), '..', 'fonts')
 
+# Helvetica Now Display — place these files in the fonts/ directory.
+# Exact filenames can vary by vendor; common names are listed as candidates.
+HND_CANDIDATES = {
+    '900': [
+        'HelveticaNowDisplay-Black.ttf',
+        'Helvetica Now Display Black.ttf',
+        'HelveticaNow-DisplayBlack.ttf',
+        'HelveticaNowDisplayBlack.ttf',
+    ],
+    '700': [
+        'HelveticaNowDisplay-Bold.ttf',
+        'Helvetica Now Display Bold.ttf',
+        'HelveticaNow-DisplayBold.ttf',
+        'HelveticaNowDisplayBold.ttf',
+    ],
+    '400': [
+        'HelveticaNowDisplay-Regular.ttf',
+        'Helvetica Now Display Regular.ttf',
+        'HelveticaNowDisplay.ttf',
+        'Helvetica Now Display.ttf',
+    ],
+}
+
 FONT_PATHS = {
-    'Anton':      os.path.join(FONTS_DIR, 'Anton-Regular.ttf'),
     'Inter':      os.path.join(FONTS_DIR, 'Inter-Regular.ttf'),
     'Inter-Bold': os.path.join(FONTS_DIR, 'Inter-Bold.ttf'),
 }
 
-def download_font(name, url, path):
-    if os.path.exists(path):
-        return True
-    try:
-        os.makedirs(os.path.dirname(path), exist_ok=True)
-        r = requests.get(url, timeout=15)
-        r.raise_for_status()
-        with open(path, 'wb') as f:
-            f.write(r.content)
-        print(f'[fonts] Downloaded {name}')
-        return True
-    except Exception as e:
-        print(f'[fonts] Failed to download {name}: {e}')
-        return False
+# System-font fallback for CairoSVG when HND files are absent
+_FALLBACK_PATHS = {
+    '900': '/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf',
+    '700': '/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf',
+    '400': '/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf',
+}
+
+
+def _find_hnd(weight):
+    """Return path to a Helvetica Now Display TTF of the given weight, or None."""
+    for name in HND_CANDIDATES.get(weight, []):
+        p = os.path.join(FONTS_DIR, name)
+        if os.path.exists(p):
+            return p
+    return None
+
 
 def _gfont_ttf_url(family_css):
     """Fetch Google Fonts CSS and extract TTF URL using old UA trick."""
@@ -127,21 +158,42 @@ def _gfont_ttf_url(family_css):
     except Exception:
         return None
 
+
+def _download_gfont(name, family_css, dest):
+    if os.path.exists(dest):
+        return
+    url = _gfont_ttf_url(family_css)
+    if not url:
+        return
+    try:
+        os.makedirs(os.path.dirname(dest), exist_ok=True)
+        r = requests.get(url, timeout=15)
+        r.raise_for_status()
+        with open(dest, 'wb') as f:
+            f.write(r.content)
+        print(f'[fonts] Downloaded {name}')
+    except Exception as e:
+        print(f'[fonts] Failed to download {name}: {e}')
+
+
 def ensure_fonts():
     os.makedirs(FONTS_DIR, exist_ok=True)
-    specs = [
-        ('Anton',      'Anton',     FONT_PATHS['Anton']),
-        ('Inter',      'Inter',     FONT_PATHS['Inter']),
-        ('Inter-Bold', 'Inter:700', FONT_PATHS['Inter-Bold']),
-    ]
-    for name, family_css, path in specs:
-        if not os.path.exists(path):
-            url = _gfont_ttf_url(family_css)
-            if url:
-                download_font(name, url, path)
+    # Only download free fonts (Inter) — HND must be supplied by user
+    _download_gfont('Inter',      'Inter',     FONT_PATHS['Inter'])
+    _download_gfont('Inter-Bold', 'Inter:700', FONT_PATHS['Inter-Bold'])
+
+    # Report HND status
+    found = [w for w in ('900', '700', '400') if _find_hnd(w)]
+    if found:
+        print(f'[fonts] Helvetica Now Display found for weights: {found}')
+    else:
+        print('[fonts] Helvetica Now Display not found in fonts/ — '
+              'place TTF files there for best export quality. '
+              'Using Liberation Sans as fallback.')
+
 
 def _font_face(family, path, weight='400'):
-    if not os.path.exists(path):
+    if not path or not os.path.exists(path):
         return ''
     abs_path = os.path.abspath(path)
     return (
@@ -152,23 +204,39 @@ def _font_face(family, path, weight='400'):
         f'}}'
     )
 
+
 def svg_style_export():
-    """Font declarations for PNG export via CairoSVG (local file paths, CDATA-wrapped)."""
-    css = (
-        _font_face('Anton', FONT_PATHS['Anton'], '400') +
-        _font_face('Inter', FONT_PATHS['Inter'], '400') +
-        _font_face('Inter', FONT_PATHS['Inter-Bold'], '700')
-    )
+    """
+    Font @font-face rules for CairoSVG PNG export.
+    Uses HND files if present in fonts/, otherwise Liberation Sans fallback.
+    """
+    css = ''
+    for w in ('900', '700', '400'):
+        hnd_path = _find_hnd(w)
+        if hnd_path:
+            css += _font_face('Helvetica Now Display', hnd_path, w)
+        else:
+            fb = _FALLBACK_PATHS.get(w, '')
+            if fb:
+                css += _font_face('Helvetica Now Display', fb, w)
+
+    # Inter body font
+    css += _font_face('Inter', FONT_PATHS['Inter'],      '400')
+    css += _font_face('Inter', FONT_PATHS['Inter-Bold'], '700')
+
     if css:
         return f'<defs><style><![CDATA[{css}]]></style></defs>'
     return '<defs/>'
 
+
 def svg_style_preview():
-    """Font declarations for browser SVG preview (Google Fonts CDN, CDATA-wrapped)."""
-    css = (
-        '@import url("https://fonts.googleapis.com/css2?'
-        'family=Anton&family=Inter:wght@400;700&display=swap");'
-    )
+    """
+    Font declarations for browser SVG preview.
+    References HND by name (renders if installed in browser OS).
+    Falls back through Helvetica Neue → Arial → sans-serif.
+    Inter loaded via Google Fonts CDN for body text.
+    """
+    css = '@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap");'
     return f'<defs><style><![CDATA[{css}]]></style></defs>'
 
 # ── SVG Root ─────────────────────────────────────────────────────────────────
@@ -228,12 +296,16 @@ def _esc(s):
 
 def text_el(x, y, content, size, fill, weight='400',
             anchor='middle', family=None, transform='', spacing=0):
-    fam  = family or FONT_TITLE
-    ls   = f' letter-spacing="{spacing}"' if spacing else ''
-    tr   = f' transform="{transform}"' if transform else ''
+    fam = family or FONT_TITLE
+    # Full fallback chain — single quotes required inside XML attribute values
+    if fam == FONT_TITLE:
+        fam = ("'Helvetica Now Display','Helvetica Neue',Helvetica,"
+               "'Arial Black',Arial,sans-serif")
+    ls  = f' letter-spacing="{spacing}"' if spacing else ''
+    tr  = f' transform="{transform}"' if transform else ''
     return (
         f'<text x="{_x(x)}" y="{_x(y)}" '
-        f'font-family="{fam}, sans-serif" '
+        f'font-family="{fam}" '
         f'font-size="{size}" font-weight="{weight}" '
         f'fill="{fill}" text-anchor="{anchor}" '
         f'dominant-baseline="central"{ls}{tr}>'
@@ -243,15 +315,20 @@ def text_el(x, y, content, size, fill, weight='400',
 def multiline_el(x, y, lines, size, fill, family=None,
                  anchor='middle', line_h=None, weight='400'):
     """Render a list of strings as vertically-centered multi-line text."""
-    fam = family or FONT_BODY
+    raw = family or FONT_BODY
+    # Use the same safe fallback chain as text_el
+    fam = ("'Helvetica Now Display','Helvetica Neue',Helvetica,"
+           "'Arial Black',Arial,sans-serif") if raw == FONT_TITLE else f'{raw},sans-serif'
     lh  = line_h or round(size * 1.45)
     total_h = (len(lines) - 1) * lh
     parts = []
     for i, ln in enumerate(lines):
-        dy = i * lh - total_h / 2
+        # SVG tspan dy is cumulative from the PREVIOUS tspan, not absolute.
+        # Line 0: jump up to top of block; subsequent lines: step down one line height.
+        dy = -total_h / 2 if i == 0 else lh
         parts.append(
             f'<tspan x="{_x(x)}" dy="{dy:.1f}" '
-            f'font-family="{fam}, sans-serif" '
+            f'font-family="{fam}" '
             f'font-size="{size}" font-weight="{weight}" '
             f'fill="{fill}" text-anchor="{anchor}">'
             f'{_esc(ln)}</tspan>'
