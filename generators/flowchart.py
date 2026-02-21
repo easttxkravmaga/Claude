@@ -153,8 +153,8 @@ def generate(params):
     chart_w  = W - chart_left - MARGIN
     chart_cx = chart_left + chart_w / 2
     nn       = len(nodes)
-    node_h   = round(min(72, (H - 200) / (nn + 1) * 0.75))
-    node_w   = round(min(220, chart_w * 0.42))
+    node_h   = round(min(96, (H - 200) / (nn + 1) * 0.75))
+    node_w   = round(min(500, chart_w * 0.32))
     v_gap    = (H - 200) / (nn + 1)
     top_y    = 180 if not split else 150
 
@@ -171,21 +171,54 @@ def generate(params):
                          node.get('label', ''), scheme, scale))
 
     # ── Connections ────────────────────────────────────────────────────────────
+    # Pre-compute how many outgoing connections each node has (for branch routing)
+    out_count = {}
+    for conn in connections:
+        if len(conn) >= 2:
+            out_count[conn[0]] = out_count.get(conn[0], 0) + 1
+
+    branch_seen = {}  # track which branch index a node is on
     for conn in connections:
         if len(conn) < 2:
             continue
         src, dst = conn[0], conn[1]
         label_conn = conn[2] if len(conn) > 2 else ''
-        if src in pos and dst in pos:
-            sx, sy = pos[src]
-            dx, dy = pos[dst]
+        if src not in pos or dst not in pos:
+            continue
+
+        sx, sy = pos[src]
+        dx, dy = pos[dst]
+        branch_idx = branch_seen.get(src, 0)
+        branch_seen[src] = branch_idx + 1
+
+        is_branching = out_count.get(src, 1) > 1
+
+        if is_branching and branch_idx > 0:
+            # Non-primary branch: exit right, elbow down, enter from right
+            elbow_x = sx + node_w / 2 + 64
+            # Horizontal leg out
+            el.append(line_el(sx + node_w / 2, sy, elbow_x, sy,
+                              scheme['accent'], sw=3))
+            # Vertical leg down (stop before node edge)
+            el.append(line_el(elbow_x, sy, elbow_x, dy,
+                              scheme['accent'], sw=3))
+            # Horizontal leg in — arrow_el handles the arrowhead
+            el.append(arrow_el(elbow_x, dy, dx + node_w / 2 + 2, dy,
+                               scheme['accent'], sw=3, head=14))
+            if label_conn:
+                # Label just to the right of the source node, at mid-vertical
+                el.append(text_el(elbow_x + 10, (sy + dy) / 2, label_conn,
+                                  fs('body', scale * 0.85), scheme['accent'],
+                                  weight='700', family=FONT_BODY, anchor='start'))
+        else:
             el.append(arrow_el(sx, sy + node_h / 2 + 2,
                                dx, dy - node_h / 2 - 2,
                                scheme['accent'], sw=3, head=14))
             if label_conn:
-                mx = (sx + dx) / 2 + 16
-                my = (sy + dy) / 2
-                el.append(text_el(mx, my, label_conn,
+                # Label to the right of the arrow, at one-third down
+                lx = sx + node_w / 2 + 16
+                ly = sy + (dy - sy) * 0.30
+                el.append(text_el(lx, ly, label_conn,
                                   fs('body', scale * 0.85), scheme['accent'],
                                   weight='700', family=FONT_BODY, anchor='start'))
 
