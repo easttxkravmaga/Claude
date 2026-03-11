@@ -105,3 +105,33 @@ easttxkravmaga/Claude/
 | ANTHROPIC_API_KEY | Set in Railway ✅ |
 | GITHUB_TOKEN | PAT ghp_hbJT4... expires 2026-04-10 |
 | PIPEDRIVE_API_KEY | Set in Railway ✅ |
+
+---
+
+## Pipedrive Audit — 2026-03-11
+
+### Completed via API
+- Deal labels: reduced from 11 → 2 (Not Interested, Invalid)
+- Person labels: reduced from 20 → 17 (removed Cold/Warm/Hot lead)
+
+### Pending Manus
+- Delete duplicate CBLTAC Enrolled Date field (see docs/Pipedrive-Cleanup-Brief.md)
+
+### Clean Label Dictionary
+
+**Deal Labels (2):**
+- Not Interested
+- Invalid
+
+**Person Labels (17):**
+- ETKM Student, Former Student, Fight Back
+- Law Enforcement, Military, Private Security, Armed Citizen Tactics
+- Youth, Seminar Attendee, Private Lesson
+- Sponsor, Coach, Instructor, School Admin, Hosting Seminars, Paladin Security
+- Invalid
+
+**Custom Person Fields (kept):**
+- ETKM Arc Type: Safety, Parent, Fitness, LE/Mil, Former MA, Default
+- CBLTAC Enrolled Date (1 of 2 — Manus to delete duplicate)
+- CBLTAC Status: active, complete, paused
+- Sakari Opt In / Opt Out (SMS)
