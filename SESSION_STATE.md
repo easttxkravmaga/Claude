@@ -2,127 +2,106 @@
 _Last updated: 2026-03-11_
 
 ## Current Repo: easttxkravmaga/Claude (private)
-Branch: main | Auto-deploy: pending Railway connection
+Branch: main | Railway: LIVE at etkm-backend-production.up.railway.app
 
 ---
 
-## Completed This Session
+## Completed — Full Build History
 
 | # | What | Commit |
 |---|---|---|
-| 1 | Folder structure (7 dirs + README) | 13077a0 |
+| 1 | Folder structure + README | 13077a0 |
 | 2 | All 21 skill files → /skills/ | 3da96bf |
-| 3 | Arc classification system prompt → /prompts/ | 0be39d5 |
-| 4 | Flask MCP server (app.py, 432 lines) | 0be39d5 |
-| 5 | Railway config (Procfile, railway.toml) | 0be39d5 |
+| 3 | Arc classification system prompt + Flask MCP server | 0be39d5 |
+| 4 | Railway config (Procfile, railway.toml, Dockerfile) | c265e55 |
+| 5 | Deployed to Railway — LIVE | — |
+| 6 | Claude.ai MCP connector active | — |
 
 ---
 
-## Current Repo Structure
+## Live Endpoints
+
+| Endpoint | URL | Status |
+|---|---|---|
+| Health | https://etkm-backend-production.up.railway.app/health | ✅ LIVE |
+| MCP Server | https://etkm-backend-production.up.railway.app/mcp | ✅ LIVE |
+| Arc Classification | https://etkm-backend-production.up.railway.app/classify-arc | ✅ LIVE |
+| Square Webhook | https://etkm-backend-production.up.railway.app/webhook/square | ✅ LIVE |
+
+---
+
+## Workflow Status (Verified 2026-03-11)
+
+| ID | Workflow | Status | Notes |
+|---|---|---|---|
+| WF-001 | Pre-Trial Email Funnel (6 arcs, 8 emails each) | ✅ LIVE | Calendly URL + PDF link confirmed in place |
+| WF-002 | 90-Day Onboarding Sequence (28 emails) | ⏳ APPROVED | Pending Manus load into Pipedrive |
+| WF-003 | CBLTAC Event Campaign (10 emails) | ✅ LIVE | Nathan confirmed deployed |
+| WF-004 | 52-Week PEACE Social Calendar | ✅ LIVE | Nathan posts manually |
+| WF-005 | March Monthly/Weekly Themes | ✅ LIVE | — |
+
+---
+
+## Key URLs (Confirmed)
+
+| Asset | URL |
+|---|---|
+| Free Trial Booking | https://calendly.com/easttxkravmaga-fud9/free-trial-lesson |
+| Welcome PDF (Protect What Matters) | https://drive.google.com/file/d/1BI0ZLUe6qUTzK-JXRGpxveslVS8YAUtg/view?usp=drive_link |
+| CBLTAC Registration | https://etxkravmaga.com/cbltac-courses/ |
+| ETKM Student Journey Map | https://etxkravmaga.com/etkm-student/etkm-journey-map/ |
+
+---
+
+## Open Dependencies
+
+| ID | Item | Needed By | Status |
+|---|---|---|---|
+| D-02 | PDF public share link confirmed | WF-001 | ✅ CLOSED |
+| D-01 | Calendly URL confirmed | WF-001 | ✅ CLOSED |
+| D-03 | Anthropic API key | Manus→Claude API | ✅ CLOSED |
+| D-04 | CBLTAC registration URL | WF-003 | ✅ CLOSED |
+| D-11 | WF-002 phase-transition emails (Days 30 + 60) | WF-002 | DRAFT — may need completion check |
+| D-12 | Notion skill migration | Skills library | PLANNED |
+
+---
+
+## Next Priorities
+
+| Priority | Task | Owner |
+|---|---|---|
+| 🔴 NOW | WF-002 Manus load into Pipedrive | Manus |
+| 🟡 NEXT | Pipedrive MCP tools (5 endpoints in app.py) | Claude |
+| 🟡 NEXT | Populate /workflows/ with email content | Claude |
+| 🟢 LATER | Shopify store build | Nathan decision |
+
+---
+
+## Repo Structure
 
 ```
 easttxkravmaga/Claude/
 ├── SESSION_STATE.md        ← this file
-├── README.md               ← master map
-├── Procfile                ← Railway: gunicorn backend.app:app
-├── railway.toml            ← Railway: build + health check config
+├── README.md
+├── Dockerfile              ← Railway build
+├── railway.toml
+├── Procfile
 ├── backend/
-│   ├── app.py              ← Flask + MCP server (432 lines)
-│   ├── requirements.txt    ← flask, requests, gunicorn
-│   └── __init__.py
-├── crm/                    ← Pipedrive architecture docs
-├── docs/                   ← Brand/strategy reference
+│   ├── app.py              ← Flask + MCP server
+│   └── requirements.txt
 ├── prompts/
-│   └── arc-classification-system-prompt.md  ← DONE ✓
-├── registry/
-│   └── README.md           ← Workflow registry + session protocol
-├── skills/
-│   └── [21 skill folders]  ← DONE ✓ (all SKILL.md files)
-└── workflows/              ← WF-001/002/003 (not yet populated)
+│   └── arc-classification-system-prompt.md
+├── registry/README.md
+├── skills/[21 folders]
+└── workflows/              ← WF email content (not yet populated)
 ```
 
 ---
 
-## MCP Server — What's Built
+## Active Credentials (stored in Railway env vars)
 
-**Endpoints:**
-- `GET  /health` → Railway health check
-- `POST /classify-arc` → arc classification + Claude API email generation
-- `POST /webhook/square` → payment failure → Pipedrive P4
-- `POST /mcp` → JSON-RPC 2.0 MCP server
-- `GET  /mcp` → SSE transport
-
-**MCP Tools exposed:**
-- `get_skill` — fetch any SKILL.md by name from GitHub
-- `list_skills` — list all 21 skills
-- `get_prompt` — fetch any prompt file
-- `get_workflow_status` — fetch registry/README.md
-- `classify_arc` — keyword-based arc classification
-
----
-
-## ✅ DEPLOYED — Railway
-
-**Required env vars:**
-- `ANTHROPIC_API_KEY` — from console.anthropic.com
-- `GITHUB_TOKEN` — use PAT: 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 (expires Apr 10 2026)
-- `PIPEDRIVE_API_KEY` — from Pipedrive settings
-
-**Deploy method — Railway CLI (bash, no browser):**
-```bash
-npm install -g @railway/cli
-railway login --token RAILWAY_TOKEN
-railway link   # select easttxkravmaga/Claude
-railway up
-railway variables set ANTHROPIC_API_KEY=xxx GITHUB_TOKEN=xxx PIPEDRIVE_API_KEY=xxx
-```
-
-**Railway token location:** railway.app → Account Settings → Tokens
-
-MCP URL (LIVE): `https://etkm-backend-production.up.railway.app/mcp`
-Add that URL as a custom MCP connector in Claude.ai Settings → Connectors.
-
----
-
-## Remaining Work
-
-| Priority | Task | Owner |
-|---|---|---|
-| 🔴 NOW | Deploy Flask app to Railway | Nathan → Railway token → Claude bash |
-| 🔴 NOW | Set 3 env vars on Railway | Claude bash |
-| 🟡 NEXT | Add Railway URL as MCP connector in Claude.ai | Nathan (Settings → Connectors) |
-| 🟡 NEXT | Populate /workflows/ with WF-001/002/003 email content | Claude |
-| 🟢 LATER | Test /classify-arc with live Manus call | Manus |
-| 🟢 LATER | WF-001 completion (D-01/D-02 dependencies) | Claude + Manus |
-
----
-
-## Active PAT
-Name: ETKM-Skills-Migration
-Token: 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
-Scope: repo (read/write) on easttxkravmaga/Claude
-Expires: 2026-04-10
-
----
-
-## Deployment — LIVE ✅
-_Deployed: 2026-03-11_
-
-**Railway Service:** etkm-backend  
-**Project ID:** 207aec28-f967-427f-ae14-f26bd0676012  
-**Service ID:** d75dba90-a0f7-41bc-9142-f6c1d316058c  
-**Environment:** production (731ec61f-d24a-4599-8d1e-d7084cbb13b1)
-
-**Live Endpoints:**
-- Health: `GET  https://etkm-backend-production.up.railway.app/health`
-- MCP:    `POST https://etkm-backend-production.up.railway.app/mcp`
-- Arc:    `POST https://etkm-backend-production.up.railway.app/classify-arc`
-- Square: `POST https://etkm-backend-production.up.railway.app/webhook/square`
-
-**To add as MCP connector in Claude.ai:**
-Settings → Connectors → Add MCP Server → URL: `https://etkm-backend-production.up.railway.app/mcp`
-
-**Next:**
-- [ ] Add MCP URL as connector in Claude.ai (Nathan does this in Settings)
-- [ ] Populate /workflows/ with WF-001/002/003 email content
-- [ ] Test /classify-arc with live Manus call
+| Key | Notes |
+|---|---|
+| ANTHROPIC_API_KEY | Set in Railway ✅ |
+| GITHUB_TOKEN | PAT ghp_hbJT4... expires 2026-04-10 |
+| PIPEDRIVE_API_KEY | Set in Railway ✅ |
