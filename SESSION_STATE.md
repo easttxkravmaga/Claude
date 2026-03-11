@@ -135,3 +135,23 @@ easttxkravmaga/Claude/
 - CBLTAC Enrolled Date (1 of 2 — Manus to delete duplicate)
 - CBLTAC Status: active, complete, paused
 - Sakari Opt In / Opt Out (SMS)
+
+---
+
+## Project-Workflow Labeling System — Adopted 2026-03-11
+
+**New ID format:** `[PROJECT]-WF-[###]`
+
+**Project codes:**
+- ACQ — Student Acquisition
+- RET — Retention & Advancement
+- EVT — Events
+- CNT — Content
+- OPS — Operations
+- TRN — Training Program
+
+**Full registry:** registry/WORKFLOW-REGISTRY.md
+
+**Commit format going forward:** `[ACQ-WF-001] ACTION — description`
+
+**Next available numbers:** ACQ-WF-019 | RET-WF-020 | EVT-WF-021 | CNT-WF-022 | OPS-WF-023 | TRN-WF-024
