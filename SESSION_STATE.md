@@ -61,7 +61,7 @@ easttxkravmaga/Claude/
 
 ---
 
-## Next Step: Deploy to Railway
+## ✅ DEPLOYED — Railway
 
 **Required env vars:**
 - `ANTHROPIC_API_KEY` — from console.anthropic.com
@@ -79,7 +79,7 @@ railway variables set ANTHROPIC_API_KEY=xxx GITHUB_TOKEN=xxx PIPEDRIVE_API_KEY=x
 
 **Railway token location:** railway.app → Account Settings → Tokens
 
-Once deployed, MCP URL = `https://[railway-domain]/mcp`
+MCP URL (LIVE): `https://etkm-backend-production.up.railway.app/mcp`
 Add that URL as a custom MCP connector in Claude.ai Settings → Connectors.
 
 ---
@@ -102,3 +102,27 @@ Name: ETKM-Skills-Migration
 Token: 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
 Scope: repo (read/write) on easttxkravmaga/Claude
 Expires: 2026-04-10
+
+---
+
+## Deployment — LIVE ✅
+_Deployed: 2026-03-11_
+
+**Railway Service:** etkm-backend  
+**Project ID:** 207aec28-f967-427f-ae14-f26bd0676012  
+**Service ID:** d75dba90-a0f7-41bc-9142-f6c1d316058c  
+**Environment:** production (731ec61f-d24a-4599-8d1e-d7084cbb13b1)
+
+**Live Endpoints:**
+- Health: `GET  https://etkm-backend-production.up.railway.app/health`
+- MCP:    `POST https://etkm-backend-production.up.railway.app/mcp`
+- Arc:    `POST https://etkm-backend-production.up.railway.app/classify-arc`
+- Square: `POST https://etkm-backend-production.up.railway.app/webhook/square`
+
+**To add as MCP connector in Claude.ai:**
+Settings → Connectors → Add MCP Server → URL: `https://etkm-backend-production.up.railway.app/mcp`
+
+**Next:**
+- [ ] Add MCP URL as connector in Claude.ai (Nathan does this in Settings)
+- [ ] Populate /workflows/ with WF-001/002/003 email content
+- [ ] Test /classify-arc with live Manus call
