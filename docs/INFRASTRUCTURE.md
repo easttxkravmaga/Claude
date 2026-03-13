@@ -1,7 +1,7 @@
 # ETKM Infrastructure & Tech Stack
 
 **Owner:** Nathan Lundstrom | East Texas Krav Maga  
-**Last Updated:** March 2026  
+**Last Updated:** March 13, 2026  
 **Status:** Live
 
 ---
@@ -27,7 +27,7 @@ Railway was the original platform. It was abandoned in March 2026 after persiste
 - `PORT` environment variable is handled natively
 - No third-party platform dependency
 
-**Railway projects to clean up:** `earnest-miracle`, `energetic-contentment`, `generous-encouragement` (all failed/abandoned)
+**Railway fully decommissioned March 2026.** All 5 projects deleted: `etkm-mcp-server`, `desirable-curiosity`, `earnest-miracle`, `energetic-contentment`, `generous-encouragement`.
 
 ---
 
@@ -54,6 +54,28 @@ Railway was the original platform. It was abandoned in March 2026 after persiste
 | `FLASK_ENV` | `production` |
 
 **Note:** The app internally reads `PIPEDRIVE_API_KEY` — verify this matches the env var name set on Cloud Run if Pipedrive deal creation fails.
+
+---
+
+### etkm-mcp-server (MCP / Webhook / Arc Classification)
+
+| Property | Value |
+|---|---|
+| Service Name | `etkm-mcp-server` |
+| Live URL | `https://etkm-mcp-server-323939015759.us-central1.run.app` |
+| Health Check | `GET /health` → `{"status": "ok", "service": "etkm-backend"}` |
+| Endpoints | `POST /classify-arc`, `POST /webhook/square`, `POST /mcp`, `GET /mcp` (SSE) |
+| Source | `easttxkravmaga/Claude` → `/backend/app.py` |
+| Deployed | March 13, 2026 |
+
+**Environment Variables (set on Cloud Run service):**
+
+| Variable | Purpose | Status |
+|---|---|---|
+| `PIPEDRIVE_API_KEY` | Pipedrive API authentication | Set ✓ |
+| `GITHUB_TOKEN` | GitHub repo access for MCP tools | Set ✓ |
+| `ANTHROPIC_API_KEY` | Claude API for arc classification | **Pending — add when available** |
+| `FLASK_ENV` | `production` | Set ✓ |
 
 ---
 
