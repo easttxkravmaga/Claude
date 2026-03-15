@@ -1,0 +1,89 @@
+{
+  "meta": {
+    "asset_id": "04",
+    "book_id": "on_combat",
+    "title": "On Combat",
+    "title_line_1": "On",
+    "title_line_2": "Combat",
+    "subtitle": "The Psychology and Physiology of Deadly Conflict in War and in Peace",
+    "author": "Lt. Col. Dave Grossman \u00b7 with Loren W. Christensen",
+    "author_last": "Grossman",
+    "year": 2004,
+    "series_label": "ETKM Book Intelligence Series"
+  },
+
+  "journey": {
+    "belt_level": ["Orange", "Green", "Blue"],
+    "peace_pillars": ["Prepared", "Capable"],
+    "arc_position": "intermediate",
+    "unlocks": "The science behind why you train the way you train — and why repetition is not optional.",
+    "pairs_with": ["gift_of_fear", "left_of_bang"],
+    "read_after": ["gift_of_fear"],
+    "identity_shift": "From person who hopes they’ll perform under pressure — to person who has installed the program they intend to run."
+  },
+
+  "pillars": [
+    {
+      "name": "Physiology",
+      "why": "This book is the science of what your body does under lethal stress — and it explains exactly why ETKM trains the way it does."
+    },
+    {
+      "name": "Mindset",
+      "why": "The condition code, decision rehearsal, and 'you run the program you installed' are mindset frameworks that change how students approach every training session."
+    },
+    {
+      "name": "Awareness",
+      "why": "Condition Yellow is named, defined, and given a biological basis — this is the science behind the awareness standard ETKM teaches every student from day one."
+    },
+    {
+      "name": "Recovery",
+      "why": "Grossman documents post-incident physiology and recovery — the part of the readiness cycle most self-defense curricula skip entirely."
+    }
+  ],
+
+  "principles": [
+    { "number": "01", "text": "You don’t rise to the occasion. You fall to the level of your training." },
+    { "number": "02", "text": "Condition Yellow is your permanent baseline in public. Not fear — awareness." },
+    { "number": "03", "text": "Fine motor skills fail first under high arousal. Train gross motor to reflex." },
+    { "number": "04", "text": "Train for the body you will have under stress — not the body you have when calm." },
+    { "number": "05", "text": "Decision rehearsal before the event removes the decision from the event. Write your if-then rules now." },
+    { "number": "06", "text": "The freeze is biological — and interrupted by a pre-rehearsed first action." },
+    { "number": "07", "text": "Breathing is a control lever. Four counts in, hold, out, hold. Daily practice builds the skill." },
+    { "number": "08", "text": "Scan every environment on entry. Exits, cover, anomalies. Every time. No exceptions." },
+    { "number": "09", "text": "Perceptual distortions under stress are normal — expect them and plan around them." },
+    { "number": "10", "text": "Recovery is part of readiness. Decompression after hard training is not optional." },
+    { "number": "11", "text": "Simple beats complicated when the adrenaline hits. Drill fundamentals deep." },
+    { "number": "12", "text": "Moral clarity before an event protects the mind long after the event is over." }
+  ],
+
+  "action_plan": {
+    "this_week": [
+      "Start tactical breathing — 5 minutes daily. 4-4-4-4 cadence. Morning or before bed.",
+      "Write 5 personal if-then decision rules for situations relevant to your life.",
+      "Scan on entry to every new environment today. Every time. No exceptions."
+    ],
+    "this_month": [
+      "Expand decision rules to 10. Review them weekly.",
+      "Request more stress-inoculation training. Tell your instructor you want more pressure.",
+      "After every hard session: 5 minutes of breathing and mental debrief. Build the habit."
+    ],
+    "permanent": [
+      "Live in Condition Yellow in public. Know where you are and what is around you.",
+      "Trust your trained responses over your in-the-moment instincts.",
+      "Treat recovery as the last phase of every readiness cycle — not an afterthought."
+    ]
+  },
+
+  "media": {
+    "video_intro": { "enabled": false, "url": "", "duration_seconds": 0, "thumbnail_url": "", "caption": "Nathan on why he assigned this book" },
+    "audio_summary": { "enabled": false, "url": "", "duration_seconds": 0, "caption": "Key principles — read aloud" },
+    "diagram": { "enabled": false, "type": "wheel", "caption": "Cooper’s Color Code — The Awareness Spectrum", "alt_text": "Color wheel diagram showing White, Yellow, Orange, Red, and Black awareness conditions" },
+    "header_image": { "enabled": false, "url": "", "alt_text": "A figure in a ready stance, scanning a public environment" }
+  },
+
+  "connections": {
+    "next_recommended": "left_of_bang",
+    "thematic_cluster": "stress_physiology",
+    "curriculum_sequence": 1
+  }
+}
