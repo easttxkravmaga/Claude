@@ -1,0 +1,85 @@
+{
+  "meta": {
+    "asset_id": "04",
+    "book_id": "gift_of_fear",
+    "title": "The Gift of Fear",
+    "title_line_1": "The Gift",
+    "title_line_2": "of Fear",
+    "subtitle": "",
+    "author": "Gavin de Becker",
+    "author_last": "de Becker",
+    "year": 1997,
+    "series_label": "ETKM Book Intelligence Series"
+  },
+
+  "journey": {
+    "belt_level": ["Yellow", "Orange"],
+    "peace_pillars": ["Aware", "Prepared"],
+    "arc_position": "foundation",
+    "unlocks": "The ability to name what you already felt but couldn’t articulate — and act on it without guilt.",
+    "pairs_with": ["left_of_bang", "on_combat"],
+    "read_after": [],
+    "identity_shift": "From person who overrides gut signals to preserve politeness — to person who treats fear as reliable information."
+  },
+
+  "pillars": [
+    {
+      "name": "Mindset",
+      "why": "This book is the scientific and philosophical foundation for the ETKM mindset layer — denial is the primary threat, and the Protector identity begins with accepting that risk is real and signals are present."
+    },
+    {
+      "name": "Awareness",
+      "why": "Pre-contact awareness is a trainable biological system, not a personality trait. PINS are observable, consistent, and precede violence — ETKM trains their recognition through deliberate practice and scenario work."
+    },
+    {
+      "name": "Tactics",
+      "why": "Upstream tactics — signal labeling, manipulation recognition, verbal boundary-setting — prevent encounters that physical technique can only respond to. Train the upstream first."
+    }
+  ],
+
+  "principles": [
+    { "number": "01", "text": "Your gut feeling is rapid pattern recognition. The cue is real. Name it before dismissing it." },
+    { "number": "02", "text": "Violence is predictable. Study the patterns. The signals are almost always present before the event." },
+    { "number": "03", "text": "Denial disables the system designed to protect you. Replace denial with preparation." },
+    { "number": "04", "text": "Six manipulation tactics predators use consistently. Learn them by name — they lose power when named." },
+    { "number": "05", "text": "No is a complete sentence. No explanation. No negotiation. Practice saying it." },
+    { "number": "06", "text": "Persistence is a risk marker. It tells you exactly how someone views your right to say no." },
+    { "number": "07", "text": "Safety is a system — contacts, exits, routines, plans. Build it before you need it." },
+    { "number": "08", "text": "Politeness can be weaponized against you. Your comfort with social friction is a self-defense skill." },
+    { "number": "09", "text": "Act on patterns early. By the time proof exists, the cheapest windows have already closed." },
+    { "number": "10", "text": "Guilt is not a safety metric. Choose your outcome over your feeling." }
+  ],
+
+  "action_plan": {
+    "this_week": [
+      "Map two exits in every space you enter today.",
+      "Name one 'something’s off' cue you notice — just name it, no journaling required.",
+      "Practice a clean 'No' at low stakes once today."
+    ],
+    "this_month": [
+      "Learn all six manipulation tactics by name.",
+      "Teach one family member about the tactics and what to look for.",
+      "Practice verbal boundary-setting under pressure — in class and in daily life.",
+      "Identify one real-life interview attempt you recognized in the wild."
+    ],
+    "permanent": [
+      "Treat fear as information. Investigate before dismissing.",
+      "Never override discomfort to preserve social comfort.",
+      "Build a real safety system — named contacts, exit routines, plans.",
+      "Evaluate behavior over appearance in every unfamiliar encounter."
+    ]
+  },
+
+  "media": {
+    "video_intro": { "enabled": false, "url": "", "duration_seconds": 0, "thumbnail_url": "", "caption": "Nathan on why he assigned this book" },
+    "audio_summary": { "enabled": false, "url": "", "duration_seconds": 0, "caption": "Key principles — read aloud" },
+    "diagram": { "enabled": false, "type": "flowchart", "caption": "The PINS Signal Recognition Framework", "alt_text": "Flowchart showing Pre-Incident Indicators and the recognition process" },
+    "header_image": { "enabled": false, "url": "", "alt_text": "A figure navigating a public space with quiet awareness" }
+  },
+
+  "connections": {
+    "next_recommended": "left_of_bang",
+    "thematic_cluster": "threat_recognition",
+    "curriculum_sequence": 1
+  }
+}
