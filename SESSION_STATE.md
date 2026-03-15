@@ -1,8 +1,8 @@
 # ETKM Session State
-_Last updated: 2026-03-11_
+_Last updated: 2026-03-15_
 
 ## Current Repo: easttxkravmaga/Claude (private)
-Branch: main | Railway: LIVE at etkm-backend-production.up.railway.app
+Branch: main | Cloud Run: LIVE
 
 ---
 
@@ -66,11 +66,44 @@ Branch: main | Railway: LIVE at etkm-backend-production.up.railway.app
 
 ---
 
+## SMS / Twilio Integration — Added 2026-03-15
+
+| Component | Status | Notes |
+|---|---|---|
+| Twilio SMS module (`twilio_sms.py`) | ✅ BUILT | Webhooks, send, opt-out, signature verification |
+| Message templates (`message_templates.py`) | ✅ BUILT | 9 pre-approved templates, compliance copy |
+| Pipedrive SMS integration (`pipedrive_sms.py`) | ✅ BUILT | Contact lookup, note logging, send-by-person |
+| Flask routes registered in `app.py` | ✅ BUILT | Blueprints registered |
+| Sole Proprietor Setup Guide | ✅ WRITTEN | `docs/TWILIO-SOLE-PROPRIETOR-SETUP.md` |
+| Technical Implementation Docs | ✅ WRITTEN | `docs/TWILIO-SMS-IMPLEMENTATION.md` |
+| Twilio Console Registration | ⏳ PENDING | Nathan to complete in Twilio Console |
+| Twilio Env Vars on Cloud Run | ⏳ PENDING | TWILIO_ACCOUNT_SID, AUTH_TOKEN, etc. |
+| Webhook URL configuration | ⏳ PENDING | Set after Cloud Run deploy |
+
+### SMS Endpoints (ready for deploy)
+
+| Endpoint | Method | Purpose |
+|---|---|---|
+| `/api/twilio/inbound-sms` | POST | Inbound SMS webhook (Twilio calls this) |
+| `/api/twilio/status-callback` | POST | Delivery status callback (Twilio calls this) |
+| `/api/twilio/send` | POST | Send SMS (internal API) |
+| `/api/twilio/opt-in` | POST | Register opt-in |
+| `/api/twilio/opt-status/<phone>` | GET | Check opt status |
+| `/api/twilio/messages` | GET | Message log |
+| `/api/twilio/templates` | GET | List templates |
+| `/api/pipedrive/send-sms` | POST | Send to Pipedrive contact |
+| `/api/pipedrive/log-inbound` | POST | Log inbound to Pipedrive |
+
+---
+
 ## Next Priorities
 
 | Priority | Task | Owner |
 |---|---|---|
+| 🔴 NOW | Twilio Console sole proprietor registration | Nathan |
+| 🔴 NOW | Set Twilio env vars on Cloud Run | Claude Code |
 | 🔴 NOW | WF-002 Manus load into Pipedrive | Manus |
+| 🟡 NEXT | Deploy SMS endpoints to Cloud Run | Claude Code |
 | 🟡 NEXT | Pipedrive MCP tools (5 endpoints in app.py) | Claude |
 | 🟡 NEXT | Populate /workflows/ with email content | Claude |
 | 🟢 LATER | Shopify store build | Nathan decision |
@@ -83,28 +116,39 @@ Branch: main | Railway: LIVE at etkm-backend-production.up.railway.app
 easttxkravmaga/Claude/
 ├── SESSION_STATE.md        ← this file
 ├── README.md
-├── Dockerfile              ← Railway build
+├── Dockerfile              ← Cloud Run build
 ├── railway.toml
 ├── Procfile
 ├── backend/
-│   ├── app.py              ← Flask + MCP server
+│   ├── app.py              ← Flask + MCP server + Twilio routes
+│   ├── twilio_sms.py       ← Twilio SMS webhooks, send, opt-out
+│   ├── message_templates.py ← Pre-approved SMS templates
+│   ├── pipedrive_sms.py    ← Pipedrive ↔ Twilio integration
 │   └── requirements.txt
+├── docs/
+│   ├── TWILIO-SOLE-PROPRIETOR-SETUP.md  ← Console registration guide
+│   └── TWILIO-SMS-IMPLEMENTATION.md     ← Technical API reference
 ├── prompts/
 │   └── arc-classification-system-prompt.md
 ├── registry/README.md
-├── skills/[21 folders]
+├── skills/[27 folders]
 └── workflows/              ← WF email content (not yet populated)
 ```
 
 ---
 
-## Active Credentials (stored in Railway env vars)
+## Active Credentials (stored in Cloud Run env vars)
 
 | Key | Notes |
 |---|---|
-| ANTHROPIC_API_KEY | Set in Railway ✅ |
+| ANTHROPIC_API_KEY | Set in Cloud Run ✅ |
 | GITHUB_TOKEN | PAT ghp_hbJT4... expires 2026-04-10 |
-| PIPEDRIVE_API_KEY | Set in Railway ✅ |
+| PIPEDRIVE_API_KEY | Set in Cloud Run ✅ |
+| TWILIO_ACCOUNT_SID | ⏳ PENDING — set after Twilio registration |
+| TWILIO_AUTH_TOKEN | ⏳ PENDING — set after Twilio registration |
+| TWILIO_MESSAGING_SERVICE_SID | ⏳ PENDING — set after Messaging Service creation |
+| TWILIO_PHONE_NUMBER | ⏳ PENDING — set after number purchase |
+| APP_BASE_URL | ⏳ PENDING — Cloud Run service URL |
 
 ---
 

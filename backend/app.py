@@ -1,7 +1,7 @@
 """
 ETKM Backend — Flask App + MCP Server
-Deployed on Railway. Serves as middleware between Make.com, Pipedrive, Claude API,
-and any AI agent (Claude, Gemini, Manus) via MCP protocol.
+Deployed on Google Cloud Run. Serves as middleware between Make.com, Pipedrive,
+Claude API, Twilio SMS, and any AI agent (Claude, Gemini, Manus) via MCP protocol.
 """
 
 import os
@@ -14,6 +14,15 @@ from flask import Flask, request, jsonify, Response
 from datetime import datetime
 
 app = Flask(__name__)
+
+# ─────────────────────────────────────────────
+# Register Twilio SMS Blueprints
+# ─────────────────────────────────────────────
+from backend.twilio_sms import twilio_bp
+from backend.pipedrive_sms import pipedrive_sms_bp
+
+app.register_blueprint(twilio_bp)
+app.register_blueprint(pipedrive_sms_bp)
 
 # ─────────────────────────────────────────────
 # Environment
