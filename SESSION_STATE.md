@@ -16,17 +16,32 @@ Branch: main | Railway: LIVE at etkm-backend-production.up.railway.app
 | 4 | Railway config (Procfile, railway.toml, Dockerfile) | c265e55 |
 | 5 | Deployed to Railway — LIVE | — |
 | 6 | Claude.ai MCP connector active | — |
+| 7 | etkm-brand-kit v3.1 + etkm-format-standards v1.1 (HTML black bg rule) | 64ceee8 |
+| 8 | Migrated backend from Railway → Google Cloud Run | — |
 
 ---
 
-## Live Endpoints
-
+## Live Endpoints (Google Cloud Run)
 | Endpoint | URL | Status |
 |---|---|---|
-| Health | https://etkm-backend-production.up.railway.app/health | ✅ LIVE |
-| MCP Server | https://etkm-backend-production.up.railway.app/mcp | ✅ LIVE |
-| Arc Classification | https://etkm-backend-production.up.railway.app/classify-arc | ✅ LIVE |
-| Square Webhook | https://etkm-backend-production.up.railway.app/webhook/square | ✅ LIVE |
+| Health | https://etkm-backend-323939015759.us-central1.run.app/health | ✅ LIVE |
+| MCP Server | https://etkm-backend-323939015759.us-central1.run.app/mcp | ✅ LIVE |
+| Arc Classification | https://etkm-backend-323939015759.us-central1.run.app/classify-arc | ✅ LIVE |
+| Square Webhook | https://etkm-backend-323939015759.us-central1.run.app/webhook/square | ✅ LIVE |
+
+**Previous Railway URL (dead):** https://etkm-backend-production.up.railway.app
+
+---
+
+## Cloud Run Service Details
+| Field | Value |
+|---|---|
+| Service name | etkm-backend |
+| Project | project-9c425f11-39e5-4743-b9d |
+| Region | us-central1 |
+| Image | us-central1-docker.pkg.dev/project-9c425f11-39e5-4743-b9d/cloud-run-source-deploy/etkm-backend:latest |
+| Revision | etkm-backend-00005-5vr |
+| Account | easttxkravmaga@gmail.com |
 
 ---
 
@@ -63,6 +78,8 @@ Branch: main | Railway: LIVE at etkm-backend-production.up.railway.app
 | D-04 | CBLTAC registration URL | WF-003 | ✅ CLOSED |
 | D-11 | WF-002 phase-transition emails (Days 30 + 60) | WF-002 | DRAFT — may need completion check |
 | D-12 | Notion skill migration | Skills library | PLANNED |
+| D-13 | Update Make.com webhook URL to Cloud Run | WF-001 | ⚠️ ACTION REQUIRED |
+| D-14 | Update Claude.ai MCP connector URL to Cloud Run | Claude.ai | ⚠️ ACTION REQUIRED |
 
 ---
 
@@ -70,7 +87,9 @@ Branch: main | Railway: LIVE at etkm-backend-production.up.railway.app
 
 | Priority | Task | Owner |
 |---|---|---|
-| 🔴 NOW | WF-002 Manus load into Pipedrive | Manus |
+| 🔴 NOW | Update Make.com webhook URL → Cloud Run base URL | Nathan |
+| 🔴 NOW | Update Claude.ai MCP connector URL → Cloud Run /mcp | Nathan |
+| 🟡 NEXT | WF-002 Manus load into Pipedrive | Manus |
 | 🟡 NEXT | Pipedrive MCP tools (5 endpoints in app.py) | Claude |
 | 🟡 NEXT | Populate /workflows/ with email content | Claude |
 | 🟢 LATER | Shopify store build | Nathan decision |
@@ -83,7 +102,7 @@ Branch: main | Railway: LIVE at etkm-backend-production.up.railway.app
 easttxkravmaga/Claude/
 ├── SESSION_STATE.md        ← this file
 ├── README.md
-├── Dockerfile              ← Railway build
+├── Dockerfile              ← Cloud Run build
 ├── railway.toml
 ├── Procfile
 ├── backend/
@@ -98,13 +117,12 @@ easttxkravmaga/Claude/
 
 ---
 
-## Active Credentials (stored in Railway env vars)
-
+## Active Credentials (stored in Cloud Run env vars)
 | Key | Notes |
 |---|---|
-| ANTHROPIC_API_KEY | Set in Railway ✅ |
-| GITHUB_TOKEN | PAT ghp_hbJT4... expires 2026-04-10 |
-| PIPEDRIVE_API_KEY | Set in Railway ✅ |
+| ANTHROPIC_API_KEY | Set in Cloud Run ✅ |
+| GITHUB_TOKEN | PAT ghp_WO7r... |
+| PIPEDRIVE_API_KEY | Set in Cloud Run ✅ |
 
 ---
 
