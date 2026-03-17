@@ -53,6 +53,13 @@ Note: PPTX requires hex WITHOUT # prefix (pptxgenjs corrupts on #FF0000 — use 
 - Diagrams: Canva export PNG only — no inline SVG
 - Scroll animations: Triggered on scroll
 
+**HTML Color Rules (Non-Negotiable):**
+- Background: #000000
+- Surfaces/cards: #111111 or #1a1a1a
+- Text: #FFFFFF primary, #BBBBBB secondary
+- Accent: #CC0000 only (one element per view)
+- Light backgrounds are a format violation — no white or light backgrounds on any HTML deliverable
+
 ---
 
 ## PDF — LOCKED
@@ -191,6 +198,6 @@ Commit: 08e688a
 
 ---
 
-*Version 1.0 — 2026-03-15*
+*Version 1.1 — 2026-03-17*
 *Format audit complete. All 5 formats locked.*
 *Maintained by: Nathan Lundstrom / East Texas Krav Maga*

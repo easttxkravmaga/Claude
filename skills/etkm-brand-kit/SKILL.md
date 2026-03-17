@@ -15,8 +15,8 @@ description: >
 
 # ETKM Brand Kit
 
-**Version:** 3.0
-**Last Updated:** 2026-03-09
+**Version:** 3.1
+**Last Updated:** 2026-03-17
 
 ---
 
@@ -120,6 +120,7 @@ When Helvetica Now is not available (HTML artifacts, React components, web pages
 - Social image briefs: Black or white background only, one red accent per image, no gradients
 - Curriculum sheets: All-white background, black font, black header bar, red accent line
 - Visual aide tools: White workspace, brand palette in controls, transparent PNG export
+- **HTML pages and artifacts:** Black background (#000000) mandatory. Card/surface layers use #111111 or #1a1a1a. White text only. Red (#CC0000) for single accent elements. No white or light backgrounds on any HTML deliverable.
 
 ---
 
