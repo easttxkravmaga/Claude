@@ -16,7 +16,7 @@ description: >
 # ETKM Brand Kit
 
 **Version:** 3.1
-**Last Updated:** 2026-03-17
+**Last Updated:** 2026-03-15
 
 ---
 
@@ -120,7 +120,18 @@ When Helvetica Now is not available (HTML artifacts, React components, web pages
 - Social image briefs: Black or white background only, one red accent per image, no gradients
 - Curriculum sheets: All-white background, black font, black header bar, red accent line
 - Visual aide tools: White workspace, brand palette in controls, transparent PNG export
-- **HTML pages and artifacts:** Black background (#000000) mandatory. Card/surface layers use #111111 or #1a1a1a. White text only. Red (#CC0000) for single accent elements. No white or light backgrounds on any HTML deliverable.
+
+### HTML Output Standard (LOCKED — 2026-03-15)
+
+All HTML deliverables — pages, email templates, artifacts, tools, portals — MUST follow this standard without exception:
+
+- **Body background:** `#000000` (pure black)
+- **Card / surface background:** `#111111` (near-black for layered depth)
+- **Text:** `#FFFFFF` white on black always. Never dark text on dark bg.
+- **Accent color:** `#CC0000` (dark red — NOT `#FF0000` in HTML contexts)
+- **No light or white backgrounds** permitted on any HTML deliverable
+- This is a brand consistency rule. It applies to all HTML regardless of content type (tools, cheat sheets, forms, portals, email HTML, React artifacts).
+- If a deliverable mixes formats (e.g., HTML email), the HTML portions follow this rule.
 
 ---
 
