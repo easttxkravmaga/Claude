@@ -267,10 +267,9 @@ load etkm-crm-doctrine.
 - Notion reference page and 5 tailored project instruction .txt files delivered
 
 [WF-021] ETKM Asset Registry
-- Status: PLANNED — identified as next build target at close of 2026-03-15 session
+- Status: LIVE — https://www.notion.so/327924c8167381d59eb0f1c1f2a84db5
 - Canonical master list of all 18 deliverable types across the ETKM system
 - Purpose: single source of truth for what exists, what format it lives in, and which workflow owns it
-- Notes: Not yet built.
 
 ### PLATFORMS
 
@@ -317,7 +316,7 @@ Items discussed but not yet started. Nathan determines sequence.
 | Campaign Planner layer for Cinematic Prompt Generator | WF-013 session | 4-week content arc sequencer |
 | PEACE framework reusable skill | WF-003, WF-004 sessions | ✅ DELIVERED — etkm-peace-framework v1.0 skill built |
 | Reusable email campaign style skill | WF-003 session close | Nathan wants to document CBLTAC email style and PEACE integration as a repeatable skill |
-| ETKM Asset Registry (WF-021) | 2026-03-15 session close | Canonical master list of all 18 deliverable types — next build target |
+| ETKM Asset Registry (WF-021) | 2026-03-15 session close | ✅ DELIVERED — live Notion page: https://www.notion.so/327924c8167381d59eb0f1c1f2a84db5 |
 | Shopify store build | Strategy session | Replace Ecwid, connect to Make and Pipedrive, merchandise plus digital products plus event tickets |
 | Remaining monthly messaging themes (April through December) | WF-005 session | March complete, 9 months remaining |
 | YouTube content development | Social media strategy | Platform identified but not yet active |
