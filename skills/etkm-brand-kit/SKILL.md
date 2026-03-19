@@ -169,3 +169,4 @@ For AI-generated image briefs and Canva designs:
 - Decorative fonts or script typography
 - Drop shadows (unless subtle and functional in layered UI)
 - Borders on all four sides of an element (use one or two sides maximum)
+- Specific year counts for Nathan's experience in any asset copy ("42 years", "43 years", etc.) — evergreen phrasing only: "decades of experience", "over four decades", or "a lifetime of experience in self-protection"

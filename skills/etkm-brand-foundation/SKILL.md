@@ -97,6 +97,7 @@ Always show who the student is becoming, not just what they're learning.
 - Fear-heavy content without immediately following with plan and hope
 - Copy that positions ETKM as the hero
 - Copy that would feel dismissive to a trauma survivor
+- Specific year counts for Nathan's experience ("42 years", "43 years", etc.) — use evergreen phrasing only: "decades of experience", "over four decades", or "a lifetime of experience in self-protection"
 
 ---
 
