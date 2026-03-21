@@ -1,0 +1,14 @@
+.git
+.github
+__pycache__
+*.pyc
+.env
+docs/
+prompts/
+skills/
+scripts/
+workflows/
+crm/
+registry/
+*.md
+railway.toml
