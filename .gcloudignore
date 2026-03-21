@@ -12,3 +12,4 @@ crm/
 registry/
 *.md
 railway.toml
+Procfile
