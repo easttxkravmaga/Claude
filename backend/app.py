@@ -1,6 +1,6 @@
 """
 ETKM Backend — Flask App + MCP Server
-Deployed on Railway. Serves as middleware between Make.com, Pipedrive, Claude API,
+Deployed on Google Cloud Run. Serves as middleware between Pipedrive, Claude API,
 and any AI agent (Claude, Gemini, Manus) via MCP protocol.
 """
 
@@ -203,6 +203,221 @@ def square_webhook():
         "customer_id": customer_id,
         "action": "move_to_p4_payment_due",
         "timestamp": datetime.utcnow().isoformat() + "Z"
+    })
+
+
+# ─────────────────────────────────────────────
+# Quiz Webhook → Pipedrive Person + Deal
+# ─────────────────────────────────────────────
+PIPEDRIVE_DOMAIN = "easttexaskravmaga.pipedrive.com"
+PIPEDRIVE_BASE   = f"https://{PIPEDRIVE_DOMAIN}/api/v1"
+
+# Owner & pipeline config
+OWNER_ID    = 21519696   # Nathan
+PIPELINE_ID = 1          # P1 — Prospects
+STAGE_ID    = 1          # Stage 1 — New Lead
+
+# Custom field hashes (Pipedrive person fields 50–65)
+QUIZ_FIELD_MAP = {
+    "entry_reason":       "field_50",
+    "score":              "field_51",
+    "tier_name":          "field_52",
+    "identity_statement": "field_53",
+    "vision_statement":   "field_54",
+    "confidence_type":    "field_55",
+    "primary_objection":  "field_56",
+    "firearm_status":     "field_57",
+    "family_motivation":  "field_58",
+    "must_protect":       "field_59",
+    "prior_incident":     "field_60",
+    "returning_pract":    "field_61",
+    "auto_pdf":           "field_62",
+    "bonus_pdf":          "field_63",
+    "urgency_flag":       "field_64",
+    "completed_date":     "field_65",
+}
+
+# Label mapping — flag name → Pipedrive label ID
+FLAG_LABEL_MAP = {
+    "HIGH_URGENCY":                        99,
+    "AWARENESS_GAP":                       100,
+    "AWARENESS_SUPPRESSED":                101,
+    "NO_BASELINE_SKILLS_GAP":              102,
+    "FALSE_CONFIDENCE_URGENT":             103,
+    "HIGH_COACHABILITY":                   104,
+    "NO_ONSET_PLAN":                       105,
+    "NO_ACTION_PLAN":                      106,
+    "PRIOR_INCIDENT_CONSULT_CARE":         107,
+    "REALITY_EXPOSURE_GAP":                108,
+    "PARENT_FAMILY_ARC":                   109,
+    "MUST_PROTECT_CONSULT_FIRST":          110,
+    "NO_FIREARM_ACT_AWARENESS":            111,
+    "ACT_CONSULT_PRIORITY":                112,
+    "ACT_CANDIDATE_ADVANCED":              113,
+    "RETURNING_PRACTITIONER_PRIORITY":     114,
+    "IDENTITY_BARRIER_OPEN_WITH_INCLUSION":115,
+    "PHYSICAL_FLAG_Q12_ACTIVE":            116,
+    "COACHABILITY_NEEDS_WARMUP":           117,
+    "ENCOURAGEMENT_PATH":                  118,
+    "ACT_CONFIRMED":                       119,
+    "FAMILY_ARC_CONFIRMED":                120,
+    "FEAR_BARRIER_CONFIRMED":              121,
+}
+
+# Tier → auto-PDF title
+TIER_PDF_MAP = {
+    "Unaware":           "The Wake-Up Call Guide",
+    "Aware of the Gap":  "The Gap Assessment Guide",
+    "Ready to Act":      "The Action Readiness Guide",
+    "Already Acting":    "The Practitioner's Edge Guide",
+}
+
+def pipedrive_request(method, path, **kwargs):
+    """Make an authenticated Pipedrive API request."""
+    url = f"{PIPEDRIVE_BASE}/{path}"
+    params = kwargs.pop("params", {})
+    params["api_token"] = PIPEDRIVE_API_KEY
+    return requests.request(method, url, params=params, timeout=15, **kwargs)
+
+
+@app.route("/quiz-webhook", methods=["POST"])
+def quiz_webhook():
+    """
+    Receive quiz submission, create/update Pipedrive person + deal,
+    map 16 custom fields, apply flag labels, add pinned note.
+    """
+    payload = request.get_json(silent=True) or {}
+
+    # ── Extract payload fields ──
+    first_name = payload.get("firstName", "")
+    email      = payload.get("email", "")
+    score      = payload.get("score", 0)
+    tier       = payload.get("tier", 0)
+    tier_name  = payload.get("tierName", "")
+    answers    = payload.get("answers", {})
+    flags      = payload.get("flags", [])
+    timestamp  = payload.get("timestamp", datetime.utcnow().isoformat() + "Z")
+
+    if not email:
+        return jsonify({"error": "email is required"}), 400
+
+    if not PIPEDRIVE_API_KEY:
+        return jsonify({"error": "PIPEDRIVE_API_KEY not configured"}), 500
+
+    # ── Build custom fields ──
+    confidence_type = f"{answers.get('confidence', '')} / {answers.get('confidenceValidated', '')}"
+    firearm_status  = f"{answers.get('firearmOwnership', '')} / {answers.get('carryStatus', '')}"
+    must_protect    = "Yes" if answers.get("motivation") == "public" else "No"
+    returning_pract = "Yes" if answers.get("objection") == "trained" else "No"
+    urgency_flag    = "Yes" if "HIGH_URGENCY" in flags else "No"
+    auto_pdf        = TIER_PDF_MAP.get(tier_name, "")
+    bonus_pdf       = payload.get("bonusPdfLabel", "")
+
+    person_fields = {
+        QUIZ_FIELD_MAP["entry_reason"]:       answers.get("entryReason", ""),
+        QUIZ_FIELD_MAP["score"]:              str(score),
+        QUIZ_FIELD_MAP["tier_name"]:          tier_name,
+        QUIZ_FIELD_MAP["identity_statement"]: answers.get("identityStatement", ""),
+        QUIZ_FIELD_MAP["vision_statement"]:   answers.get("visionStatement", ""),
+        QUIZ_FIELD_MAP["confidence_type"]:    confidence_type,
+        QUIZ_FIELD_MAP["primary_objection"]:  answers.get("objection", ""),
+        QUIZ_FIELD_MAP["firearm_status"]:     firearm_status,
+        QUIZ_FIELD_MAP["family_motivation"]:  answers.get("motivation", ""),
+        QUIZ_FIELD_MAP["must_protect"]:       must_protect,
+        QUIZ_FIELD_MAP["prior_incident"]:     answers.get("experience", ""),
+        QUIZ_FIELD_MAP["returning_pract"]:    returning_pract,
+        QUIZ_FIELD_MAP["auto_pdf"]:           auto_pdf,
+        QUIZ_FIELD_MAP["bonus_pdf"]:          bonus_pdf,
+        QUIZ_FIELD_MAP["urgency_flag"]:       urgency_flag,
+        QUIZ_FIELD_MAP["completed_date"]:     timestamp,
+    }
+
+    # ── Step 1: Search or create person ──
+    try:
+        search_resp = pipedrive_request("GET", "persons/search", params={"term": email, "fields": "email"})
+        search_resp.raise_for_status()
+        search_data = search_resp.json()
+        items = search_data.get("data", {}).get("items", [])
+
+        if items:
+            person_id = items[0]["item"]["id"]
+            # Update existing person with quiz fields
+            update_body = {**person_fields}
+            pipedrive_request("PUT", f"persons/{person_id}", json=update_body).raise_for_status()
+        else:
+            # Create new person
+            create_body = {
+                "name": first_name or email.split("@")[0],
+                "email": [{"value": email, "primary": True}],
+                "owner_id": OWNER_ID,
+                **person_fields,
+            }
+            create_resp = pipedrive_request("POST", "persons", json=create_body)
+            create_resp.raise_for_status()
+            person_id = create_resp.json()["data"]["id"]
+    except requests.RequestException as e:
+        return jsonify({"error": f"Pipedrive person error: {str(e)}"}), 502
+
+    # ── Step 2: Create deal ──
+    try:
+        label_ids = [FLAG_LABEL_MAP[f] for f in flags if f in FLAG_LABEL_MAP]
+
+        deal_body = {
+            "title": f"Quiz Lead — {first_name or email}",
+            "person_id": person_id,
+            "pipeline_id": PIPELINE_ID,
+            "stage_id": STAGE_ID,
+            "user_id": OWNER_ID,
+        }
+        if label_ids:
+            deal_body["label"] = label_ids
+
+        deal_resp = pipedrive_request("POST", "deals", json=deal_body)
+        deal_resp.raise_for_status()
+        deal_id = deal_resp.json()["data"]["id"]
+    except requests.RequestException as e:
+        return jsonify({"error": f"Pipedrive deal error: {str(e)}", "person_id": person_id}), 502
+
+    # ── Step 3: Add pinned note ──
+    try:
+        date_str = timestamp[:10] if len(timestamp) >= 10 else timestamp
+        flags_str = ", ".join(flags) if flags else "None"
+
+        note_content = f"""QUIZ SUBMISSION — {date_str}
+
+SCORE: {score} / 100 — {tier_name}
+FLAGS: {flags_str}
+
+ENTRY REASON (Q0):
+{answers.get('entryReason', 'N/A')}
+
+IDENTITY STATEMENT (Q1):
+{answers.get('identityStatement', 'N/A')}
+
+CLOSING VISION (Q13):
+{answers.get('visionStatement', 'N/A')}
+
+CONFIDENCE TYPE: {answers.get('confidence', '')} / {answers.get('confidenceValidated', '')}
+FIREARM STATUS: {answers.get('firearmOwnership', '')} / {answers.get('carryStatus', '')}
+PRIMARY OBJECTION: {answers.get('objection', '')}
+FAMILY MOTIVATION: {answers.get('motivation', '')}
+PRIOR INCIDENT: {answers.get('experience', '')}"""
+
+        note_body = {
+            "deal_id": deal_id,
+            "content": note_content,
+            "pinned_to_deal_flag": 1,
+        }
+        pipedrive_request("POST", "notes", json=note_body).raise_for_status()
+    except requests.RequestException:
+        pass  # Note failure is non-critical
+
+    return jsonify({
+        "status": "ok",
+        "person_id": person_id,
+        "deal_id": deal_id,
+        "flags_applied": len(label_ids),
+        "timestamp": datetime.utcnow().isoformat() + "Z",
     })
 
 
