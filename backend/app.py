@@ -219,22 +219,22 @@ STAGE_ID    = 1          # Stage 1 — New Lead
 
 # Custom field hashes (Pipedrive person fields 50–65)
 QUIZ_FIELD_MAP = {
-    "entry_reason":       "field_50",
-    "score":              "field_51",
-    "tier_name":          "field_52",
-    "identity_statement": "field_53",
-    "vision_statement":   "field_54",
-    "confidence_type":    "field_55",
-    "primary_objection":  "field_56",
-    "firearm_status":     "field_57",
-    "family_motivation":  "field_58",
-    "must_protect":       "field_59",
-    "prior_incident":     "field_60",
-    "returning_pract":    "field_61",
-    "auto_pdf":           "field_62",
-    "bonus_pdf":          "field_63",
-    "urgency_flag":       "field_64",
-    "completed_date":     "field_65",
+    "entry_reason":       "fd235088591c58d957cffaa27e7e85a804f73cea",
+    "score":              "39051ebf8f2001d53d23c38ef85cb0552aa61180",
+    "tier_name":          "0ce15f1cb1943e4017a9c98649fc377dcb2a9359",
+    "identity_statement": "6aec18882b061254c804fb4f290344e2e0eb13a3",
+    "vision_statement":   "d90d46159cb1a1487f112293424b35508149c9b8",
+    "confidence_type":    "22f5e8d233b391e515df63c0dcbb0213f8d28c47",
+    "primary_objection":  "9a28210fc9693618507d6a8c8020abd46e975fb0",
+    "firearm_status":     "2d3de05af26cc6f8ee839d211d59ece76c51592f",
+    "family_motivation":  "7abb9b8107081b6809141de27ae3b652db83582b",
+    "must_protect":       "ec69ea4a4ffebd979e57d7a5de9880c4302333e7",
+    "prior_incident":     "ce3267994db16a8e860eb75c578b5dba5dddea4e",
+    "returning_pract":    "49bd6796dd47f83dae488a9d4d7d9e50c1e501f4",
+    "auto_pdf":           "998e468cd3a69d1a7d0aed8e481384d1ef42e728",
+    "bonus_pdf":          "6bf2526c2ff7fbfc6e4566f021aeff5ce31f8635",
+    "urgency_flag":       "c6c7c5392f0eb4e5aa9dc9ea32fd42192fe2c3f7",
+    "completed_date":     "db849879591eca16552aad77711175973f431a06",
 }
 
 # Label mapping — flag name → Pipedrive label ID
