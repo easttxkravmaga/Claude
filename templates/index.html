@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>ETKM Visual Aide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+/* ── Reset ───────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+
+/* ── Body / root ─────────────────────────────────── */
+body{
+  display:flex;flex-direction:column;
+  background:#000;color:#fff;
+  font-family:'Inter',sans-serif;font-size:13px;
+}
+
+/* ── Top bar ─────────────────────────────────────── */
+#topbar{
+  flex:0 0 44px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 18px;
+  border-bottom:1px solid #1a1a1a;
+  background:#000;
+}
+#topbar h1{
+  font-family:'Anton',sans-serif;
+  font-size:20px;letter-spacing:1px;color:#fff;font-weight:400;
+}
+#topbar-right{display:flex;align-items:center;gap:8px}
+.btn-top{
+  padding:5px 14px;
+  font-family:'Inter',sans-serif;font-size:10px;font-weight:700;
+  letter-spacing:1.5px;text-transform:uppercase;
+  border:none;border-radius:3px;cursor:pointer;transition:all .15s;
+}
+.btn-top-primary{background:#ff0000;color:#fff}
+.btn-top-primary:hover{background:#cc0000}
+.btn-top-secondary{background:#1a1a1a;color:#888;border:1px solid #2a2a2a}
+.btn-top-secondary:hover{border-color:#ff0000;color:#ff0000}
+#export-status{font-size:10px;color:#575757;min-width:60px;text-align:right}
+
+/* ── Main 3-column layout ────────────────────────── */
+#main{
+  flex:1;display:flex;min-height:0;
+}
+
+/* ── Col 1 — Style controls (20%) ───────────────── */
+#col1{
+  flex:0 0 20%;
+  min-width:200px;max-width:280px;
+  background:#080808;
+  border-right:1px solid #1a1a1a;
+  overflow-y:auto;
+  display:flex;flex-direction:column;
+}
+#col1::-webkit-scrollbar{width:3px}
+#col1::-webkit-scrollbar-thumb{background:#222;border-radius:2px}
+#col1::-webkit-scrollbar-track{background:transparent}
+
+/* ── Col 2 — Content inputs (30%) ───────────────── */
+#col2{
+  flex:0 0 30%;
+  min-width:280px;
+  background:#0a0a0a;
+  border-right:1px solid #1a1a1a;
+  overflow-y:auto;
+  display:flex;flex-direction:column;
+}
+#col2::-webkit-scrollbar{width:3px}
+#col2::-webkit-scrollbar-thumb{background:#222;border-radius:2px}
+#col2::-webkit-scrollbar-track{background:transparent}
+
+/* ── Col 3 — Preview (50%) ───────────────────────── */
+#col3{
+  flex:1;
+  display:flex;flex-direction:column;
+  background:#111;
+  min-width:0;
+}
+
+/* ── Panel sections (shared) ─────────────────────── */
+.panel-section{
+  padding:14px 14px 12px;
+  border-bottom:1px solid #141414;
+}
+.panel-label{
+  font-size:9px;letter-spacing:2.5px;text-transform:uppercase;
+  color:#444;margin-bottom:10px;
+}
+
+/* ── Diagram type list ───────────────────────────── */
+#diagram-list{
+  display:flex;flex-direction:column;gap:2px;
+}
+.dt-item{cursor:pointer;display:block}
+.dt-item input{display:none}
+.dt-item span{
+  display:block;
+  padding:7px 10px;border-radius:3px;
+  font-size:11px;color:#555;
+  transition:all .12s;line-height:1.3;
+}
+.dt-item input:checked + span{
+  background:#1a0000;color:#ff0000;
+  font-weight:700;
+}
+.dt-item:hover span{color:#aaa}
+
+/* ── Pill groups (PRO/SIMPLE, BG) ────────────────── */
+.pill-group{display:flex;gap:4px}
+.pill-group label{flex:1;cursor:pointer}
+.pill-group input{display:none}
+.pill-group label span{
+  display:block;padding:5px 4px;
+  border:1px solid #222;border-radius:3px;
+  font-size:10px;text-align:center;text-transform:uppercase;letter-spacing:.8px;
+  color:#444;transition:all .12s;
+}
+.pill-group input:checked + span{
+  border-color:#ff0000;color:#ff0000;background:#180000;
+}
+.pill-group label:hover span{color:#888}
+
+/* ── Text color chips ────────────────────────────── */
+.chip-row{display:flex;gap:6px;align-items:center;margin-top:4px}
+.color-chip{
+  width:26px;height:26px;border-radius:3px;border:2px solid transparent;
+  cursor:pointer;transition:border-color .12s;flex-shrink:0;
+  padding:0;outline:none;
+}
+.color-chip.active{border-color:#fff}
+.color-chip[data-c="white"]{border:2px solid #333}
+.color-chip[data-c="white"].active{border-color:#fff}
+
+/* ── Size pills (S/M/L/XL per field) ────────────── */
+.scale-table{display:flex;flex-direction:column;gap:6px}
+.scale-row{display:flex;align-items:center;gap:6px}
+.scale-field-lbl{
+  font-size:10px;color:#444;width:38px;flex-shrink:0;
+}
+.size-pills{display:flex;gap:3px}
+.size-pills label{cursor:pointer}
+.size-pills input{display:none}
+.size-pills label span{
+  display:block;padding:3px 6px;
+  border:1px solid #1e1e1e;border-radius:3px;
+  font-size:9px;color:#444;letter-spacing:.5px;
+  transition:all .12s;
+}
+.size-pills input:checked + span{
+  border-color:#ff0000;color:#ff0000;background:#180000;
+}
+.size-pills label:hover span{color:#888}
+
+/* ── Accent element pills ────────────────────────── */
+#accent-pills{display:flex;flex-wrap:wrap;gap:4px}
+.acc-pill{
+  width:28px;height:24px;border:1px solid #222;border-radius:3px;
+  font-size:10px;color:#444;cursor:pointer;background:none;
+  transition:all .12s;
+}
+.acc-pill.active{border-color:#ff0000;color:#ff0000;background:#180000}
+.acc-pill:hover{color:#888;border-color:#444}
+
+/* ── Text inputs (shared) ────────────────────────── */
+label.fld{
+  display:block;font-size:10px;color:#555;margin-bottom:3px;margin-top:8px;
+}
+label.fld:first-of-type{margin-top:0}
+input[type=text],textarea,select{
+  width:100%;background:#0f0f0f;border:1px solid #1e1e1e;
+  color:#ccc;font-family:'Inter',sans-serif;font-size:12px;
+  padding:6px 9px;border-radius:3px;outline:none;
+  transition:border-color .15s;
+}
+input[type=text]:focus,textarea:focus{border-color:#ff0000}
+textarea{resize:vertical;min-height:48px;line-height:1.5}
+
+/* ── Element cards ────────────────────────────────── */
+.el-card{
+  background:#0f0f0f;border:1px solid #1a1a1a;border-radius:4px;
+  padding:10px 10px 8px;margin-bottom:6px;position:relative;
+}
+.el-card-hdr{
+  font-size:9px;color:#333;letter-spacing:1px;text-transform:uppercase;
+  margin-bottom:6px;
+}
+.el-rm{
+  position:absolute;top:7px;right:8px;
+  background:none;border:none;color:#2a2a2a;cursor:pointer;font-size:14px;
+  line-height:1;transition:color .12s;
+}
+.el-rm:hover{color:#ff0000}
+
+/* ── Add element button ──────────────────────────── */
+#add-element-btn{
+  background:none;border:1px dashed #222;color:#444;
+  width:100%;padding:7px;border-radius:3px;cursor:pointer;
+  font-size:10px;letter-spacing:1px;text-transform:uppercase;
+  margin-top:4px;transition:all .15s;
+}
+#add-element-btn:hover{border-color:#ff0000;color:#ff0000}
+
+/* ── Preview ─────────────────────────────────────── */
+#preview-bar{
+  flex:0 0 36px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 14px;border-bottom:1px solid #1a1a1a;
+  background:#080808;
+}
+#preview-bar .hint{font-size:9px;color:#2a2a2a;letter-spacing:1.5px;text-transform:uppercase}
+#preview-bar-right{display:flex;gap:6px}
+.btn-sm{
+  padding:4px 10px;
+  font-family:'Inter',sans-serif;font-size:9px;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;
+  background:#111;color:#555;border:1px solid #1e1e1e;
+  border-radius:3px;cursor:pointer;transition:all .12s;
+}
+.btn-sm:hover{border-color:#ff0000;color:#ff0000}
+#preview-wrap{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  padding:20px;overflow:hidden;position:relative;
+}
+#preview-wrap.bg-white{background:#e8e8e8}
+#preview-wrap.bg-black{background:#111}
+#preview-wrap.bg-transparent{
+  background-image:
+    linear-gradient(45deg,#181818 25%,transparent 25%),
+    linear-gradient(-45deg,#181818 25%,transparent 25%),
+    linear-gradient(45deg,transparent 75%,#181818 75%),
+    linear-gradient(-45deg,transparent 75%,#181818 75%);
+  background-size:14px 14px;
+  background-position:0 0,0 7px,7px -7px,-7px 0;
+}
+#svg-display{max-width:100%;max-height:100%;width:auto;height:auto}
+#svg-display svg{max-width:100%;height:auto;display:block}
+#loading{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-size:9px;color:#333;letter-spacing:3px;text-transform:uppercase;
+  display:none;
+}
+#loading.active{display:block}
+#error-notice{
+  position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
+  background:#1a0000;border:1px solid #ff0000;border-radius:3px;
+  padding:7px 12px;font-size:10px;color:#ff0000;
+  max-width:80%;display:none;white-space:pre-wrap;word-break:break-all;
+}
+#error-notice.active{display:block}
+</style>
+</head>
+<body>
+
+<!-- ── Top bar ───────────────────────────────────────────────────────────── -->
+<div id="topbar">
+  <h1>ETKM VISUAL AIDE</h1>
+  <div id="topbar-right">
+    <div id="export-status"></div>
+    <button class="btn-top btn-top-secondary" id="export-svg-btn">Export SVG</button>
+    <button class="btn-top btn-top-primary"   id="export-btn">Export PNG</button>
+  </div>
+</div>
+
+<!-- ── Main ──────────────────────────────────────────────────────────────── -->
+<div id="main">
+
+  <!-- ══ COL 1 — Style controls ═══════════════════════════════════════════ -->
+  <div id="col1">
+
+    <!-- Diagram type list -->
+    <div class="panel-section">
+      <div class="panel-label">Diagram Type</div>
+      <div id="diagram-list">
+        {% for key, label in diagram_labels.items() %}
+        <label class="dt-item">
+          <input type="radio" name="diagram_type" value="{{ key }}"
+            {% if loop.first %}checked{% endif %}/>
+          <span>{{ label }}</span>
+        </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Output style -->
+    <div class="panel-section">
+      <div class="panel-label">Output Style</div>
+      <div class="pill-group">
+        <label><input type="radio" name="output_style" value="brand" checked/><span>PRO</span></label>
+        <label><input type="radio" name="output_style" value="bw"/><span>SIMPLE</span></label>
+      </div>
+    </div>
+
+    <!-- Background -->
+    <div class="panel-section">
+      <div class="panel-label">Background</div>
+      <div class="pill-group">
+        <label><input type="radio" name="background" value="transparent" checked/><span>None</span></label>
+        <label><input type="radio" name="background" value="black"/><span>Blk</span></label>
+        <label><input type="radio" name="background" value="white"/><span>Wht</span></label>
+      </div>
+    </div>
+
+    <!-- Text color -->
+    <div class="panel-section">
+      <div class="panel-label">Text Color</div>
+      <div class="chip-row">
+        <button class="color-chip" data-c="red"    style="background:#FF0000" title="Red"></button>
+        <button class="color-chip active" data-c="black"  style="background:#000000" title="Black"></button>
+        <button class="color-chip" data-c="white"  style="background:#FFFFFF" title="White"></button>
+        <button class="color-chip" data-c="gray"   style="background:#575757" title="Gray"></button>
+        <button class="color-chip" data-c="ltgray" style="background:#BBBBBB" title="Light Gray"></button>
+      </div>
+    </div>
+
+    <!-- Accent color -->
+    <div class="panel-section">
+      <div class="panel-label">Accent Color</div>
+      <div class="chip-row">
+        <button class="color-chip acc-active" data-ac="red"    style="background:#FF0000" title="Red"></button>
+        <button class="color-chip"            data-ac="black"  style="background:#000000" title="Black"></button>
+        <button class="color-chip"            data-ac="white"  style="background:#FFFFFF" title="White"></button>
+        <button class="color-chip"            data-ac="gray"   style="background:#575757" title="Gray"></button>
+        <button class="color-chip"            data-ac="ltgray" style="background:#BBBBBB" title="Light Gray"></button>
+      </div>
+    </div>
+
+    <!-- Text scale per field -->
+    <div class="panel-section">
+      <div class="panel-label">Text Scale</div>
+      <div class="scale-table">
+        <div class="scale-row">
+          <span class="scale-field-lbl">Title</span>
+          <div class="size-pills">
+            <label><input type="radio" name="ts_title" value="0.75"/><span>S</span></label>
+            <label><input type="radio" name="ts_title" value="1.0" checked/><span>M</span></label>
+            <label><input type="radio" name="ts_title" value="1.25"/><span>L</span></label>
+            <label><input type="radio" name="ts_title" value="1.5"/><span>XL</span></label>
+          </div>
+        </div>
+        <div class="scale-row">
+          <span class="scale-field-lbl">Sub</span>
+          <div class="size-pills">
+            <label><input type="radio" name="ts_sub" value="0.75"/><span>S</span></label>
+            <label><input type="radio" name="ts_sub" value="1.0" checked/><span>M</span></label>
+            <label><input type="radio" name="ts_sub" value="1.25"/><span>L</span></label>
+            <label><input type="radio" name="ts_sub" value="1.5"/><span>XL</span></label>
+          </div>
+        </div>
+        <div class="scale-row">
+          <span class="scale-field-lbl">Label</span>
+          <div class="size-pills">
+            <label><input type="radio" name="ts_label" value="0.75"/><span>S</span></label>
+            <label><input type="radio" name="ts_label" value="1.0" checked/><span>M</span></label>
+            <label><input type="radio" name="ts_label" value="1.25"/><span>L</span></label>
+            <label><input type="radio" name="ts_label" value="1.5"/><span>XL</span></label>
+          </div>
+        </div>
+        <div class="scale-row">
+          <span class="scale-field-lbl">Head</span>
+          <div class="size-pills">
+            <label><input type="radio" name="ts_head" value="0.75"/><span>S</span></label>
+            <label><input type="radio" name="ts_head" value="1.0" checked/><span>M</span></label>
+            <label><input type="radio" name="ts_head" value="1.25"/><span>L</span></label>
+            <label><input type="radio" name="ts_head" value="1.5"/><span>XL</span></label>
+          </div>
+        </div>
+        <div class="scale-row">
+          <span class="scale-field-lbl">Body</span>
+          <div class="size-pills">
+            <label><input type="radio" name="ts_body" value="0.75"/><span>S</span></label>
+            <label><input type="radio" name="ts_body" value="1.0" checked/><span>M</span></label>
+            <label><input type="radio" name="ts_body" value="1.25"/><span>L</span></label>
+            <label><input type="radio" name="ts_body" value="1.5"/><span>XL</span></label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Accent element selector -->
+    <div class="panel-section">
+      <div class="panel-label">Accent Element</div>
+      <div id="accent-pills"></div>
+    </div>
+
+  </div><!-- /col1 -->
+
+  <!-- ══ COL 2 — Content inputs ═══════════════════════════════════════════ -->
+  <div id="col2">
+
+    <!-- Title + subtitle -->
+    <div class="panel-section">
+      <div class="panel-label">Content</div>
+      <label class="fld">Title</label>
+      <input type="text" id="title" value="PROCESS TITLE" placeholder="MAIN TITLE"/>
+      <label class="fld">Subtitle</label>
+      <input type="text" id="subtitle" value="Your subtitle here" placeholder="Subtitle text"/>
+      <div id="extra-fields"></div>
+    </div>
+
+    <!-- Elements -->
+    <div class="panel-section" id="elements-section">
+      <div class="panel-label">Elements</div>
+      <div id="elements-list"></div>
+      <button id="add-element-btn">+ Add Element</button>
+    </div>
+
+  </div><!-- /col2 -->
+
+  <!-- ══ COL 3 — Live preview ══════════════════════════════════════════════ -->
+  <div id="col3">
+    <div id="preview-bar">
+      <span class="hint">Live Preview — 1920 × 1080</span>
+      <div id="preview-bar-right">
+        <button class="btn-sm" id="bg-toggle">Toggle BG</button>
+        <button class="btn-sm" id="refresh-btn">Refresh</button>
+      </div>
+    </div>
+    <div id="preview-wrap" class="bg-transparent">
+      <div id="svg-display"></div>
+      <div id="loading">Rendering…</div>
+      <div id="error-notice"></div>
+    </div>
+  </div><!-- /col3 -->
+
+</div><!-- /main -->
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════════════
+   State
+═══════════════════════════════════════════════════════════════════════════ */
+const state = {
+  diagramType: 'chevron_flow',
+  title:    'PROCESS TITLE',
+  subtitle: 'Your subtitle here',
+  elements: [],
+  settings: {
+    color_scheme:  'brand',
+    background:    'transparent',
+    emphasis_index: 1,
+    text_scale:    1.0,
+    ts_title: 1.0, ts_sub: 1.0, ts_label: 1.0, ts_head: 1.0, ts_body: 1.0,
+    text_color_override:  null,
+    accent_color_override: null,
+  },
+};
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Element schemas per diagram type
+═══════════════════════════════════════════════════════════════════════════ */
+const SCHEMAS = {
+  chevron_flow: {
+    defaultElements: [
+      {label:'STEP 1', sub_label:'MILESTONE 01', body:'Description for this stage.'},
+      {label:'STEP 2', sub_label:'MILESTONE 02', body:'Description for this stage.'},
+      {label:'STEP 3', sub_label:'MILESTONE 03', body:'Description for this stage.'},
+    ],
+    fields: [
+      {key:'label',     label:'Stage / Year Label',  type:'text'},
+      {key:'sub_label', label:'Milestone Heading',   type:'text'},
+      {key:'body',      label:'Body Text',            type:'textarea'},
+    ],
+    extraFields: [],
+  },
+
+  timeline_dots: {
+    defaultElements: [
+      {heading:'MILESTONE 01', body:'Description text here.'},
+      {heading:'MILESTONE 02', body:'Description text here.'},
+      {heading:'MILESTONE 03', body:'Description text here.'},
+      {heading:'MILESTONE 04', body:'Description text here.'},
+      {heading:'MILESTONE 05', body:'Description text here.'},
+    ],
+    fields: [
+      {key:'heading', label:'Heading', type:'text'},
+      {key:'body',    label:'Body Text', type:'textarea'},
+    ],
+    extraFields: [],
+  },
+
+  cycle_diagram: {
+    defaultElements: [
+      {label:'COMPETITION', heading:'Competition', body:'Assess market forces and competitors.'},
+      {label:'EXECUTION',   heading:'Execution',   body:'Implement tactics with precision.'},
+      {label:'TARGET',      heading:'Target',      body:'Define goals and key results.'},
+      {label:'PROFIT',      heading:'Profit',      body:'Maximize returns on investment.'},
+      {label:'PLANNING',    heading:'Planning',    body:'Build roadmap and allocate resources.'},
+    ],
+    fields: [
+      {key:'label',   label:'Segment Label (inside)',  type:'text'},
+      {key:'heading', label:'Heading (outside)',        type:'text'},
+      {key:'body',    label:'Body Text',                type:'textarea'},
+    ],
+    extraFields: [],
+  },
+
+  day_plan: {
+    defaultElements: [
+      {label:'30', unit:'DAYS', body:'Describe your primary objectives for this period.',
+       stage_a:'STAGE A', stage_a_body:'Key milestone or deliverable.',
+       stage_b:'STAGE B', stage_b_body:'Secondary milestone or deliverable.'},
+      {label:'60', unit:'DAYS', body:'Build on early wins and deepen execution.',
+       stage_a:'STAGE A', stage_a_body:'Key milestone or deliverable.',
+       stage_b:'STAGE B', stage_b_body:'Secondary milestone or deliverable.'},
+      {label:'90', unit:'DAYS', body:'Drive results, measure outcomes, set next cycle.',
+       stage_a:'STAGE A', stage_a_body:'Key milestone or deliverable.',
+       stage_b:'STAGE B', stage_b_body:'Secondary milestone or deliverable.'},
+    ],
+    fields: [
+      {key:'label',        label:'Label (30/60/90)',  type:'text'},
+      {key:'unit',         label:'Unit (DAYS)',        type:'text'},
+      {key:'body',         label:'Main Body',          type:'textarea'},
+      {key:'stage_a',      label:'Stage A Title',      type:'text'},
+      {key:'stage_a_body', label:'Stage A Body',       type:'textarea'},
+      {key:'stage_b',      label:'Stage B Title',      type:'text'},
+      {key:'stage_b_body', label:'Stage B Body',       type:'textarea'},
+    ],
+    extraFields: [],
+  },
+
+  pyramid: {
+    defaultElements: [
+      {label:'KIT',     body:'Foundation equipment and tools.'},
+      {label:'SKILLS',  body:'Core techniques built through repetition.'},
+      {label:'TACTICS', body:'Strategic decision-making under pressure.'},
+      {label:'MINDSET', body:'Mental toughness and situational awareness.'},
+    ],
+    fields: [
+      {key:'label', label:'Level Label', type:'text'},
+      {key:'body',  label:'Body Text',   type:'textarea'},
+    ],
+    extraFields: [
+      {key:'pyramid_color', label:'Pyramid Color', type:'color', default:'#FF0000'},
+    ],
+  },
+
+  mind_map: {
+    defaultElements: [
+      {label:'Target',    body:'Primary objective and key result area.'},
+      {label:'Strategy',  body:'Planned approach and decision framework.'},
+      {label:'Execution', body:'Implementation steps and tactical actions.'},
+      {label:'Review',    body:'Performance assessment and adjustment loop.'},
+      {label:'Growth',    body:'Continuous development and skill building.'},
+      {label:'Culture',   body:'Team values, standards, shared identity.'},
+    ],
+    fields: [
+      {key:'label', label:'Segment Label', type:'text'},
+      {key:'body',  label:'Body Text',     type:'textarea'},
+    ],
+    extraFields: [
+      {key:'center_label', label:'Center Label', type:'text', default:'FOCUS'},
+    ],
+  },
+
+  matrix_grid: {
+    defaultElements: [],
+    fields: [],
+    extraFields: [
+      {key:'x_label',  label:'X-Axis Title',                     type:'text', default:'POTENTIAL ASSESSMENT'},
+      {key:'y_label',  label:'Y-Axis Title',                     type:'text', default:'PERFORMANCE ASSESSMENT'},
+      {key:'x_values', label:'Column Labels (comma-separated)',   type:'text', default:'LOW, MODERATE, HIGH'},
+      {key:'y_values', label:'Row Labels (comma-separated)',      type:'text', default:'HIGH, MODERATE, LOW'},
+    ],
+  },
+
+  price_table: {
+    defaultElements: [
+      {name:'SILVER',   price:'$1.99',  period:'/month', features:'Feature One\nFeature Two\nFeature Three', button:'SIGN UP'},
+      {name:'GOLD',     price:'$4.99',  period:'/month', features:'Feature One\nFeature Two\nFeature Three', button:'SIGN UP'},
+      {name:'PLATINUM', price:'$9.99',  period:'/month', features:'Feature One\nFeature Two\nFeature Three', button:'SIGN UP'},
+      {name:'DIAMOND',  price:'$19.99', period:'/month', features:'Feature One\nFeature Two\nFeature Three', button:'SIGN UP'},
+    ],
+    fields: [
+      {key:'name',     label:'Tier Name',                  type:'text'},
+      {key:'price',    label:'Price',                       type:'text'},
+      {key:'period',   label:'Period (e.g. /month)',        type:'text'},
+      {key:'features', label:'Features (one per line)',     type:'textarea'},
+      {key:'button',   label:'Button Text',                 type:'text'},
+    ],
+    extraFields: [],
+  },
+
+  decision_tree: {
+    defaultElements: [
+      {label:'Option A', leaves:[{label:'Result 1',body:''},{label:'Result 2',body:''}]},
+      {label:'Option B', leaves:[{label:'Result 3',body:''},{label:'Result 4',body:''}]},
+      {label:'Option C', leaves:[{label:'Result 5',body:''},{label:'Result 6',body:''}]},
+    ],
+    fields: [
+      {key:'label', label:'Branch Label', type:'text'},
+    ],
+    extraFields: [
+      {key:'root_label', label:'Root Node Label', type:'text', default:'START'},
+    ],
+  },
+
+  flowchart: {
+    defaultElements: [],
+    fields: [],
+    extraFields: [
+      {key:'split_layout', label:'Split Layout (dark left panel)', type:'checkbox', default:false},
+    ],
+  },
+
+  journey_map: {
+    defaultElements: [
+      {label:'ACTIONS',         cells:', , , , '},
+      {label:'QUESTIONS',       cells:', , , , '},
+      {label:'TOUCH POINTS',    cells:', , , , '},
+      {label:'OPPORTUNITIES',   cells:', , , , '},
+      {label:'CONTENT NEEDED',  cells:', , , , '},
+    ],
+    fields: [
+      {key:'label', label:'Row Label',                                    type:'text'},
+      {key:'cells', label:'Cell Content (comma-separated per column)',    type:'textarea'},
+    ],
+    extraFields: [
+      {key:'x_values', label:'Stage Columns (comma-separated)', type:'text',
+       default:'AWARENESS, ENGAGEMENT, EVALUATION, PURCHASE, POST-PURCHASE'},
+    ],
+  },
+};
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DOM refs
+═══════════════════════════════════════════════════════════════════════════ */
+const $title    = document.getElementById('title');
+const $subtitle = document.getElementById('subtitle');
+const $elList   = document.getElementById('elements-list');
+const $addBtn   = document.getElementById('add-element-btn');
+const $extra    = document.getElementById('extra-fields');
+const $preview  = document.getElementById('svg-display');
+const $loading  = document.getElementById('loading');
+const $error    = document.getElementById('error-notice');
+const $expBtn   = document.getElementById('export-btn');
+const $expSvg   = document.getElementById('export-svg-btn');
+const $expStat  = document.getElementById('export-status');
+const $pvWrap   = document.getElementById('preview-wrap');
+const $acPills  = document.getElementById('accent-pills');
+
+/* Color maps */
+const COLOR_MAP = {
+  red:'#FF0000', black:'#000000', white:'#FFFFFF', gray:'#575757', ltgray:'#BBBBBB'
+};
+let _textColor   = '#000000';
+let _accentColor = '#FF0000';
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Build params
+═══════════════════════════════════════════════════════════════════════════ */
+function buildParams() {
+  const schema = SCHEMAS[state.diagramType] || SCHEMAS.chevron_flow;
+  const params = {
+    diagram_type: state.diagramType,
+    title:    $title.value,
+    subtitle: $subtitle.value,
+    settings: {
+      color_scheme:  document.querySelector('input[name=output_style]:checked')?.value || 'brand',
+      background:    document.querySelector('input[name=background]:checked')?.value   || 'transparent',
+      emphasis_index: state.settings.emphasis_index,
+      text_scale:    parseFloat(document.querySelector('input[name=ts_title]:checked')?.value || 1.0),
+      ts_title: parseFloat(document.querySelector('input[name=ts_title]:checked')?.value || 1.0),
+      ts_sub:   parseFloat(document.querySelector('input[name=ts_sub]:checked')?.value   || 1.0),
+      ts_label: parseFloat(document.querySelector('input[name=ts_label]:checked')?.value || 1.0),
+      ts_head:  parseFloat(document.querySelector('input[name=ts_head]:checked')?.value  || 1.0),
+      ts_body:  parseFloat(document.querySelector('input[name=ts_body]:checked')?.value  || 1.0),
+    },
+  };
+
+  if (_textColor   !== '#000000') params.settings.primary_color_override = _textColor;
+  if (_accentColor !== '#FF0000') params.settings.accent_color_override  = _accentColor;
+
+  /* Extra fields */
+  (schema.extraFields || []).forEach(ef => {
+    const el = document.getElementById('ef-' + ef.key);
+    if (!el) return;
+    if (ef.type === 'checkbox') {
+      params.settings[ef.key] = el.checked;
+    } else if (ef.type === 'color') {
+      params[ef.key] = el.value;
+    } else if (ef.key === 'x_values' || ef.key === 'y_values') {
+      params[ef.key] = el.value.split(',').map(v => v.trim()).filter(Boolean);
+    } else {
+      params[ef.key] = el.value;
+    }
+  });
+
+  /* Elements */
+  const rows = $elList.querySelectorAll('.el-card');
+  const elements = [];
+  rows.forEach(row => {
+    const obj = {};
+    (schema.fields || []).forEach(f => {
+      const inp = row.querySelector(`[data-key="${f.key}"]`);
+      if (!inp) return;
+      if (f.key === 'features') {
+        obj[f.key] = inp.value.split('\n').map(s => s.trim()).filter(Boolean);
+      } else {
+        obj[f.key] = inp.value;
+      }
+    });
+    elements.push(obj);
+  });
+  if (elements.length) params.elements = elements;
+
+  return params;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Render extra fields (col2 — diagram-specific inputs above elements)
+═══════════════════════════════════════════════════════════════════════════ */
+function renderExtraFields() {
+  const schema = SCHEMAS[state.diagramType] || {};
+  $extra.innerHTML = '';
+  (schema.extraFields || []).forEach(ef => {
+    const lbl = document.createElement('label');
+    lbl.className = 'fld';
+    lbl.textContent = ef.label;
+    $extra.appendChild(lbl);
+
+    if (ef.type === 'checkbox') {
+      const inp = document.createElement('input');
+      inp.type = 'checkbox'; inp.id = 'ef-' + ef.key;
+      inp.checked = ef.default || false;
+      inp.style.accentColor = '#ff0000';
+      inp.addEventListener('change', debounceRefresh);
+      $extra.appendChild(inp);
+    } else if (ef.type === 'color') {
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;gap:8px;margin-top:4px';
+      const inp = document.createElement('input');
+      inp.type = 'color'; inp.id = 'ef-' + ef.key; inp.value = ef.default || '#FF0000';
+      inp.addEventListener('input', debounceRefresh);
+      row.appendChild(inp);
+      $extra.appendChild(row);
+    } else {
+      const inp = document.createElement('input');
+      inp.type = 'text'; inp.id = 'ef-' + ef.key;
+      inp.value = ef.default || '';
+      inp.addEventListener('input', debounceRefresh);
+      $extra.appendChild(inp);
+    }
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Render element cards
+═══════════════════════════════════════════════════════════════════════════ */
+function renderElements() {
+  const schema = SCHEMAS[state.diagramType] || {};
+  $elList.innerHTML = '';
+  const els = state.elements;
+  els.forEach((el, i) => {
+    const card = document.createElement('div');
+    card.className = 'el-card';
+
+    const hdr = document.createElement('div');
+    hdr.className = 'el-card-hdr';
+    hdr.textContent = `Element ${i + 1}`;
+    card.appendChild(hdr);
+
+    const rmBtn = document.createElement('button');
+    rmBtn.className = 'el-rm';
+    rmBtn.textContent = '×';
+    rmBtn.title = 'Remove';
+    rmBtn.addEventListener('click', () => {
+      state.elements.splice(i, 1);
+      renderElements();
+      updateAccentPills();
+      debounceRefresh();
+    });
+    card.appendChild(rmBtn);
+
+    (schema.fields || []).forEach(f => {
+      const lbl = document.createElement('label');
+      lbl.className = 'fld';
+      lbl.textContent = f.label;
+      card.appendChild(lbl);
+
+      let inp;
+      if (f.type === 'textarea') {
+        inp = document.createElement('textarea');
+        inp.rows = 2;
+      } else {
+        inp = document.createElement('input');
+        inp.type = 'text';
+      }
+      inp.setAttribute('data-key', f.key);
+      inp.value = el[f.key] !== undefined ? el[f.key] : '';
+      inp.addEventListener('input', debounceRefresh);
+      card.appendChild(inp);
+    });
+
+    $elList.appendChild(card);
+  });
+
+  $addBtn.style.display = (schema.fields && schema.fields.length > 0) ? 'block' : 'none';
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Accent element pills (col1)
+═══════════════════════════════════════════════════════════════════════════ */
+function updateAccentPills() {
+  const n = state.elements.length || 8;
+  $acPills.innerHTML = '';
+  for (let i = 0; i < n; i++) {
+    const btn = document.createElement('button');
+    btn.className = 'acc-pill' + (i === state.settings.emphasis_index ? ' active' : '');
+    btn.textContent = i + 1;
+    btn.addEventListener('click', () => {
+      state.settings.emphasis_index = i;
+      updateAccentPills();
+      debounceRefresh();
+    });
+    $acPills.appendChild(btn);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Switch diagram type
+═══════════════════════════════════════════════════════════════════════════ */
+function switchType(type) {
+  state.diagramType = type;
+  const schema = SCHEMAS[type] || {};
+  state.elements = JSON.parse(JSON.stringify(schema.defaultElements || []));
+  renderExtraFields();
+  renderElements();
+  updateAccentPills();
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Fetch + render SVG
+═══════════════════════════════════════════════════════════════════════════ */
+let _debTimer = null;
+function debounceRefresh(delay = 380) {
+  clearTimeout(_debTimer);
+  _debTimer = setTimeout(refresh, typeof delay === 'number' ? delay : 380);
+}
+
+async function refresh() {
+  $loading.classList.add('active');
+  $error.classList.remove('active');
+  try {
+    const params = buildParams();
+    const res = await fetch('/preview', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(params),
+    });
+    const data = await res.json();
+    if (data.ok) {
+      $preview.innerHTML = data.svg;
+      const svgEl = $preview.querySelector('svg');
+      if (svgEl) {
+        svgEl.style.maxWidth  = '100%';
+        svgEl.style.maxHeight = 'calc(100vh - 88px)';
+        svgEl.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+      }
+    } else {
+      showError(data.error || 'Unknown error');
+    }
+  } catch(e) {
+    showError(String(e));
+  } finally {
+    $loading.classList.remove('active');
+  }
+}
+
+function showError(msg) {
+  $error.textContent = msg.split('\n').slice(-1)[0];
+  $error.classList.add('active');
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Export PNG (client-side canvas)
+═══════════════════════════════════════════════════════════════════════════ */
+async function _arrayBufToBase64(buf) {
+  const bytes = new Uint8Array(buf);
+  let b = '';
+  for (let i = 0; i < bytes.length; i += 8192)
+    b += String.fromCharCode(...bytes.subarray(i, i + 8192));
+  return btoa(b);
+}
+
+async function _inlineFonts(svgStr) {
+  try {
+    const css = await (await fetch(
+      'https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap'
+    )).text();
+    let embedded = css;
+    for (const [, rawUrl] of css.matchAll(/url\((['"]?)(https?[^)'"]+)\1\)/g)) {
+      try {
+        const buf  = await (await fetch(rawUrl)).arrayBuffer();
+        const b64  = await _arrayBufToBase64(buf);
+        const mime = rawUrl.includes('woff2') ? 'font/woff2' : 'font/woff';
+        embedded   = embedded.split(rawUrl).join(`data:${mime};base64,${b64}`);
+      } catch { /* skip on error */ }
+    }
+    return svgStr.replace(
+      /<defs>[\s\S]*?<\/defs>/,
+      `<defs><style>${embedded}</style></defs>`
+    );
+  } catch(e) {
+    console.warn('[export] Font embedding failed:', e);
+    return svgStr;
+  }
+}
+
+$expBtn.addEventListener('click', async () => {
+  $expBtn.textContent = 'Generating…';
+  $expStat.textContent = '';
+  try {
+    const params = buildParams();
+    const res  = await fetch('/preview', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(params),
+    });
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || 'SVG generation failed');
+
+    $expStat.textContent = 'Embedding fonts…';
+    const svgStr = await _inlineFonts(data.svg);
+
+    $expStat.textContent = 'Rendering…';
+    const canvas = document.createElement('canvas');
+    canvas.width = 1920; canvas.height = 1080;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, 1920, 1080);
+
+    const blobUrl = URL.createObjectURL(new Blob([svgStr], {type:'image/svg+xml'}));
+    await new Promise((ok, fail) => {
+      const img = new Image();
+      img.onload = () => { ctx.drawImage(img, 0, 0, 1920, 1080); URL.revokeObjectURL(blobUrl); ok(); };
+      img.onerror = () => { URL.revokeObjectURL(blobUrl); fail(new Error('SVG render failed')); };
+      img.src = blobUrl;
+    });
+
+    canvas.toBlob(pngBlob => {
+      const slug = (params.title || params.diagram_type || 'visual')
+        .slice(0, 30).replace(/\s+/g, '_').toLowerCase();
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(pngBlob);
+      a.download = `etkm_${slug}.png`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+      $expStat.textContent = '✓ Saved';
+    }, 'image/png');
+
+  } catch(e) {
+    $expStat.textContent = String(e);
+  } finally {
+    $expBtn.textContent = 'Export PNG';
+  }
+});
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Export SVG
+═══════════════════════════════════════════════════════════════════════════ */
+$expSvg.addEventListener('click', () => {
+  const svgEl = $preview.querySelector('svg');
+  if (!svgEl) return;
+  const blob = new Blob([svgEl.outerHTML], {type:'image/svg+xml'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = 'etkm_visual.svg'; a.click();
+  URL.revokeObjectURL(url);
+});
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Background toggle (preview bg cycling)
+═══════════════════════════════════════════════════════════════════════════ */
+const BG_CLASSES = ['bg-transparent','bg-white','bg-black'];
+let _bgIdx = 0;
+document.getElementById('bg-toggle').addEventListener('click', () => {
+  $pvWrap.classList.remove(...BG_CLASSES);
+  _bgIdx = (_bgIdx + 1) % BG_CLASSES.length;
+  $pvWrap.classList.add(BG_CLASSES[_bgIdx]);
+});
+
+/* Sync background radio → preview wrapper */
+document.querySelectorAll('input[name=background]').forEach(r => {
+  r.addEventListener('change', () => {
+    $pvWrap.classList.remove(...BG_CLASSES);
+    $pvWrap.classList.add('bg-' + r.value);
+    debounceRefresh();
+  });
+});
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Color chip wiring
+═══════════════════════════════════════════════════════════════════════════ */
+document.querySelectorAll('.color-chip[data-c]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.color-chip[data-c]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    _textColor = COLOR_MAP[btn.dataset.c] || '#000000';
+    debounceRefresh();
+  });
+});
+
+document.querySelectorAll('.color-chip[data-ac]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.color-chip[data-ac]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    _accentColor = COLOR_MAP[btn.dataset.ac] || '#FF0000';
+    debounceRefresh();
+  });
+});
+
+/* Set initial active state for accent chips */
+document.querySelector('.color-chip[data-ac="red"]')?.classList.add('active');
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Event wiring
+═══════════════════════════════════════════════════════════════════════════ */
+/* Diagram type radios */
+document.querySelectorAll('input[name=diagram_type]').forEach(r => {
+  r.addEventListener('change', () => {
+    switchType(r.value);
+    debounceRefresh(100);
+  });
+});
+
+$title.addEventListener('input', debounceRefresh);
+$subtitle.addEventListener('input', debounceRefresh);
+
+document.querySelectorAll('input[name=output_style]').forEach(r =>
+  r.addEventListener('change', debounceRefresh));
+
+['ts_title','ts_sub','ts_label','ts_head','ts_body'].forEach(name => {
+  document.querySelectorAll(`input[name=${name}]`).forEach(r =>
+    r.addEventListener('change', debounceRefresh));
+});
+
+$addBtn.addEventListener('click', () => {
+  const schema = SCHEMAS[state.diagramType] || {};
+  const defaults = schema.defaultElements?.[0] || {};
+  const newEl = {};
+  (schema.fields || []).forEach(f => { newEl[f.key] = ''; });
+  Object.assign(newEl, defaults);
+  state.elements.push({...newEl});
+  renderElements();
+  updateAccentPills();
+  debounceRefresh();
+});
+
+document.getElementById('refresh-btn').addEventListener('click', () => refresh());
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Init
+═══════════════════════════════════════════════════════════════════════════ */
+switchType('chevron_flow');
+refresh();
+</script>
+</body>
+</html>
