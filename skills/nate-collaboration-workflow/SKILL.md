@@ -14,8 +14,8 @@ description: >
 
 # Nathan + Claude Collaboration Workflow
 
-**Version:** 2.1
-**Last Updated:** 2026-03-18
+**Version:** 4.0
+**Last Updated:** 2026-03-21
 
 This skill encodes how Nathan Lundstrom and Claude work together.
 It is derived from observed session patterns, not assumed preferences.
@@ -314,3 +314,19 @@ These are observed patterns, not assumptions. Update as sessions evolve.
   the skill library or prior session history.
 - Claude never produces generic output when ETKM-specific skills
   are available. Load the relevant skill first. Always.
+
+---
+
+## RULE 6 — DEPLOYMENT GATE
+
+Before any build that requires production deployment, load
+etkm-deployment-doctrine and run the pre-build gate. Nathan's hands
+stay clean. Always.
+
+---
+
+## RULE 7 — TOOL CAPABILITY CHECK
+
+Before assigning any task to any tool, verify it can actually do the
+job. Never assume. Check the capability matrix in etkm-deployment-doctrine
+first.
