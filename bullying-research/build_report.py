@@ -1,725 +1,859 @@
 """
-Bullying Research Report Builder — build_report.py
-====================================================
-Reads JSON data from data/ folder and renders a single self-contained
-HTML report with tabbed navigation by age tier, ETKM black/white/red
-brand colors, and five sections per tier.
-
+Bullying Research Intelligence System — build_report.py
+=========================================================
+Reads data/master.json and renders a full HTML research report.
+One page, all four tiers, tabbed navigation.
+ETKM brand standards: black background, white text, red accents.
 Usage:
-    python build_report.py               # builds report from all tiers
-    python build_report.py --tier k2     # builds report for single tier
-    python build_report.py --output report.html  # custom output path
-
+    python build_report.py
+    python build_report.py --tier k2       # single tier preview
 Output:
-    output/bullying_research_report.html (self-contained, no external deps)
+    output/bullying_research_report.html
+    output/tier_k2.html  (if --tier specified)
 """
-
 import json
 import os
 import sys
 import argparse
 from datetime import datetime
 
-# ──────────────────────────────────────────────
-# TIER METADATA (mirrors gather_research.py)
-# ──────────────────────────────────────────────
-
-TIER_ORDER = ["k2", "35", "68", "912"]
-
-TIER_META = {
-    "k2":  {"label": "K–2", "full": "Kindergarten – 2nd Grade", "ages": "Ages 5–7",  "stage": "Early Childhood"},
-    "35":  {"label": "3–5", "full": "3rd – 5th Grade",          "ages": "Ages 8–10", "stage": "Late Elementary"},
-    "68":  {"label": "6–8", "full": "6th – 8th Grade",          "ages": "Ages 11–13","stage": "Middle School"},
-    "912": {"label": "9–12","full": "9th – 12th Grade",         "ages": "Ages 14–18","stage": "High School"},
-}
 
 # ──────────────────────────────────────────────
 # DATA LOADER
 # ──────────────────────────────────────────────
 
-def load_tier_data(tier_id: str) -> dict | None:
-    filepath = f"data/tier_{tier_id}.json"
-    if not os.path.exists(filepath):
-        print(f"  WARNING: {filepath} not found")
-        return None
-    with open(filepath, "r", encoding="utf-8") as f:
+def load_master() -> dict:
+    if not os.path.exists("data/master.json"):
+        print("ERROR: data/master.json not found. Run gather_research.py first.")
+        sys.exit(1)
+    with open("data/master.json", "r", encoding="utf-8") as f:
         return json.load(f)
 
 
-def load_all_tiers(tier_ids: list[str]) -> dict:
-    tiers = {}
-    for tid in tier_ids:
-        data = load_tier_data(tid)
-        if data and "error" not in data:
-            tiers[tid] = data
-        elif data and "error" in data:
-            print(f"  SKIPPING {tid}: data contains error — {data['error']}")
-    return tiers
+def load_tier(tier_id: str) -> dict:
+    filepath = f"data/tier_{tier_id}.json"
+    if not os.path.exists(filepath):
+        print(f"ERROR: {filepath} not found. Run gather_research.py --tier {tier_id} first.")
+        sys.exit(1)
+    with open(filepath, "r", encoding="utf-8") as f:
+        return json.load(f)
 
 
 # ──────────────────────────────────────────────
 # HTML HELPERS
 # ──────────────────────────────────────────────
 
-def esc(text) -> str:
-    """Escape HTML entities."""
-    if not isinstance(text, str):
-        text = str(text)
-    return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
+def safe(val, fallback="—"):
+    """Return val or fallback if empty/None."""
+    if val is None:
+        return fallback
+    s = str(val).strip()
+    return s if s else fallback
 
 
-def risk_badge(level: str) -> str:
-    level = (level or "unknown").lower()
-    colors = {
-        "low": "#28a745",
-        "medium": "#f0ad4e",
-        "high": "#dc3545",
+def stat_badge(source, year):
+    """Small source badge."""
+    parts = []
+    if source:
+        parts.append(f'<span class="badge-source">{source}</span>')
+    if year:
+        parts.append(f'<span class="badge-year">{year}</span>')
+    return " ".join(parts) if parts else ""
+
+
+def escalation_class(level):
+    mapping = {"high": "esc-high", "medium": "esc-medium", "low": "esc-low"}
+    return mapping.get(str(level).lower(), "esc-low")
+
+
+def resource_type_icon(rtype):
+    icons = {
+        "hotline": "📞",
+        "website": "🌐",
+        "guide": "📄",
+        "program": "🎯",
+        "app": "📱"
     }
-    bg = colors.get(level, "#888")
-    return f'<span class="risk-badge" style="background:{bg}">{esc(level.upper())}</span>'
-
-
-def resource_type_badge(rtype: str) -> str:
-    rtype = (rtype or "other").lower()
-    colors = {
-        "hotline": "#dc3545",
-        "website": "#0066cc",
-        "guide": "#28a745",
-        "program": "#6f42c1",
-        "app": "#fd7e14",
-    }
-    bg = colors.get(rtype, "#888")
-    return f'<span class="type-badge" style="background:{bg}">{esc(rtype.upper())}</span>'
+    return icons.get(str(rtype).lower(), "🔗")
 
 
 # ──────────────────────────────────────────────
 # SECTION RENDERERS
 # ──────────────────────────────────────────────
 
-def render_categories(data: dict) -> str:
-    categories = data.get("categories", [])
+def render_categories(categories):
     if not categories:
-        return '<p class="empty">No category data available.</p>'
+        return "<p class='empty'>No category data found.</p>"
 
-    html = ""
+    html = '<div class="categories-grid">'
     for cat in categories:
-        behaviors = "".join(f"<li>{esc(b)}</li>" for b in cat.get("age_specific_behaviors", []))
-        warnings = "".join(f"<li>{esc(w)}</li>" for w in cat.get("warning_signs", []))
+        esc = escalation_class(cat.get("escalation_risk", "low"))
+        behaviors = "".join(f"<li>{b}</li>" for b in cat.get("age_specific_behaviors", []))
+        signs = "".join(f"<li>{s}</li>" for s in cat.get("warning_signs", []))
 
         html += f"""
-        <div class="card">
-            <div class="card-header">
-                <h3>{esc(cat.get('name', 'Unknown'))}</h3>
-                {risk_badge(cat.get('escalation_risk', ''))}
-            </div>
-            <p class="card-desc">{esc(cat.get('description', ''))}</p>
-            <p class="prevalence"><strong>Prevalence:</strong> {esc(cat.get('prevalence_note', 'N/A'))}</p>
-            <div class="two-col">
-                <div>
-                    <h4>Age-Specific Behaviors</h4>
-                    <ul>{behaviors if behaviors else '<li>No data</li>'}</ul>
-                </div>
-                <div>
-                    <h4>Warning Signs</h4>
-                    <ul class="warning-list">{warnings if warnings else '<li>No data</li>'}</ul>
-                </div>
-            </div>
+        <div class="category-card">
+          <div class="cat-header">
+            <span class="cat-name">{safe(cat.get('name'))}</span>
+            <span class="escalation-badge {esc}">{safe(cat.get('escalation_risk','—')).upper()} RISK</span>
+          </div>
+          <p class="cat-desc">{safe(cat.get('description'))}</p>
+          <p class="cat-prevalence"><em>{safe(cat.get('prevalence_note'))}</em></p>
+          {f'<div class="sub-section"><span class="sub-label">Age-Specific Behaviors</span><ul>{behaviors}</ul></div>' if behaviors else ''}
+          {f'<div class="sub-section"><span class="sub-label">Warning Signs</span><ul>{signs}</ul></div>' if signs else ''}
         </div>"""
+    html += "</div>"
     return html
 
 
-def render_commonalities(data: dict) -> str:
-    c = data.get("commonalities", {})
-    if not c:
-        return '<p class="empty">No commonality data available.</p>'
+def render_commonalities(comm):
+    if not comm:
+        return "<p class='empty'>No commonality data found.</p>"
 
-    targeted = c.get("who_is_targeted", {})
-    bullies = c.get("who_bullies", {})
-    bystander = c.get("bystander_behavior", {})
+    targeted = comm.get("who_is_targeted", {})
+    bullies = comm.get("who_bullies", {})
+    bystander = comm.get("bystander_behavior", {})
 
-    risk_factors = "".join(f"<li>{esc(r)}</li>" for r in targeted.get("risk_factors", []))
-    protective = "".join(f"<li>{esc(p)}</li>" for p in targeted.get("protective_factors", []))
-    traits = "".join(f"<li>{esc(t)}</li>" for t in bullies.get("common_traits", []))
-    motivations = "".join(f"<li>{esc(m)}</li>" for m in bullies.get("motivations", []))
-    environments = "".join(f"<li>{esc(e)}</li>" for e in c.get("environments", []))
+    risk_factors = "".join(f"<li>{r}</li>" for r in targeted.get("risk_factors", []))
+    protective = "".join(f"<li>{p}</li>" for p in targeted.get("protective_factors", []))
+    traits = "".join(f"<li>{t}</li>" for t in bullies.get("common_traits", []))
+    motivations = "".join(f"<li>{m}</li>" for m in bullies.get("motivations", []))
+    environments = "".join(f"<li>{e}</li>" for e in comm.get("environments", []))
 
     return f"""
-    <div class="card">
-        <h3>Who Is Targeted</h3>
-        <p>{esc(targeted.get('summary', ''))}</p>
-        <div class="two-col">
-            <div>
-                <h4>Risk Factors</h4>
-                <ul class="risk-list">{risk_factors if risk_factors else '<li>No data</li>'}</ul>
-            </div>
-            <div>
-                <h4>Protective Factors</h4>
-                <ul class="protect-list">{protective if protective else '<li>No data</li>'}</ul>
-            </div>
-        </div>
-    </div>
-    <div class="card">
-        <h3>Who Bullies</h3>
-        <p>{esc(bullies.get('summary', ''))}</p>
-        <div class="two-col">
-            <div>
-                <h4>Common Traits</h4>
-                <ul>{traits if traits else '<li>No data</li>'}</ul>
-            </div>
-            <div>
-                <h4>Motivations</h4>
-                <ul>{motivations if motivations else '<li>No data</li>'}</ul>
-            </div>
-        </div>
-    </div>
-    <div class="card">
-        <h3>Bystander Behavior</h3>
-        <p>{esc(bystander.get('summary', ''))}</p>
-        <p><strong>Typical Response:</strong> {esc(bystander.get('typical_response', 'N/A'))}</p>
-        <p><strong>Intervention Rate:</strong> {esc(bystander.get('intervention_rate', 'N/A'))}</p>
-    </div>
-    <div class="card">
-        <h3>Environments &amp; Context</h3>
-        <ul>{environments if environments else '<li>No data</li>'}</ul>
-        <p><strong>Gender Patterns:</strong> {esc(c.get('gender_patterns', 'N/A'))}</p>
-        <p><strong>Developmental Context:</strong> {esc(c.get('developmental_context', 'N/A'))}</p>
+    <div class="commonalities-grid">
+      <div class="comm-block">
+        <h4 class="comm-title red-line">Who Gets Targeted</h4>
+        <p>{safe(targeted.get('summary'))}</p>
+        {f'<span class="sub-label">Risk Factors</span><ul>{risk_factors}</ul>' if risk_factors else ''}
+        {f'<span class="sub-label">Protective Factors</span><ul>{protective}</ul>' if protective else ''}
+      </div>
+      <div class="comm-block">
+        <h4 class="comm-title red-line">Who Bullies</h4>
+        <p>{safe(bullies.get('summary'))}</p>
+        {f'<span class="sub-label">Common Traits</span><ul>{traits}</ul>' if traits else ''}
+        {f'<span class="sub-label">Motivations</span><ul>{motivations}</ul>' if motivations else ''}
+      </div>
+      <div class="comm-block">
+        <h4 class="comm-title red-line">Bystander Behavior</h4>
+        <p>{safe(bystander.get('summary'))}</p>
+        <p><strong>Typical Response:</strong> {safe(bystander.get('typical_response'))}</p>
+        <p><strong>Intervention Rate:</strong> {safe(bystander.get('intervention_rate'))}</p>
+      </div>
+      <div class="comm-block">
+        <h4 class="comm-title red-line">Environment &amp; Context</h4>
+        {f'<span class="sub-label">Where It Happens</span><ul>{environments}</ul>' if environments else ''}
+        <p><strong>Gender Patterns:</strong> {safe(comm.get('gender_patterns'))}</p>
+        <p><strong>Developmental Context:</strong> {safe(comm.get('developmental_context'))}</p>
+      </div>
     </div>"""
 
 
-def render_statistics(data: dict) -> str:
-    stats = data.get("statistics", {})
+def render_statistics(stats):
     if not stats:
-        return '<p class="empty">No statistics available.</p>'
+        return "<p class='empty'>No statistics data found.</p>"
 
-    def stat_table(items, columns):
+    national = stats.get("national", [])
+    regional = stats.get("regional", [])
+    outcomes = stats.get("outcomes", [])
+
+    def render_stat_list(items):
         if not items:
-            return '<p class="empty">No data in this category.</p>'
-        header = "".join(f"<th>{esc(c)}</th>" for c in columns)
+            return "<p class='empty'>No data available.</p>"
         rows = ""
-        for item in items:
-            unverified = ' class="unverified"' if item.get("unverified") else ""
-            cells = []
-            for col in columns:
-                key = col.lower().replace(" ", "_")
-                val = item.get(key, "")
-                cells.append(f"<td>{esc(val)}</td>")
-            rows += f"<tr{unverified}>{''.join(cells)}</tr>"
-        return f"<table><thead><tr>{header}</tr></thead><tbody>{rows}</tbody></table>"
+        for s in items:
+            unverified = s.get("unverified", False)
+            flag = ' <span class="unverified-flag">⚠ UNVERIFIED</span>' if unverified else ''
+            rows += f"""
+            <div class="stat-row">
+              <div class="stat-value">{safe(s.get('value'))}</div>
+              <div class="stat-text">
+                <span class="stat-label">{safe(s.get('stat'))}</span>{flag}
+                <div class="stat-meta">{stat_badge(s.get('source'), s.get('year'))}</div>
+              </div>
+            </div>"""
+        return rows
 
-    national_html = stat_table(stats.get("national", []), ["Stat", "Value", "Source", "Year"])
-    regional_html = stat_table(stats.get("regional", []), ["Region", "Stat", "Value", "Source", "Year"])
-    outcomes_html = stat_table(stats.get("outcomes", []), ["Stat", "Value", "Source", "Year"])
+    regional_note = ""
+    if regional:
+        reg_rows = ""
+        for r in regional:
+            reg_rows += f"""
+            <div class="stat-row regional">
+              <div class="stat-value">{safe(r.get('value'))}</div>
+              <div class="stat-text">
+                <span class="region-tag">{safe(r.get('region'))}</span>
+                <span class="stat-label">{safe(r.get('stat'))}</span>
+                <div class="stat-meta">{stat_badge(r.get('source'), r.get('year'))}</div>
+              </div>
+            </div>"""
+        regional_note = f"""
+        <div class="stats-section">
+          <h4 class="stats-subhead">Regional / Texas Data</h4>
+          {reg_rows}
+        </div>"""
 
     return f"""
-    <div class="card">
-        <h3>National Statistics</h3>
-        {national_html}
-    </div>
-    <div class="card">
-        <h3>Regional / Texas Data</h3>
-        {regional_html}
-    </div>
-    <div class="card">
-        <h3>Outcomes</h3>
-        {outcomes_html}
+    <div class="stats-layout">
+      <div class="stats-section">
+        <h4 class="stats-subhead">National Prevalence</h4>
+        {render_stat_list(national)}
+      </div>
+      {regional_note}
+      <div class="stats-section">
+        <h4 class="stats-subhead">Outcomes &amp; Impact</h4>
+        {render_stat_list(outcomes)}
+      </div>
     </div>"""
 
 
-def render_parent_resources(data: dict) -> str:
-    resources = data.get("parent_resources", [])
+def render_resources(resources):
     if not resources:
-        return '<p class="empty">No parent resources available.</p>'
+        return "<p class='empty'>No resources found.</p>"
 
-    html = ""
+    html = '<div class="resources-grid">'
     for r in resources:
-        free_tag = '<span class="free-tag">FREE</span>' if r.get("free") else ""
-        url = esc(r.get("url", "#"))
+        icon = resource_type_icon(r.get("type", ""))
+        url = r.get("url", "#")
+        free_badge = '<span class="free-badge">FREE</span>' if r.get("free") else ''
+
         html += f"""
         <div class="resource-card">
-            <div class="resource-header">
-                <h3>{esc(r.get('name', 'Unknown'))}</h3>
-                <div class="resource-tags">
-                    {resource_type_badge(r.get('type', ''))}
-                    {free_tag}
-                </div>
+          <div class="resource-header">
+            <span class="resource-icon">{icon}</span>
+            <div>
+              <a href="{url}" target="_blank" class="resource-name">{safe(r.get('name'))}</a>
+              {free_badge}
             </div>
-            <p>{esc(r.get('description', ''))}</p>
-            <p class="best-for"><strong>Best for:</strong> {esc(r.get('best_for', 'N/A'))}</p>
-            <a href="{url}" target="_blank" rel="noopener noreferrer" class="resource-link">{url}</a>
+          </div>
+          <p class="resource-desc">{safe(r.get('description'))}</p>
+          <p class="resource-best"><strong>Best for:</strong> {safe(r.get('best_for'))}</p>
+          <a href="{url}" target="_blank" class="resource-url">{url}</a>
         </div>"""
+
+    html += "</div>"
     return html
 
 
-def render_intervention(data: dict) -> str:
-    intervention = data.get("intervention_strategies", {})
+def render_intervention(intervention):
     if not intervention:
-        return '<p class="empty">No intervention data available.</p>'
+        return "<p class='empty'>No intervention data found.</p>"
 
-    parent_steps = "".join(f"<li>{esc(s)}</li>" for s in intervention.get("for_parents", []))
-    convos = "".join(f'<li class="convo">"{esc(c)}"</li>' for c in intervention.get("conversation_starters", []))
-    red_flags = "".join(f"<li>{esc(r)}</li>" for r in intervention.get("red_flags_requiring_immediate_action", []))
+    for_parents = "".join(f"<li>{a}</li>" for a in intervention.get("for_parents", []))
+    starters = "".join(f'<li class="starter">&ldquo;{s}&rdquo;</li>' for s in intervention.get("conversation_starters", []))
+    red_flags = "".join(f"<li class='red-flag-item'>{f}</li>" for f in intervention.get("red_flags_requiring_immediate_action", []))
 
     return f"""
-    <div class="card">
-        <h3>Parent Action Steps</h3>
-        <ol class="action-list">{parent_steps if parent_steps else '<li>No data</li>'}</ol>
-    </div>
-    <div class="card">
-        <h3>Conversation Starters</h3>
-        <ul class="convo-list">{convos if convos else '<li>No data</li>'}</ul>
-    </div>
-    <div class="card red-flag-card">
-        <h3>&#9888; Red Flags — Immediate Action Required</h3>
-        <ul class="red-flag-list">{red_flags if red_flags else '<li>No data</li>'}</ul>
+    <div class="intervention-grid">
+      <div class="int-block">
+        <h4 class="int-title">Parent Actions</h4>
+        <ul class="action-list">{for_parents}</ul>
+      </div>
+      <div class="int-block">
+        <h4 class="int-title">Conversation Starters</h4>
+        <ul class="starters-list">{starters}</ul>
+      </div>
+      <div class="int-block red-block">
+        <h4 class="int-title">&#x1F6A8; Red Flags — Act Immediately</h4>
+        <ul class="red-flags-list">{red_flags}</ul>
+      </div>
     </div>"""
 
 
-# ──────────────────────────────────────────────
-# FULL TIER RENDERER
-# ──────────────────────────────────────────────
+def render_tier_section(tier_id, tier_data, active=False):
+    """Renders full HTML section for one tier."""
 
-SECTION_DEFS = [
-    ("categories",    "01 — Categories",          render_categories),
-    ("commonalities", "02 — Commonalities",        render_commonalities),
-    ("statistics",    "03 — Statistics",            render_statistics),
-    ("resources",     "04 — Parent Resources",      render_parent_resources),
-    ("intervention",  "05 — Intervention",          render_intervention),
-]
-
-
-def render_tier(tier_id: str, data: dict) -> str:
-    meta = TIER_META[tier_id]
-
-    section_tabs = ""
-    section_panels = ""
-    for i, (sec_id, sec_label, renderer) in enumerate(SECTION_DEFS):
-        active = " active" if i == 0 else ""
-        full_sec_id = f"{tier_id}-{sec_id}"
-        section_tabs += f'<button class="sec-tab{active}" data-section="{full_sec_id}">{esc(sec_label)}</button>'
-        section_panels += f'<div class="sec-panel{active}" id="{full_sec_id}">{renderer(data)}</div>'
-
-    freshness = data.get("data_freshness_note", "")
-    research_date = data.get("research_date", "")
-    sources = data.get("sources_consulted", [])
-    sources_html = ""
-    if sources:
-        source_items = "".join(
-            f'<li><a href="{esc(s.get("url", "#"))}" target="_blank">{esc(s.get("name", ""))}</a> '
-            f'<span class="source-type">({esc(s.get("type", ""))})</span></li>'
-            for s in sources
-        )
-        sources_html = f'<div class="sources"><h4>Sources Consulted</h4><ul>{source_items}</ul></div>'
+    active_class = "active" if active else ""
+    stage = safe(tier_data.get("stage", ""))
+    age_range = safe(tier_data.get("age_range", ""))
+    freshness = safe(tier_data.get("data_freshness_note", ""))
 
     return f"""
-    <div class="tier-content" id="tier-{tier_id}">
-        <div class="tier-header">
-            <h2>{esc(meta['full'])}</h2>
-            <div class="tier-badges">
-                <span class="badge">{esc(meta['ages'])}</span>
-                <span class="badge">{esc(meta['stage'])}</span>
-                {f'<span class="badge date-badge">Researched: {esc(research_date)}</span>' if research_date else ''}
-            </div>
-            {f'<p class="freshness">{esc(freshness)}</p>' if freshness else ''}
+    <div class="tier-panel {active_class}" id="panel-{tier_id}" role="tabpanel">
+      <div class="tier-hero">
+        <div class="tier-label">
+          <span class="tier-grades">{safe(tier_data.get('grades', tier_id.upper()))}</span>
+          <span class="tier-stage">{stage}</span>
         </div>
-        <div class="sec-tabs">{section_tabs}</div>
-        <div class="sec-panels">{section_panels}</div>
-        {sources_html}
+        <div class="tier-meta">
+          <span class="tier-age">{age_range}</span>
+          {f'<span class="freshness-note">{freshness}</span>' if freshness != "—" else ''}
+        </div>
+      </div>
+
+      <div class="section-block" id="{tier_id}-categories">
+        <h3 class="section-heading">
+          <span class="section-num">01</span>
+          Categories of Bullying
+        </h3>
+        {render_categories(tier_data.get("categories", []))}
+      </div>
+
+      <div class="section-block" id="{tier_id}-commonalities">
+        <h3 class="section-heading">
+          <span class="section-num">02</span>
+          Commonalities &amp; Patterns
+        </h3>
+        {render_commonalities(tier_data.get("commonalities", {}))}
+      </div>
+
+      <div class="section-block" id="{tier_id}-stats">
+        <h3 class="section-heading">
+          <span class="section-num">03</span>
+          Statistics
+        </h3>
+        {render_statistics(tier_data.get("statistics", {}))}
+      </div>
+
+      <div class="section-block" id="{tier_id}-resources">
+        <h3 class="section-heading">
+          <span class="section-num">04</span>
+          Parent Resources
+        </h3>
+        {render_resources(tier_data.get("parent_resources", []))}
+      </div>
+
+      <div class="section-block" id="{tier_id}-intervention">
+        <h3 class="section-heading">
+          <span class="section-num">05</span>
+          Intervention Strategies
+        </h3>
+        {render_intervention(tier_data.get("intervention_strategies", {}))}
+      </div>
     </div>"""
 
 
 # ──────────────────────────────────────────────
-# FULL HTML TEMPLATE
+# FULL PAGE RENDERER
 # ──────────────────────────────────────────────
 
-def build_html(tiers: dict) -> str:
-    tier_ids = [t for t in TIER_ORDER if t in tiers]
+TIER_META = {
+    "k2":  {"label": "K–2",  "sublabel": "Ages 5–7"},
+    "35":  {"label": "3–5",  "sublabel": "Ages 8–10"},
+    "68":  {"label": "6–8",  "sublabel": "Ages 11–13"},
+    "912": {"label": "9–12", "sublabel": "Ages 14–18"},
+}
 
-    # Tier navigation tabs
-    tier_tabs = ""
-    for i, tid in enumerate(tier_ids):
-        meta = TIER_META[tid]
+
+def build_full_report(master: dict) -> str:
+    tiers = master.get("tiers", {})
+    generated = master.get("generated", datetime.now().isoformat())
+
+    # Build tab bar
+    tab_html = ""
+    for i, (tid, meta) in enumerate(TIER_META.items()):
         active = " active" if i == 0 else ""
-        tier_tabs += f'<button class="tier-tab{active}" data-tier="{tid}">{esc(meta["label"])}<br><small>{esc(meta["ages"])}</small></button>'
+        tab_html += f"""
+        <button class="tab-btn{active}" data-tier="{tid}" role="tab" aria-selected="{'true' if i==0 else 'false'}">
+          <span class="tab-grade">{meta['label']}</span>
+          <span class="tab-age">{meta['sublabel']}</span>
+        </button>"""
 
-    # Tier content panels
-    tier_panels = ""
-    for i, tid in enumerate(tier_ids):
-        active = " active" if i == 0 else ""
-        tier_panels += f'<div class="tier-panel{active}" data-tier-panel="{tid}">{render_tier(tid, tiers[tid])}</div>'
-
-    generated = datetime.now().strftime("%B %d, %Y at %I:%M %p")
+    # Build panels
+    panels_html = ""
+    for i, tid in enumerate(["k2", "35", "68", "912"]):
+        tier_data = tiers.get(tid, {})
+        if not tier_data:
+            panels_html += f'<div class="tier-panel{" active" if i==0 else ""}" id="panel-{tid}"><p class="empty">No data for this tier. Run gather_research.py --tier {tid}</p></div>'
+        else:
+            panels_html += render_tier_section(tid, tier_data, active=(i == 0))
 
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bullying Research Intelligence — East Texas Krav Maga</title>
+<title>Bullying Research Intelligence — K-12</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-/* ── RESET & BASE ── */
+/* ── RESET & BASE ─────────────────────────── */
 *, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
+:root {{
+  --black: #000000;
+  --surface: #111111;
+  --surface2: #1a1a1a;
+  --surface3: #222222;
+  --white: #FFFFFF;
+  --gray: #575757;
+  --gray-light: #BBBBBB;
+  --red: #CC0000;
+  --red-bright: #FF0000;
+  --font-display: 'Barlow Condensed', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}}
 body {{
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    background: #111;
-    color: #e0e0e0;
-    line-height: 1.6;
-    min-height: 100vh;
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  min-height: 100vh;
 }}
-a {{ color: #ff4444; text-decoration: none; }}
+a {{ color: var(--red-bright); text-decoration: none; }}
 a:hover {{ text-decoration: underline; }}
+ul {{ padding-left: 1.2rem; }}
+li {{ margin-bottom: 0.35rem; }}
 
-/* ── HEADER ── */
-.header {{
-    background: #000;
-    border-bottom: 3px solid #dc3545;
-    padding: 24px 32px;
-    text-align: center;
+/* ── HEADER ───────────────────────────────── */
+.site-header {{
+  background: var(--black);
+  border-bottom: 3px solid var(--red);
+  padding: 2rem 2.5rem 1.5rem;
 }}
-.header h1 {{
-    color: #fff;
-    font-size: 28px;
-    font-weight: 800;
-    letter-spacing: 1px;
-    text-transform: uppercase;
+.header-eyebrow {{
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  color: var(--red);
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
 }}
-.header .subtitle {{
-    color: #dc3545;
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-top: 4px;
+.header-title {{
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin-bottom: 0.5rem;
 }}
-.header .generated {{
-    color: #666;
-    font-size: 12px;
-    margin-top: 8px;
+.header-subtitle {{
+  color: var(--gray-light);
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
 }}
-
-/* ── TIER TABS ── */
-.tier-nav {{
-    display: flex;
-    background: #1a1a1a;
-    border-bottom: 1px solid #333;
-    padding: 0;
-    overflow-x: auto;
-}}
-.tier-tab {{
-    flex: 1;
-    min-width: 120px;
-    padding: 16px 12px;
-    background: transparent;
-    border: none;
-    color: #888;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    border-bottom: 3px solid transparent;
-    transition: all 0.2s;
-    text-align: center;
-}}
-.tier-tab small {{
-    font-weight: 400;
-    font-size: 11px;
-    color: #666;
-    display: block;
-    margin-top: 2px;
-}}
-.tier-tab:hover {{
-    color: #ccc;
-    background: #222;
-}}
-.tier-tab.active {{
-    color: #fff;
-    border-bottom-color: #dc3545;
-    background: #222;
-}}
-.tier-tab.active small {{ color: #aaa; }}
-
-/* ── TIER PANELS ── */
-.tier-panel {{ display: none; }}
-.tier-panel.active {{ display: block; }}
-
-/* ── TIER HEADER ── */
-.tier-content {{ max-width: 1100px; margin: 0 auto; padding: 24px 20px; }}
-.tier-header {{ margin-bottom: 24px; }}
-.tier-header h2 {{
-    color: #fff;
-    font-size: 24px;
-    font-weight: 700;
-    margin-bottom: 8px;
-}}
-.tier-badges {{ display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }}
-.badge {{
-    background: #2a2a2a;
-    color: #ccc;
-    padding: 4px 12px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: 600;
-    border: 1px solid #444;
-}}
-.date-badge {{ color: #888; }}
-.freshness {{ color: #888; font-size: 13px; font-style: italic; }}
-
-/* ── SECTION TABS ── */
-.sec-tabs {{
-    display: flex;
-    gap: 2px;
-    background: #1a1a1a;
-    border-radius: 8px 8px 0 0;
-    overflow-x: auto;
-    padding: 4px 4px 0;
-}}
-.sec-tab {{
-    padding: 10px 16px;
-    background: #222;
-    border: none;
-    color: #888;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    border-radius: 6px 6px 0 0;
-    transition: all 0.2s;
-    white-space: nowrap;
-}}
-.sec-tab:hover {{ color: #ccc; background: #2a2a2a; }}
-.sec-tab.active {{
-    color: #fff;
-    background: #1e1e1e;
-    border-top: 2px solid #dc3545;
+.header-meta {{
+  font-size: 0.75rem;
+  color: var(--gray);
 }}
 
-/* ── SECTION PANELS ── */
-.sec-panels {{
-    background: #1e1e1e;
-    border-radius: 0 0 8px 8px;
-    padding: 24px;
-    min-height: 300px;
+/* ── TAB BAR ──────────────────────────────── */
+.tab-bar {{
+  display: flex;
+  background: var(--surface);
+  border-bottom: 2px solid var(--surface3);
+  padding: 0 1rem;
+  gap: 0.25rem;
+  overflow-x: auto;
+  scrollbar-width: none;
 }}
-.sec-panel {{ display: none; }}
-.sec-panel.active {{ display: block; }}
+.tab-bar::-webkit-scrollbar {{ display: none; }}
+.tab-btn {{
+  background: none;
+  border: none;
+  color: var(--gray-light);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  transition: all 0.2s;
+  white-space: nowrap;
+  min-width: 80px;
+}}
+.tab-btn:hover {{
+  color: var(--white);
+  border-bottom-color: var(--gray);
+}}
+.tab-btn.active {{
+  color: var(--white);
+  border-bottom-color: var(--red);
+}}
+.tab-grade {{
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 800;
+  line-height: 1;
+}}
+.tab-age {{
+  font-size: 0.7rem;
+  color: var(--gray);
+  margin-top: 0.2rem;
+}}
+.tab-btn.active .tab-age {{ color: var(--gray-light); }}
 
-/* ── CARDS ── */
-.card {{
-    background: #252525;
-    border: 1px solid #333;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 16px;
+/* ── CONTENT AREA ─────────────────────────── */
+.content-area {{
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 2.5rem 4rem;
 }}
-.card h3 {{
-    color: #fff;
-    font-size: 18px;
-    margin-bottom: 10px;
+.tier-panel {{
+  display: none;
 }}
-.card h4 {{
-    color: #dc3545;
-    font-size: 14px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 8px;
-    margin-top: 12px;
-}}
-.card p {{ color: #bbb; margin-bottom: 8px; }}
-.card-header {{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}}
-.card-header h3 {{ margin-bottom: 0; }}
-.card-desc {{ color: #aaa; font-size: 14px; }}
-.prevalence {{ color: #999; font-size: 13px; }}
-
-/* ── LISTS ── */
-ul, ol {{ padding-left: 20px; color: #bbb; }}
-li {{ margin-bottom: 6px; font-size: 14px; }}
-.warning-list li {{ color: #f0ad4e; }}
-.risk-list li {{ color: #e88; }}
-.protect-list li {{ color: #6c6; }}
-.red-flag-list li {{ color: #ff4444; font-weight: 600; }}
-.convo-list li {{ font-style: italic; color: #8cb4ff; }}
-.action-list li {{ color: #ccc; }}
-
-/* ── TWO COLUMN ── */
-.two-col {{
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-top: 8px;
-}}
-@media (max-width: 700px) {{ .two-col {{ grid-template-columns: 1fr; }} }}
-
-/* ── BADGES ── */
-.risk-badge {{
-    color: #fff;
-    padding: 3px 10px;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-}}
-.type-badge {{
-    color: #fff;
-    padding: 2px 8px;
-    border-radius: 3px;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-}}
-.free-tag {{
-    background: #28a745;
-    color: #fff;
-    padding: 2px 8px;
-    border-radius: 3px;
-    font-size: 10px;
-    font-weight: 700;
+.tier-panel.active {{
+  display: block;
 }}
 
-/* ── TABLES ── */
-table {{
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 8px;
-    font-size: 13px;
+/* ── TIER HERO ────────────────────────────── */
+.tier-hero {{
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-bottom: 1.5rem;
+  margin-bottom: 2.5rem;
+  border-bottom: 1px solid var(--surface3);
 }}
-th {{
-    background: #333;
-    color: #fff;
-    padding: 10px 12px;
-    text-align: left;
-    font-weight: 700;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+.tier-grades {{
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 800;
+  display: block;
+  line-height: 1;
+  color: var(--white);
 }}
-td {{
-    padding: 10px 12px;
-    border-bottom: 1px solid #333;
-    color: #bbb;
+.tier-stage {{
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--red);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  display: block;
+  margin-top: 0.25rem;
 }}
-tr:hover td {{ background: #2a2a2a; }}
-tr.unverified td {{ opacity: 0.6; font-style: italic; }}
+.tier-age {{
+  font-size: 0.9rem;
+  color: var(--gray-light);
+  display: block;
+  text-align: right;
+}}
+.freshness-note {{
+  font-size: 0.75rem;
+  color: var(--gray);
+  display: block;
+  text-align: right;
+  margin-top: 0.25rem;
+  font-style: italic;
+}}
 
-/* ── RESOURCES ── */
+/* ── SECTION BLOCKS ───────────────────────── */
+.section-block {{
+  margin-bottom: 3.5rem;
+}}
+.section-heading {{
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--surface3);
+}}
+.section-num {{
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--red);
+  border: 1px solid var(--red);
+  padding: 0.1rem 0.4rem;
+  letter-spacing: 0.1em;
+}}
+
+/* ── CATEGORIES ───────────────────────────── */
+.categories-grid {{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.25rem;
+}}
+.category-card {{
+  background: var(--surface);
+  border: 1px solid var(--surface3);
+  border-left: 3px solid var(--red);
+  padding: 1.25rem;
+}}
+.cat-header {{
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}}
+.cat-name {{
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}}
+.escalation-badge {{
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  padding: 0.2rem 0.5rem;
+  border-radius: 2px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}}
+.esc-high {{ background: var(--red); color: var(--white); }}
+.esc-medium {{ background: #994400; color: var(--white); }}
+.esc-low {{ background: var(--surface3); color: var(--gray-light); }}
+.cat-desc {{ font-size: 0.9rem; margin-bottom: 0.5rem; }}
+.cat-prevalence {{ font-size: 0.82rem; color: var(--gray-light); margin-bottom: 0.75rem; }}
+.sub-section {{ margin-top: 0.75rem; }}
+.sub-label {{
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--red);
+  display: block;
+  margin-bottom: 0.35rem;
+}}
+.sub-section ul {{ font-size: 0.85rem; }}
+
+/* ── COMMONALITIES ────────────────────────── */
+.commonalities-grid {{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}}
+.comm-block {{
+  background: var(--surface);
+  border: 1px solid var(--surface3);
+  padding: 1.25rem;
+}}
+.comm-title {{
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--red);
+}}
+.comm-block p {{ font-size: 0.88rem; margin-bottom: 0.5rem; }}
+.comm-block ul {{ font-size: 0.85rem; margin-top: 0.25rem; }}
+
+/* ── STATISTICS ───────────────────────────── */
+.stats-layout {{ display: flex; flex-direction: column; gap: 2rem; }}
+.stats-subhead {{
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gray-light);
+  margin-bottom: 1rem;
+  padding-left: 0.75rem;
+  border-left: 2px solid var(--red);
+}}
+.stat-row {{
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+  padding: 0.85rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--surface3);
+  margin-bottom: 0.5rem;
+}}
+.stat-row.regional {{ border-left: 3px solid #994400; }}
+.stat-value {{
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--red-bright);
+  min-width: 80px;
+  line-height: 1.1;
+  flex-shrink: 0;
+}}
+.stat-label {{ font-size: 0.9rem; display: block; margin-bottom: 0.35rem; }}
+.stat-meta {{ display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.25rem; }}
+.badge-source, .badge-year {{
+  font-size: 0.7rem;
+  padding: 0.15rem 0.4rem;
+  background: var(--surface3);
+  color: var(--gray-light);
+}}
+.region-tag {{
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: #994400;
+  color: var(--white);
+  padding: 0.15rem 0.4rem;
+  display: inline-block;
+  margin-bottom: 0.3rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}}
+.unverified-flag {{
+  font-size: 0.7rem;
+  background: #555500;
+  color: #ffff00;
+  padding: 0.1rem 0.35rem;
+  margin-left: 0.5rem;
+}}
+
+/* ── RESOURCES ────────────────────────────── */
+.resources-grid {{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.25rem;
+}}
 .resource-card {{
-    background: #252525;
-    border: 1px solid #333;
-    border-radius: 8px;
-    padding: 16px 20px;
-    margin-bottom: 12px;
+  background: var(--surface);
+  border: 1px solid var(--surface3);
+  padding: 1.25rem;
 }}
 .resource-header {{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
 }}
-.resource-header h3 {{ font-size: 16px; margin: 0; }}
-.resource-tags {{ display: flex; gap: 6px; align-items: center; }}
-.best-for {{ font-size: 13px; color: #999; }}
-.resource-link {{
-    display: inline-block;
-    margin-top: 6px;
-    font-size: 13px;
-    color: #dc3545;
-    word-break: break-all;
+.resource-icon {{ font-size: 1.4rem; flex-shrink: 0; }}
+.resource-name {{
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  display: block;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--white);
+}}
+.resource-name:hover {{ color: var(--red-bright); }}
+.free-badge {{
+  font-size: 0.65rem;
+  font-weight: 700;
+  background: var(--red);
+  color: var(--white);
+  padding: 0.1rem 0.4rem;
+  letter-spacing: 0.1em;
+  display: inline-block;
+  margin-top: 0.2rem;
+}}
+.resource-desc {{ font-size: 0.87rem; margin-bottom: 0.5rem; color: var(--gray-light); }}
+.resource-best {{ font-size: 0.83rem; margin-bottom: 0.5rem; }}
+.resource-url {{
+  font-size: 0.75rem;
+  color: var(--red);
+  word-break: break-all;
+  display: block;
+  margin-top: 0.5rem;
 }}
 
-/* ── RED FLAG CARD ── */
-.red-flag-card {{
-    border-color: #dc3545;
-    border-width: 2px;
-    background: #2a1a1a;
+/* ── INTERVENTION ─────────────────────────── */
+.intervention-grid {{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.25rem;
 }}
-.red-flag-card h3 {{ color: #ff4444; }}
+.int-block {{
+  background: var(--surface);
+  border: 1px solid var(--surface3);
+  padding: 1.25rem;
+}}
+.int-block.red-block {{ border-left: 3px solid var(--red-bright); }}
+.int-title {{
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1rem;
+  color: var(--white);
+}}
+.action-list li, .starters-list li, .red-flags-list li {{
+  font-size: 0.87rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}}
+.starters-list li {{
+  list-style: none;
+  margin-left: -1.2rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--surface2);
+  border-left: 2px solid var(--gray);
+  font-style: italic;
+  color: var(--gray-light);
+}}
+.red-flag-item {{
+  color: #ff8888;
+  font-weight: 500;
+}}
 
-/* ── SOURCES ── */
-.sources {{
-    margin-top: 32px;
-    padding: 16px 20px;
-    background: #1a1a1a;
-    border-radius: 8px;
-    border: 1px solid #2a2a2a;
-}}
-.sources h4 {{
-    color: #888;
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 8px;
-}}
-.sources ul {{ list-style: none; padding: 0; }}
-.sources li {{
-    font-size: 13px;
-    color: #666;
-    margin-bottom: 4px;
-}}
-.sources a {{ color: #888; }}
-.sources a:hover {{ color: #dc3545; }}
-.source-type {{ font-size: 11px; color: #555; }}
-
-/* ── EMPTY STATE ── */
+/* ── EMPTY STATE ──────────────────────────── */
 .empty {{
-    color: #666;
-    font-style: italic;
-    text-align: center;
-    padding: 40px 20px;
+  color: var(--gray);
+  font-style: italic;
+  font-size: 0.88rem;
+  padding: 1rem;
+  border: 1px dashed var(--surface3);
 }}
 
-/* ── FOOTER ── */
-.footer {{
-    text-align: center;
-    padding: 24px;
-    color: #444;
-    font-size: 12px;
-    border-top: 1px solid #222;
-    margin-top: 40px;
+/* ── FOOTER ───────────────────────────────── */
+.site-footer {{
+  border-top: 1px solid var(--surface3);
+  padding: 1.5rem 2.5rem;
+  color: var(--gray);
+  font-size: 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}}
+
+/* ── RESPONSIVE ───────────────────────────── */
+@media (max-width: 700px) {{
+  .content-area {{ padding: 1.5rem 1rem 3rem; }}
+  .site-header {{ padding: 1.5rem 1rem 1rem; }}
+  .tier-hero {{ flex-direction: column; align-items: flex-start; gap: 0.5rem; }}
+  .tier-age, .freshness-note {{ text-align: left; }}
+  .categories-grid, .commonalities-grid, .resources-grid, .intervention-grid {{
+    grid-template-columns: 1fr;
+  }}
+  .stat-value {{ font-size: 1.2rem; min-width: 60px; }}
+  .tab-btn {{ padding: 0.75rem 1rem; }}
 }}
 </style>
 </head>
 <body>
 
-<div class="header">
-    <h1>Bullying Research Intelligence</h1>
-    <div class="subtitle">East Texas Krav Maga — Parent &amp; Educator Resource</div>
-    <div class="generated">Generated {esc(generated)}</div>
-</div>
+<header class="site-header">
+  <p class="header-eyebrow">Research Intelligence</p>
+  <h1 class="header-title">Bullying in America<br>K–12 Research Brief</h1>
+  <p class="header-subtitle">Categories &middot; Patterns &middot; Statistics &middot; Regional Data &middot; Parent Resources</p>
+  <p class="header-meta">Generated: {generated[:10]} — Data gathered via live web research</p>
+</header>
 
-<div class="tier-nav">
-    {tier_tabs}
-</div>
+<nav class="tab-bar" role="tablist" aria-label="Grade tiers">
+  {tab_html}
+</nav>
 
-{tier_panels}
+<main class="content-area">
+  {panels_html}
+</main>
 
-<div class="footer">
-    East Texas Krav Maga &bull; Bullying Research Intelligence System &bull; Data gathered via Anthropic API with live web search
-</div>
+<footer class="site-footer">
+  <span>Bullying Research Intelligence System</span>
+  <span>Data gathered via Anthropic API + web search — verify all statistics at primary sources</span>
+</footer>
 
 <script>
-// ── Tier tab switching ──
-document.querySelectorAll('.tier-tab').forEach(tab => {{
-    tab.addEventListener('click', () => {{
-        document.querySelectorAll('.tier-tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.tier-panel').forEach(p => p.classList.remove('active'));
-        tab.classList.add('active');
-        const panel = document.querySelector(`[data-tier-panel="${{tab.dataset.tier}}"]`);
-        if (panel) panel.classList.add('active');
-    }});
-}});
+// Tab switching
+document.querySelectorAll('.tab-btn').forEach(btn => {{
+  btn.addEventListener('click', () => {{
+    const tier = btn.dataset.tier;
 
-// ── Section tab switching (scoped per tier) ──
-document.querySelectorAll('.sec-tab').forEach(tab => {{
-    tab.addEventListener('click', () => {{
-        const parent = tab.closest('.tier-content');
-        parent.querySelectorAll('.sec-tab').forEach(t => t.classList.remove('active'));
-        parent.querySelectorAll('.sec-panel').forEach(p => p.classList.remove('active'));
-        tab.classList.add('active');
-        const panel = document.getElementById(tab.dataset.section);
-        if (panel) panel.classList.add('active');
+    document.querySelectorAll('.tab-btn').forEach(b => {{
+      b.classList.remove('active');
+      b.setAttribute('aria-selected', 'false');
     }});
+    document.querySelectorAll('.tier-panel').forEach(p => p.classList.remove('active'));
+
+    btn.classList.add('active');
+    btn.setAttribute('aria-selected', 'true');
+    document.getElementById('panel-' + tier).classList.add('active');
+
+    window.scrollTo({{ top: 0, behavior: 'smooth' }});
+  }});
 }});
 </script>
 </body>
@@ -732,32 +866,29 @@ document.querySelectorAll('.sec-tab').forEach(tab => {{
 
 def main():
     parser = argparse.ArgumentParser(description="Bullying Research Report Builder")
-    parser.add_argument("--tier", choices=TIER_ORDER, help="Build report for single tier only")
-    parser.add_argument("--output", default="output/bullying_research_report.html", help="Output file path")
+    parser.add_argument("--tier", choices=["k2", "35", "68", "912"], help="Build single tier preview")
     args = parser.parse_args()
 
-    tier_ids = [args.tier] if args.tier else TIER_ORDER
+    os.makedirs("output", exist_ok=True)
 
-    print(f"\nBullying Research Report Builder")
-    print(f"Loading tiers: {', '.join(tier_ids)}")
+    if args.tier:
+        tier_data = load_tier(args.tier)
+        master = {
+            "generated": datetime.now().isoformat(),
+            "tiers": {args.tier: tier_data}
+        }
+        html = build_full_report(master)
+        outpath = f"output/tier_{args.tier}.html"
+    else:
+        master = load_master()
+        html = build_full_report(master)
+        outpath = "output/bullying_research_report.html"
 
-    tiers = load_all_tiers(tier_ids)
-
-    if not tiers:
-        print("\nERROR: No valid tier data found. Run gather_research.py first.")
-        sys.exit(1)
-
-    print(f"Building report with {len(tiers)} tier(s)...")
-    html = build_html(tiers)
-
-    os.makedirs(os.path.dirname(args.output) or ".", exist_ok=True)
-    with open(args.output, "w", encoding="utf-8") as f:
+    with open(outpath, "w", encoding="utf-8") as f:
         f.write(html)
 
-    size_kb = os.path.getsize(args.output) / 1024
-    print(f"\nSUCCESS: {args.output} ({size_kb:.1f} KB)")
-    print(f"Tiers included: {', '.join(tiers.keys())}")
-    print(f"Open in browser to view.")
+    print(f"Report built: {outpath}")
+    print(f"Open in browser: file://{os.path.abspath(outpath)}")
 
 
 if __name__ == "__main__":
