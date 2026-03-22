@@ -2,6 +2,7 @@
 .github
 __pycache__
 *.pyc
+*.pyo
 .env
 .gcloudignore
 docs/
@@ -11,6 +12,12 @@ scripts/
 workflows/
 crm/
 registry/
+generators/
+templates/
+fonts/
+output/
+app.py
 *.md
+*.egg-info/
 railway.toml
 Procfile
