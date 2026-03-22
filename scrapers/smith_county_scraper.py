@@ -7,11 +7,17 @@ Builds a deduplicated contact list from 10 Smith County organizations,
 maps each contact to ETKM audience segments and arc types for WF-001.
 
 Usage:
-    python smith_county_scraper.py [--sources SOURCE1 SOURCE2 ...] [--output FILE]
+    python smith_county_scraper.py [--sources SOURCE1 SOURCE2 ...] [--output FILE] [--email]
 
     --sources   One or more source IDs to run (default: all, in priority order)
                 CHAMBER GTAR SCSO BNI TYLER_ISD TYP JL_TYLER ROTARY VET_ORGS HOMESCHOOL
     --output    Output CSV filename (default: smith_county_contacts_YYYY-MM-DD.csv)
+    --email     Send CSV to RECIPIENT_EMAIL via Gmail SMTP after scraping
+
+Email setup (one time):
+    Copy .env.example to .env and fill in your Gmail App Password.
+    Gmail → Google Account → Security → 2-Step Verification → App Passwords
+    Create an app password for "Mail" and paste it into .env as GMAIL_APP_PASSWORD.
 
 Requirements:
     pip install -r requirements_scraper.txt
@@ -21,12 +27,31 @@ Requirements:
 import argparse
 import csv
 import logging
+import os
 import random
 import re
+import smtplib
 import time
 from abc import ABC, abstractmethod
 from datetime import date
+from email import encoders
+from email.mime.base import MIMEBase
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from pathlib import Path
+
+# Load .env if present (no external dependency needed)
+_env_path = Path(__file__).parent / ".env"
+if _env_path.exists():
+    for _line in _env_path.read_text().splitlines():
+        _line = _line.strip()
+        if _line and not _line.startswith("#") and "=" in _line:
+            _k, _, _v = _line.partition("=")
+            os.environ.setdefault(_k.strip(), _v.strip())
+
+GMAIL_SENDER    = os.environ.get("GMAIL_SENDER", "easttxkravmaga@gmail.com")
+GMAIL_APP_PASS  = os.environ.get("GMAIL_APP_PASSWORD", "")
+RECIPIENT_EMAIL = os.environ.get("RECIPIENT_EMAIL", "easttxkravmaga@gmail.com")
 
 import requests
 from bs4 import BeautifulSoup
@@ -936,10 +961,58 @@ SCRAPERS: dict[str, type[BaseScraper]] = {
 
 
 # ---------------------------------------------------------------------------
+# Email delivery
+# ---------------------------------------------------------------------------
+
+def send_email(csv_path: Path, contact_count: int):
+    """Send CSV as attachment via Gmail SMTP using an App Password."""
+    if not GMAIL_APP_PASS:
+        log.error(
+            "GMAIL_APP_PASSWORD not set — skipping email. "
+            "Add it to scrapers/.env (see .env.example)."
+        )
+        return
+
+    today = date.today().isoformat()
+    msg = MIMEMultipart()
+    msg["From"]    = GMAIL_SENDER
+    msg["To"]      = RECIPIENT_EMAIL
+    msg["Subject"] = f"Smith County Contacts — {contact_count} records — {today}"
+
+    body = (
+        f"Weekly Smith County contact scrape complete.\n\n"
+        f"  Date:     {today}\n"
+        f"  Records:  {contact_count} (after dedup)\n"
+        f"  Sources:  CHAMBER, GTAR, SCSO, BNI, TYLER_ISD, TYP, JL_TYLER, ROTARY, VET_ORGS, HOMESCHOOL\n\n"
+        f"CSV attached. Import into Pipedrive → Student Acquisition → Cold Outreach stage.\n"
+        f"WF-001 will route each contact by arc type automatically.\n"
+    )
+    msg.attach(MIMEText(body, "plain"))
+
+    with csv_path.open("rb") as f:
+        part = MIMEBase("application", "octet-stream")
+        part.set_payload(f.read())
+    encoders.encode_base64(part)
+    part.add_header("Content-Disposition", f'attachment; filename="{csv_path.name}"')
+    msg.attach(part)
+
+    try:
+        with smtplib.SMTP("smtp.gmail.com", 587) as server:
+            server.ehlo()
+            server.starttls()
+            server.login(GMAIL_SENDER, GMAIL_APP_PASS)
+            server.sendmail(GMAIL_SENDER, RECIPIENT_EMAIL, msg.as_string())
+        log.info(f"Email sent to {RECIPIENT_EMAIL}")
+        print(f"✓ Email sent to {RECIPIENT_EMAIL}")
+    except Exception as e:
+        log.error(f"Email failed: {e}")
+
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
-def run(sources: list[str], output_path: Path):
+def run(sources: list[str], output_path: Path, email: bool = False):
     all_contacts = []
 
     for source_id in sources:
@@ -968,6 +1041,9 @@ def run(sources: list[str], output_path: Path):
     log.info(f"Output written to: {output_path}")
     print(f"\n✓ {len(deduped)} contacts → {output_path}")
 
+    if email:
+        send_email(output_path, len(deduped))
+
 
 def main():
     parser = argparse.ArgumentParser(description="Smith County Contact Scraper — ETKM ACQ")
@@ -980,13 +1056,17 @@ def main():
         "--output", default=f"smith_county_contacts_{date.today().isoformat()}.csv",
         help="Output CSV file path",
     )
+    parser.add_argument(
+        "--email", action="store_true",
+        help=f"Email the CSV to {RECIPIENT_EMAIL} after scraping",
+    )
     args = parser.parse_args()
 
     output_path = Path(args.output)
     log.info(f"Sources: {args.sources}")
     log.info(f"Output:  {output_path}")
 
-    run(args.sources, output_path)
+    run(args.sources, output_path, email=args.email)
 
 
 if __name__ == "__main__":
