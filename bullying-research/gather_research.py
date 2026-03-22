@@ -244,8 +244,8 @@ def gather_tier_data(tier_id: str, client: anthropic.Anthropic) -> dict:
 
     try:
         response = client.messages.create(
-            model="claude-sonnet-4-20250514",
-            max_tokens=8000,
+            model="claude-haiku-4-5-20251001",
+            max_tokens=16000,
             system=SYSTEM_PROMPT,
             tools=[
                 {
@@ -354,8 +354,8 @@ def main():
 
         # Pace API calls — don't hammer the endpoint
         if tier_id != tiers_to_run[-1]:
-            print("  Waiting 3s before next tier...")
-            time.sleep(3)
+            print("  Waiting 65s before next tier (rate limit pacing)...")
+            time.sleep(65)
 
     # Always rebuild master if we ran everything
     if not args.tier:

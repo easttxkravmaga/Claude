@@ -1,0 +1,826 @@
+{
+  "tier_id": "35",
+  "grades": "3rd–5th",
+  "age_range": "8–10 years old",
+  "stage": "Late Elementary",
+  "research_date": "2026-03-22",
+  "data_freshness_note": "Most data reflects 2021–2022 school year; cyberbullying data extends through 2024. Elementary-specific data is limited; available statistics primarily capture ages 12–18. Texas data (2016–2023) included where available.",
+  "categories": [
+    {
+      "name": "Physical Bullying",
+      "description": "At ages 8–10, physical bullying includes hitting, kicking, pushing, shoving, tripping, spitting, or intentionally damaging property. At this age, it is often unplanned reactions to peer conflicts but can become more deliberate with practice.",
+      "prevalence_note": "Physical bullying decreases with age; at this elementary stage, it occurs more frequently than in middle/high school. Males report experiencing physical bullying at higher rates (6% vs. 3.7% females nationally).",
+      "age_specific_behaviors": [
+        "Pushing or shoving on playground/in hallways",
+        "Taking or breaking another child's belongings",
+        "Hitting or kicking during play escalation",
+        "Spitting or other gross physical contact",
+        "Excluding from games or physical activities"
+      ],
+      "warning_signs": [
+        "Unexplained bruises, scratches, or torn clothing",
+        "Reluctance to go to recess or specific locations",
+        "Fear of particular peers or situations",
+        "Complaints of physical pain (stomach, headaches)",
+        "Becoming aggressive or retaliatory toward peers"
+      ],
+      "escalation_risk": "medium"
+    },
+    {
+      "name": "Verbal/Name-Calling Bullying",
+      "description": "Name-calling, insults, teasing, and mocking. At ages 8–10, children understand the power of words and intentionally use them to hurt. This is the most common form of bullying reported by this age group.",
+      "prevalence_note": "Verbal bullying is the most frequently reported type across all school grades. At this age, children are developmentally capable of deliberate verbal cruelty but have limited impulse control and empathy.",
+      "age_specific_behaviors": [
+        "Persistent name-calling (fat, stupid, ugly, etc.)",
+        "Mocking appearance, interests, or family background",
+        "Making jokes at another child's expense",
+        "Insulting intelligence or athletic ability",
+        "Public humiliation or embarrassment tactics",
+        "Teasing that escalates when child shows upset"
+      ],
+      "warning_signs": [
+        "Child becomes withdrawn or quiet at school",
+        "Loss of interest in social activities",
+        "Expressions of feeling 'stupid' or 'ugly'",
+        "Reluctance to speak up or participate in class",
+        "Increased anxiety around peers"
+      ],
+      "escalation_risk": "medium"
+    },
+    {
+      "name": "Social/Relational Bullying",
+      "description": "Spreading rumors, excluding from peer groups, deliberately leaving out, or turning friends against a target. At ages 8–10, this involves subtle social manipulation. Females report higher rates of rumor-based and exclusion bullying (16.6% rumors vs. 9.7% males; 4.9% exclusion vs. 2.6% males).",
+      "prevalence_note": "Relational aggression increases significantly at this age as social awareness develops. Girls are more likely to engage in and be targets of relational bullying.",
+      "age_specific_behaviors": [
+        "Spreading false stories or rumors about a child",
+        "Deliberately excluding from group activities or friend groups",
+        "Organizing peer rejection (turning others against target)",
+        "Whispering or giving meaningful looks to make child feel unwelcome",
+        "Creating exclusive groups designed to include some and exclude others",
+        "Threatening friendship withdrawal ('if you do this, we won't be your friend')"
+      ],
+      "warning_signs": [
+        "Child reports 'no one likes me' or 'everyone hates me'",
+        "Sudden loss of friendships",
+        "Avoidance of group activities or lunch",
+        "Comments about what others are saying behind their back",
+        "Withdrawal and isolation from peer groups",
+        "Complaints of stomach aches or school avoidance related to social situations"
+      ],
+      "escalation_risk": "high"
+    },
+    {
+      "name": "Cyberbullying",
+      "description": "Bullying through digital means (texts, social media, gaming platforms). At ages 8–10, access varies widely; some have devices/social media, others do not. Includes mean messages, exclusion from online groups, sharing embarrassing content, or spreading rumors online.",
+      "prevalence_note": "Cyberbullying is still emerging at this age but increasing. Only 6% of elementary schools report weekly cyberbullying incidents (vs. 37% middle, 25% high school). However, among tweens (ages 10–12), 20.9% report cyberbullying exposure.",
+      "age_specific_behaviors": [
+        "Receiving mean or threatening texts/messages",
+        "Being excluded from online gaming groups or chats",
+        "Having embarrassing photos or videos shared online",
+        "Mean comments posted on social media or gaming platforms",
+        "Rumors spread through text/social media",
+        "Being blocked or unfriended in an organized, public way"
+      ],
+      "warning_signs": [
+        "Secretive behavior with devices; quickly closing apps or screens",
+        "Visible emotional distress after using phone/computer",
+        "Withdrawal from devices child previously enjoyed",
+        "Anxiety about checking messages or social media",
+        "Reluctance to discuss online friendships",
+        "Sleep disruption (checking phone at night for messages)"
+      ],
+      "escalation_risk": "high"
+    },
+    {
+      "name": "Identity-Based Bullying",
+      "description": "Bullying targeting race, ethnicity, religion, disability, perceived sexual orientation, or other identity characteristics. At this age, children are developing awareness of differences and may use identity as a bullying tool without full understanding of impact.",
+      "prevalence_note": "Most common targets: appearance (32.7%), race (13%), disability (9.7%), ethnic origin (9.4%), gender (9.2%), sexual orientation (8.9%), religion (5.8%). Students with disabilities experience 24.5% bullying prevalence in elementary school.",
+      "age_specific_behaviors": [
+        "Racial slurs, ethnic stereotypes, or mocking accents",
+        "Religious mockery (dietary restrictions, holidays, practices)",
+        "Mocking disabilities, speech impediments, or physical differences",
+        "Gender-based teasing (too feminine/masculine, clothes, interests)",
+        "Exclusion based on race, family background, or body type",
+        "Comments about how a child 'looks different' or 'talks funny'"
+      ],
+      "warning_signs": [
+        "Child reports being targeted for 'being different'",
+        "Expressions of shame about cultural or family identity",
+        "Avoidance of cultural activities or expression",
+        "Questions about why they 'aren't like other kids'",
+        "Anxiety or withdrawal around specific groups",
+        "Internalized negative self-perception related to identity"
+      ],
+      "escalation_risk": "high"
+    }
+  ],
+  "commonalities": {
+    "who_is_targeted": {
+      "summary": "Children ages 8–10 who are bullied often share characteristics of perceived vulnerability, social isolation, or visible differences. At this age, children with low self-esteem, anxiety, or social difficulties are at heightened risk. Physical characteristics (size, appearance), disabilities, and those with fewer friendships are disproportionately targeted.",
+      "risk_factors": [
+        "Low self-esteem; strong predictor of victimization across grade levels",
+        "Social isolation or few close friendships",
+        "Visible physical or learning differences",
+        "Students with disabilities (24.5% bullying rate in elementary)",
+        "Neurodivergent children (autism, ADHD); autistic students report highest rates among neurodivergent peers",
+        "Children perceived as physically smaller or weaker",
+        "Shy, withdrawn, or sensitive temperament",
+        "Poor social skills or difficulty with peer relationships",
+        "History of behavioral or externalizing problems in early grades (K-2)",
+        "Low academic achievement or school engagement",
+        "Children experiencing family distress, maltreatment, or domestic violence",
+        "Higher school poverty or attending larger schools"
+      ],
+      "protective_factors": [
+        "Close, supportive friendships (at least one best friend)",
+        "Peer social support; peer acceptance buffers bullying risk",
+        "High self-esteem and positive self-concept",
+        "Strong family support and open communication with parents",
+        "Secure attachment to caregivers",
+        "School connectedness; feeling safe and valued at school",
+        "Good impulse control and emotional regulation skills",
+        "Involvement in school activities or extracurricular programs",
+        "Positive teacher relationships and feeling liked by adults",
+        "Cultural pride and secure identity"
+      ]
+    },
+    "who_bullies": {
+      "summary": "At ages 8–10, children who bully may do so for various reasons: seeking power/control, low frustration tolerance, modeling behavior witnessed at home, or peer pressure. Unlike older bullies, younger children may not fully understand the harm they cause. Many children who bully also experience bullying themselves (bully-victims).",
+      "common_traits": [
+        "Externalizing behavior problems in K-2 (strong predictor; 0.56 effect size)",
+        "Higher levels of aggression or impulsivity",
+        "Lower school performance (paradoxically)",
+        "Average to above-average self-esteem (differs from victims)",
+        "Difficulty managing emotions; low frustration tolerance",
+        "Lack of empathy or difficulty understanding impact on others",
+        "Need for control or dominance in relationships",
+        "Peer acceptance or high social status (sometimes)",
+        "History of harsh parenting, family conflict, or domestic violence exposure",
+        "Limited problem-solving or conflict resolution skills"
+      ],
+      "motivations": [
+        "Seeking power, control, or dominance in peer relationships",
+        "Retaliation or response to their own bullying victimization",
+        "Peer pressure; maintaining status within a peer group",
+        "Low frustration tolerance; using bullying as emotional outlet",
+        "Modeling behavior witnessed at home or in media",
+        "Lack of empathy; not understanding victim's emotional response",
+        "Gaining attention or social reward from peers who laugh/encourage",
+        "Insecurity masked by aggressive behavior",
+        "Access to resources/power (size, popularity, social influence)"
+      ]
+    },
+    "bystander_behavior": {
+      "summary": "At ages 8–10, most children witness bullying at school (70.6% report witnessing; 71% say bullying is a problem). However, only about 44% of bullied students report it to an adult—lower reporting rate than older children. Bystanders often feel uncertain about how to intervene safely or fear becoming targets themselves.",
+      "typical_response": "Bystanders at this age typically either passively watch (fear of retaliation, uncertainty about role), laugh or encourage the bully (seeking social acceptance), or try to distract the bullied child. Very few intervene directly. Younger children (especially 6th-graders) are more likely to report bullying to adults (62%) than older students.",
+      "intervention_rate": "Approximately 44% of students overall report bullying to a trusted adult; younger elementary students show higher reporting (6th-graders 62%, 7th-graders 57%). However, willingness to intervene as upstanders (stopping bullying, supporting victim) is estimated at only 10–20% without specific training."
+    },
+    "environments": [
+      "Classroom (39% of bullying occurs here); often during transitions, independent work, or when teacher is occupied",
+      "Hallways and stairwells (37.5%); between classes or at passing times",
+      "Playground/recess (high rate at this age); with minimal adult supervision",
+      "Cafeteria/lunch (25.1%); crowded, less supervised space",
+      "School bus (significant at this age); students without adult monitoring",
+      "Locker rooms or bathrooms; isolated, unsupervised spaces",
+      "Online spaces (emerging at this age); texts, social media, gaming platforms where children have access"
+    ],
+    "gender_patterns": "Females report higher overall bullying rates (21.8% vs. 16.7% males). Physical bullying is higher among males (6% vs. 3.7% females). Relational/social bullying and rumor-spreading are significantly higher for females (16.6% rumors vs. 9.7% males; 4.9% exclusion vs. 2.6% males). Males and females differ in bullying style: boys engage more in power-based aggression; girls in affiliation-based (social manipulation). Girls experience higher emotional impacts of bullying.",
+    "developmental_context": "Ages 8–10 represent a critical window. Children are developing theory of mind (understanding others' mental states) but still have limited empathy and impulse control. Social hierarchy and peer status become increasingly important; exclusion from peer groups causes real distress. Children understand that words hurt and reputation matters. However, they lack the maturity to fully foresee long-term consequences of their actions. This is a 'ripe' age for bullying prevention because interventions at this stage are highly effective; bullying patterns established now often persist if unaddressed."
+  },
+  "statistics": {
+    "national": [
+      {
+        "stat": "Prevalence of bullying, ages 12–18 (includes upper elementary/middle school)",
+        "value": "19.2%",
+        "source": "National Center for Education Statistics, School Crime Supplement 2022",
+        "year": "2022",
+        "unverified": false
+      },
+      {
+        "stat": "Bullying among grades 6–8 (middle school; includes upper-age students)",
+        "value": "26.1%",
+        "source": "National Center for Education Statistics, 2022",
+        "year": "2022",
+        "unverified": false
+      },
+      {
+        "stat": "Most common type of bullying: spreading rumors",
+        "value": "13.0% (of all bullying)",
+        "source": "National Center for Education Statistics, 2022",
+        "year": "2022",
+        "unverified": false
+      },
+      {
+        "stat": "Most common type of bullying: being made fun of or called names",
+        "value": "11.9% (of all bullying)",
+        "source": "National Center for Education Statistics, 2022",
+        "year": "2022",
+        "unverified": false
+      },
+      {
+        "stat": "Physical bullying among males (ages 12–18)",
+        "value": "6%",
+        "source": "National Center for Education Statistics, 2022",
+        "year": "2022",
+        "unverified": false
+      },
+      {
+        "stat": "Physical bullying among females (ages 12–18)",
+        "value": "3.7%",
+        "source": "National Center for Education Statistics, 2022",
+        "year": "2022",
+        "unverified": false
+      },
+      {
+        "stat": "Rumors as bullying target: females",
+        "value": "16.6%",
+        "source": "National Center for Education Statistics, 2022",
+        "year": "2022",
+        "unverified": false
+      },
+      {
+        "stat": "Rumors as bullying target: males",
+        "value": "9.7%",
+        "source": "National Center for Education Statistics, 2022",
+        "year": "2022",
+        "unverified": false
+      },
+      {
+        "stat": "Exclusion from activities: females",
+        "value": "4.9%",
+        "source": "National Center for Education Statistics, 2022",
+        "year": "2022",
+        "unverified": false
+      },
+      {
+        "stat": "Exclusion from activities: males",
+        "value": "2.6%",
+        "source": "National Center for Education Statistics, 2022",
+        "year": "2022",
+        "unverified": false
+      },
+      {
+        "stat": "Elementary schools reporting bullying at least once per week",
+        "value": "10%",
+        "source": "CDC; National Center for Education Statistics, 2024",
+        "year": "2024",
+        "unverified": false
+      },
+      {
+        "stat": "Elementary schools reporting cyberbullying at least once per week",
+        "value": "6%",
+        "source": "National Center for Education Statistics, 2024",
+        "year": "2024",
+        "unverified": false
+      },
+      {
+        "stat": "Cyberbullying among tweens (ages 8–12)",
+        "value": "20.9% (have been cyberbullied, bullied others, or seen cyberbullying)",
+        "source": "National Center for Education Statistics, 2024",
+        "year": "2024",
+        "unverified": false
+      },
+      {
+        "stat": "Bullying at school among tweens",
+        "value": "49.8%",
+        "source": "National Center for Education Statistics, 2024",
+        "year": "2024",
+        "unverified": false
+      },
+      {
+        "stat": "Bullying appearance as reason for being bullied",
+        "value": "32.7%",
+        "source": "National Center for Education Statistics, 2022",
+        "year": "2022",
+        "unverified": false
+      },
+      {
+        "stat": "Bullying due to race",
+        "value": "13%",
+        "source": "National Center for Education Statistics, 2022",
+        "year": "2022",
+        "unverified": false
+      },
+      {
+        "stat": "Bullying due to disability",
+        "value": "9.7%",
+        "source": "National Center for Education Statistics, 2022",
+        "year": "2022",
+        "unverified": false
+      },
+      {
+        "stat": "Bullying due to ethnic origin",
+        "value": "9.4%",
+        "source": "National Center for Education Statistics, 2022",
+        "year": "2022",
+        "unverified": false
+      },
+      {
+        "stat": "Bullying due to gender",
+        "value": "9.2%",
+        "source": "National Center for Education Statistics, 2022",
+        "year": "2022",
+        "unverified": false
+      },
+      {
+        "stat": "Bullying due to sexual orientation",
+        "value": "8.9%",
+        "source": "National Center for Education Statistics, 2022",
+        "year": "2022",
+        "unverified": false
+      },
+      {
+        "stat": "Bullying due to religion",
+        "value": "5.8%",
+        "source": "National Center for Education Statistics, 2022",
+        "year": "2022",
+        "unverified": false
+      },
+      {
+        "stat": "Students with disabilities experiencing bullying (elementary school)",
+        "value": "24.5%",
+        "source": "University of Rochester; cited by Espelage et al.",
+        "year": "2023",
+        "unverified": false
+      },
+      {
+        "stat": "Students reporting bullying to trusted adult",
+        "value": "44.2%",
+        "source": "National Center for Education Statistics, 2022",
+        "year": "2022",
+        "unverified": false
+      },
+      {
+        "stat": "Students who think bullying will happen again",
+        "value": "41.3%",
+        "source": "National Center for Education Statistics, 2022",
+        "year": "2022",
+        "unverified": false
+      },
+      {
+        "stat": "Students who witnessed bullying in their school",
+        "value": "70.6%",
+        "source": "PACER Center, cited surveys",
+        "year": "2022",
+        "unverified": false
+      },
+      {
+        "stat": "Students who say bullying is a problem",
+        "value": "71%",
+        "source": "PACER Center, cited surveys",
+        "year": "2022",
+        "unverified": false
+      },
+      {
+        "stat": "Negative effects on feelings about themselves",
+        "value": "27.8%",
+        "source": "National Center for Education Statistics, 2022",
+        "year": "2022",
+        "unverified": false
+      },
+      {
+        "stat": "Negative effects on schoolwork",
+        "value": "19.7%",
+        "source": "National Center for Education Statistics, 2022",
+        "year": "2022",
+        "unverified": false
+      },
+      {
+        "stat": "Negative effects on relationships with family and friends",
+        "value": "18.5%",
+        "source": "National Center for Education Statistics, 2022",
+        "year": "2022",
+        "unverified": false
+      },
+      {
+        "stat": "Negative effects on physical health",
+        "value": "13.4%",
+        "source": "National Center for Education Statistics, 2022",
+        "year": "2022",
+        "unverified": false
+      },
+      {
+        "stat": "Students in grades 4–8 reporting harassment or bullying",
+        "value": "90%",
+        "source": "Education Corner, citing student surveys",
+        "year": "2024",
+        "unverified": false
+      }
+    ],
+    "regional": [
+      {
+        "region": "Texas",
+        "stat": "Texas school staff who have seen bullying in schools",
+        "value": "70.4%",
+        "source": "CDC National Statistics Report",
+        "year": "2016",
+        "unverified": false
+      },
+      {
+        "region": "Texas",
+        "stat": "Texas school staff who witnessed bullying 2+ times in last month",
+        "value": "62%",
+        "source": "CDC National Statistics Report",
+        "year": "2016",
+        "unverified": false
+      },
+      {
+        "region": "Texas",
+        "stat": "Texas school staff who witnessed bullying at least once per week",
+        "value": "41%",
+        "source": "CDC National Statistics Report",
+        "year": "2016",
+        "unverified": false
+      },
+      {
+        "region": "Texas",
+        "stat": "Texas students (grades 6–10) most likely to engage in bullying behaviors",
+        "value": "High prevalence in grades 6–10 (middle school tier)",
+        "source": "UEA Texas Safe Study",
+        "year": "2023",
+        "unverified": false
+      },
+      {
+        "region": "Texas",
+        "stat": "Texas: bullying response rate (bullying reported by students)",
+        "value": "36%",
+        "source": "Texas educational analysis",
+        "year": "2023",
+        "unverified": false
+      },
+      {
+        "region": "Texas",
+        "stat": "Texas: bullying underreporting rate",
+        "value": "64% of harassed students did not report it",
+        "source": "Texas educational data",
+        "year": "2023",
+        "unverified": false
+      },
+      {
+        "region": "Texas",
+        "stat": "Texas: instances where no action was taken to stop bullying",
+        "value": "~85% (no teacher/administrator intervention)",
+        "source": "Texas bullying analysis",
+        "year": "2023",
+        "unverified": false
+      }
+    ],
+    "outcomes": [
+      {
+        "stat": "Bullying victims: depression risk",
+        "value": "2.77 times higher than non-bullied children",
+        "source": "Meta-analysis of 31 studies; 133,688 participants",
+        "year": "2023",
+        "unverified": false
+      },
+      {
+        "stat": "Bullying perpetrators: depression risk",
+        "value": "1.73 times higher than non-bullying children",
+        "source": "Meta-analysis of 31 studies; 133,688 participants",
+        "year": "2023",
+        "unverified": false
+      },
+      {
+        "stat": "Bully-victims (bullied and bully): depression risk",
+        "value": "3.19 times higher than non-involved children",
+        "source": "Meta-analysis of 31 studies; 133,688 participants",
+        "year": "2023",
+        "unverified": false
+      },
+      {
+        "stat": "Teenagers who were bullied: anxiety symptoms in past 2 weeks",
+        "value": "29.8% (vs. 14.5% non-bullied)",
+        "source": "CDC; National Health Interview Survey-Teen",
+        "year": "2023",
+        "unverified": false
+      },
+      {
+        "stat": "Teenagers who were bullied: depression symptoms in past 2 weeks",
+        "value": "28.5% (vs. 12.1% non-bullied)",
+        "source": "CDC; National Health Interview Survey-Teen",
+        "year": "2023",
+        "unverified": false
+      },
+      {
+        "stat": "Children bullied at ages 8–10: higher rates of depression, anxiety, and suicidal thoughts by age 25",
+        "value": "Higher rates documented in longitudinal follow-up",
+        "source": "Youth Ranch; longitudinal bullying research",
+        "year": "2023",
+        "unverified": false
+      },
+      {
+        "stat": "Bullying victims: poor academic achievement, school avoidance",
+        "value": "Significant negative association with academic outcomes",
+        "source": "Multiple meta-analyses; PACER Center",
+        "year": "2023",
+        "unverified": false
+      },
+      {
+        "stat": "Bullying victims: absenteeism and school refusal",
+        "value": "Over 160,000 kids refuse school daily out of fear of being bullied",
+        "source": "National Education Association",
+        "year": "2023",
+        "unverified": false
+      },
+      {
+        "stat": "Bullying victims: sleep disturbances, eating changes",
+        "value": "Changes in sleep and eating patterns reported",
+        "source": "StopBullying.gov; clinical observations",
+        "year": "2024",
+        "unverified": false
+      },
+      {
+        "stat": "Bullying victims: self-esteem issues and shame",
+        "source": "StopBullying.gov; clinical data",
+        "value": "Persistent negative self-perception and feelings of shame",
+        "year": "2024",
+        "unverified": false
+      },
+      {
+        "stat": "Bullying perpetrators: substance use and academic problems",
+        "value": "Higher rates than non-bullying peers",
+        "source": "CDC; literature review",
+        "year": "2024",
+        "unverified": false
+      },
+      {
+        "stat": "Bullying perpetrators: criminal convictions by age 24",
+        "value": "60% of boys who bullied in grades 6–9 had at least one conviction by age 24; 35% had 3+ convictions",
+        "source": "Longitudinal study cited by NCBI",
+        "year": "2016",
+        "unverified": false
+      },
+      {
+        "stat": "Bystanders: depression and anxiety symptoms",
+        "value": "Increased risk for mental health problems including depression and anxiety",
+        "source": "StopBullying.gov; peer-reviewed research",
+        "year": "2024",
+        "unverified": false
+      },
+      {
+        "stat": "Bystanders: school avoidance and absenteeism",
+        "value": "Increased likelihood of missing school or avoiding activities",
+        "source": "StopBullying.gov",
+        "year": "2024",
+        "unverified": false
+      },
+      {
+        "stat": "Long-term effects: bullying in childhood linked to adult depression, anxiety, substance abuse",
+        "value": "Documented in longitudinal studies extending into adulthood",
+        "source": "CDC; long-term outcome research",
+        "year": "2024",
+        "unverified": false
+      }
+    ]
+  },
+  "parent_resources": [
+    {
+      "name": "StopBullying.gov",
+      "url": "https://www.stopbullying.gov/",
+      "type": "website",
+      "description": "Comprehensive federal resource from HRSA, CDC, Department of Education. Provides definitions, warning signs, prevention strategies, and state-by-state anti-bullying laws.",
+      "best_for": "Parents seeking evidence-based information, understanding what bullying is, state-specific legal resources, how to talk to children about bullying",
+      "free": true
+    },
+    {
+      "name": "PACER Center – National Bullying Prevention Center",
+      "url": "https://www.pacer.org/bullying/",
+      "type": "website",
+      "description": "Advocacy organization with extensive bullying resources, free downloadable guides, Student Action Plan Against Bullying, research statistics, and support for parents whose children have disabilities.",
+      "best_for": "Parents of children with disabilities, seeking action plans, understanding risk factors for specific populations, access to peer support groups",
+      "free": true
+    },
+    {
+      "name": "Kids Against Bullying (PACER)",
+      "url": "https://www.pacerkidsagainstbullying.org/",
+      "type": "website",
+      "description": "Age-appropriate animated resource for elementary school children (grades 3–5 appropriate). Features relatable characters, teaches recognition and response to bullying.",
+      "best_for": "Teaching children ages 8–10 about bullying, helping them understand their roles, building empathy and inclusion",
+      "free": true
+    },
+    {
+      "name": "Crisis Text Line",
+      "url": "Text HOME to 741741",
+      "type": "hotline",
+      "description": "24/7 crisis support via text message. For children experiencing severe distress, suicidal thoughts, or mental health crises related to bullying.",
+      "best_for": "Immediate crisis intervention; child experiencing severe anxiety, depression, or suicidal ideation",
+      "free": true
+    },
+    {
+      "name": "National Suicide Prevention Lifeline",
+      "url": "1-800-273-8255 (call or text 988)",
+      "type": "hotline",
+      "description": "24/7 free confidential support for people in suicidal crisis or emotional distress. Can discuss bullying-related mental health concerns.",
+      "best_for": "Children or parents in mental health crisis; immediate professional support needed",
+      "free": true
+    },
+    {
+      "name": "American Academy of Pediatrics – HealthyChildren.org",
+      "url": "https://www.healthychildren.org/",
+      "type": "website",
+      "description": "Pediatrician-reviewed parenting resource with articles on bullying recognition, mental health impact, and family strategies.",
+      "best_for": "Parents wanting evidence-based pediatric guidance; understanding developmental context",
+      "free": true
+    },
+    {
+      "name": "Cyberbullying Research Center",
+      "url": "https://cyberbullying.org/",
+      "type": "website",
+      "description": "Academic research center providing up-to-date information on cyberbullying, prevention strategies, legal resources, and downloadable tip sheets (many in Spanish).",
+      "best_for": "Parents concerned about online bullying; seeking research-based guidance on digital safety",
+      "free": true
+    },
+    {
+      "name": "Texas Education Agency – Bullying and Cyberbullying Resources",
+      "url": "https://tea.texas.gov/texas-schools/health-safety-discipline/coordinated-school-health/coordinated-school-health-bullying-and-cyberbullying",
+      "type": "website",
+      "description": "State-specific bullying policy information, David's Law requirements, and school-reporting procedures for Texas families.",
+      "best_for": "Texas parents; understanding state laws, school responsibilities, David's Law protections",
+      "free": true
+    },
+    {
+      "name": "Texas School Safety Center – Bullying and the Law",
+      "url": "https://txssc.txstate.edu/videos/bullying-and-the-law/",
+      "type": "website",
+      "description": "Texas-specific legal guidance, bullying checklist for schools, SB 179 (David's Law) information, and scenario-based resources.",
+      "best_for": "Texas parents seeking understanding of legal protections and school obligations",
+      "free": true
+    },
+    {
+      "name": "Center for Parent Information and Resources (CPIR) – Bullying",
+      "url": "https://www.parentcenterhub.org/bullying/",
+      "type": "website",
+      "description": "Parent-focused hub with links to multiple bullying resources, video guides, and state-specific parent centers.",
+      "best_for": "Finding local parent advocacy organizations, state-specific resources, comprehensive bullying links",
+      "free": true
+    },
+    {
+      "name": "National Crime Prevention Council – Bullying Resources",
+      "url": "https://www.ncpc.org/programs/bullying/",
+      "type": "website",
+      "description": "Prevention-focused resources for parents, children, and law enforcement regarding bullying and cyberbullying.",
+      "best_for": "Prevention-focused families; community-level resources",
+      "free": true
+    },
+    {
+      "name": "Mental Health America – Bullying: Tips for Parents",
+      "url": "https://mhanational.org/resources/bullying-tips-for-parents/",
+      "type": "guide",
+      "description": "Downloadable factsheet on recognizing bullying, understanding mental health impacts, and evidence-based parental responses.",
+      "best_for": "Parents wanting quick reference guide; mental health impacts of bullying",
+      "free": true
+    },
+    {
+      "name": "Children's Wisconsin – Parents Act Now! Bullying Prevention",
+      "url": "https://childrenswi.org/elearningcenter/topics/bullying-prevention/bullying-prevention-for-parents-and-caregivers",
+      "type": "guide",
+      "description": "Online parent education module covering bullying types, responses, school reporting, and emotional coaching strategies.",
+      "best_for": "Parents seeking step-by-step guidance; interactive learning about bullying situations",
+      "free": true
+    }
+  ],
+  "intervention_strategies": {
+    "for_parents": [
+      "Listen calmly and without judgment when your child discloses bullying; praise them for talking to you",
+      "Avoid immediate anger or urging retaliation; remain composed to help your child feel safe",
+      "Believe your child; validate that bullying is real and not their fault",
+      "Ask open-ended questions to understand full context: 'Tell me what happened. Who was involved? When? How many times?'",
+      "Document all bullying incidents in writing (dates, times, locations, people involved, what was said/done); keep records for school meetings",
+      "Contact the school (principal, teacher, counselor) in writing and request a formal meeting to discuss the bullying",
+      "Request that the school conduct an investigation and provide written documentation of findings and response plan",
+      "Teach your child three concrete strategies: (1) Tell a trusted adult; (2) Use the 'buddy system'—never be alone; (3) Don't react emotionally when bullied (bullies thrive on reactions)",
+      "Practice assertiveness and calm responses with role-play: 'That's not OK' then walk away; practice staying calm even when upset",
+      "Help your child identify one or more trusted peers to sit with at lunch, be with at recess, and spend time with after school",
+      "Monitor for signs of depression, anxiety, school avoidance; consult school counselor or pediatrician if concerned",
+      "Encourage participation in activities where your child feels successful (sports, clubs, arts) to build confidence and friendships",
+      "Talk regularly about school, friendships, and emotions; keep lines of communication open",
+      "If cyberbullying: keep evidence (screenshots, saved messages); report to platform; consider involving law enforcement if threats present",
+      "Work with school to develop a written safety plan specifying what the child will do if bullying occurs again",
+      "Check state and school bullying policies; understand your school's reporting and response procedures",
+      "If bullying continues or worsens despite school involvement, consider consulting school district administration or state education agency",
+      "Seek counseling or therapy for your child if showing signs of depression, anxiety, self-harm, or social withdrawal"
+    ],
+    "conversation_starters": [
+      "\"How was your day? Who did you play with at recess? Any kids being mean today?\"",
+      "\"I noticed you don't want to go to school today. Is something going on? Is anyone being mean to you?\"",
+      "\"Tell me about your friends at school. Do you have someone you sit with at lunch?\"",
+      "\"If someone was being mean to you, how would you want me to help? What would feel safe?\"",
+      "\"That's not your fault. Being bullied is not because of anything you did or said. The person bullying is making a bad choice.\"",
+      "\"Let's come up with a plan together. What are three things you could do if this happens again?\"",
+      "\"I'm going to call the school today. We're going to figure this out together.\"",
+      "\"You are not alone. A lot of kids deal with bullying. We're going to get help.\"",
+      "\"I believe you. I'm proud of you for telling me. That took courage.\"",
+      "\"If you see someone else being bullied, it's okay to tell a teacher. That's being a good friend.\"",
+      "\"What do you think you'd like the school to do to make this stop?\"",
+      "\"Bullying can happen because someone is having a hard time. That doesn't make it okay, but we can try to understand why.\"",
+      "\"Let's practice what you could say. If someone calls you a name, you could say, 'That's not okay,' and then walk away. Want to practice?\"",
+      "\"Who is someone at school you trust? A teacher, counselor, or friend? Can you go to them if this happens again?\"",
+      "\"You deserve to feel safe at school. Let's make that happen.\"",
+      "\"I notice you haven't wanted to see your friends as much. Is something going on? Are kids being unkind?\""
+    ],
+    "red_flags_requiring_immediate_action": [
+      "Child expresses suicidal thoughts or self-harm ideation related to bullying",
+      "Physical injuries resulting from bullying; threat of or actual violence",
+      "Child refuses to go to school; extreme school avoidance despite parental intervention",
+      "Significant changes in mood: sudden withdrawal, depression, severe anxiety, uncontrollable crying",
+      "Child expresses hopelessness, worthlessness, or persistent belief they 'can't take it anymore'",
+      "Evidence of cyberbullying involving explicit threats, sexual content, or identity-based hate speech",
+      "Bullying is escalating despite school reporting and intervention attempts",
+      "School staff dismissive or unresponsive to documented bullying complaints",
+      "Child showing signs of eating disorder, sleep disturbance, or physical symptoms (headaches, stomach aches) related to stress",
+      "Bullying involves criminal behavior (theft, property damage, assault, stalking, threats)",
+      "Child is engaging in self-harm (cutting, scratching, picking) related to bullying",
+      "Sudden academic decline (failing grades, no homework completion, withdrawal from activities)",
+      "Child has acquired weapons, made threats of violence, or expressed intent to hurt self or others",
+      "Isolation is severe and complete (no friendships, excluded from all peer groups)",
+      "Bullying is happening in collusion with school staff or is being ignored when reported"
+    ]
+  },
+  "sources_consulted": [
+    {
+      "name": "National Center for Education Statistics (NCES) – School Crime Supplement",
+      "url": "https://nces.ed.gov/programs/coe/indicator/a10/bullying-electronic-bullying",
+      "type": "government"
+    },
+    {
+      "name": "Centers for Disease Control and Prevention (CDC) – Youth Violence Prevention",
+      "url": "https://www.cdc.gov/youth-violence/about/about-bullying.html",
+      "type": "government"
+    },
+    {
+      "name": "PACER Center – National Bullying Prevention Center",
+      "url": "https://www.pacer.org/bullying/",
+      "type": "nonprofit"
+    },
+    {
+      "name": "StopBullying.gov",
+      "url": "https://www.stopbullying.gov/",
+      "type": "government"
+    },
+    {
+      "name": "Health Resources and Services Administration (HRSA) – Bullying Resources",
+      "url": "https://www.hrsa.gov/",
+      "type": "government"
+    },
+    {
+      "name": "Texas Education Agency (TEA) – Bullying and Cyberbullying",
+      "url": "https://tea.texas.gov/texas-schools/health-safety-discipline/coordinated-school-health/coordinated-school-health-bullying-and-cyberbullying",
+      "type": "government"
+    },
+    {
+      "name": "Texas School Safety Center",
+      "url": "https://txssc.txstate.edu/",
+      "type": "government"
+    },
+    {
+      "name": "University of Rochester Warner School of Education – Bullying in School: Prevalence, Contributing Factors, and Interventions",
+      "url": "https://www.rochester.edu/warner/cues/",
+      "type": "academic"
+    },
+    {
+      "name": "American Academy of Pediatrics – HealthyChildren.org",
+      "url": "https://www.healthychildren.org/",
+      "type": "nonprofit"
+    },
+    {
+      "name": "National Child Traumatic Stress Network (NCTSN) – Bullying",
+      "url": "https://www.nctsn.org/what-is-child-trauma/trauma-types/bullying/effects",
+      "type": "nonprofit"
+    },
+    {
+      "name": "Cyberbullying Research Center",
+      "url": "https://cyberbullying.org/",
+      "type": "academic"
+    },
+    {
+      "name": "Meta-analysis: Bullying and Depressive Symptoms in Children and Adolescents",
+      "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10061722/",
+      "type": "academic"
+    },
+    {
+      "name": "Bullying Victimization Among Teenagers (CDC Data Brief)",
+      "url": "https://www.cdc.gov/nchs/products/databriefs/db514.htm",
+      "type": "government"
+    },
+    {
+      "name": "Mental Health America – Bullying: Tips for Parents",
+      "url": "https://mhanational.org/resources/bullying-tips-for-parents/",
+      "type": "nonprofit"
+    },
+    {
+      "name": "Penn State – Factors Predictive of Being Bullies or Victims",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10322117/",
+      "type": "academic"
+    },
+    {
+      "name": "School Bullying and Mental Health Among Adolescents (Narrative Review)",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11982999/",
+      "type": "academic"
+    },
+    {
+      "name": "Consequences of Bullying Behavior (NCBI/IOM)",
+      "url": "https://www.ncbi.nlm.nih.gov/books/NBK390414/",
+      "type": "academic"
+    }
+  ]
+}
