@@ -11,7 +11,7 @@ Usage:
     python build_report.py --output report.html  # custom output path
 
 Output:
-    bullying_research_report.html (self-contained, no external deps)
+    output/bullying_research_report.html (self-contained, no external deps)
 """
 
 import json
@@ -733,7 +733,7 @@ document.querySelectorAll('.sec-tab').forEach(tab => {{
 def main():
     parser = argparse.ArgumentParser(description="Bullying Research Report Builder")
     parser.add_argument("--tier", choices=TIER_ORDER, help="Build report for single tier only")
-    parser.add_argument("--output", default="bullying_research_report.html", help="Output file path")
+    parser.add_argument("--output", default="output/bullying_research_report.html", help="Output file path")
     args = parser.parse_args()
 
     tier_ids = [args.tier] if args.tier else TIER_ORDER
@@ -750,6 +750,7 @@ def main():
     print(f"Building report with {len(tiers)} tier(s)...")
     html = build_html(tiers)
 
+    os.makedirs(os.path.dirname(args.output) or ".", exist_ok=True)
     with open(args.output, "w", encoding="utf-8") as f:
         f.write(html)
 
