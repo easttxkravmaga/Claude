@@ -16,7 +16,6 @@ generators/
 templates/
 fonts/
 output/
-app.py
 *.md
 *.egg-info/
 railway.toml
