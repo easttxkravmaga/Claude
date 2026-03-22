@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Personal Safety Readiness Assessment | East Texas Krav Maga</title>
+  <style>
+    :root {
+      --etkm-black: #1a1a1a;
+      --etkm-red: #c0392b;
+      --etkm-red-dark: #a93226;
+      --etkm-white: #ffffff;
+      --etkm-gray: #f5f5f5;
+      --etkm-gray-mid: #888;
+      --etkm-gray-dark: #333;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+      background: var(--etkm-gray);
+      color: var(--etkm-black);
+      line-height: 1.6;
+    }
+
+    .quiz-container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .quiz-header {
+      text-align: center;
+      padding: 30px 20px;
+      margin-bottom: 20px;
+    }
+
+    .quiz-header h1 {
+      font-size: 1.8em;
+      color: var(--etkm-black);
+      margin-bottom: 8px;
+    }
+
+    .quiz-header p {
+      color: var(--etkm-gray-mid);
+      font-size: 1em;
+    }
+
+    .progress-bar-container {
+      background: #ddd;
+      border-radius: 10px;
+      height: 8px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      background: var(--etkm-red);
+      height: 100%;
+      width: 0%;
+      transition: width 0.4s ease;
+      border-radius: 10px;
+    }
+
+    .progress-text {
+      text-align: center;
+      font-size: 0.85em;
+      color: var(--etkm-gray-mid);
+      margin-bottom: 16px;
+    }
+
+    .question-card {
+      background: var(--etkm-white);
+      border-radius: 12px;
+      padding: 28px 24px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      display: none;
+    }
+
+    .question-card.active { display: block; }
+
+    .question-card h2 {
+      font-size: 1.15em;
+      margin-bottom: 6px;
+      color: var(--etkm-black);
+    }
+
+    .question-card .q-subtitle {
+      font-size: 0.9em;
+      color: var(--etkm-gray-mid);
+      margin-bottom: 18px;
+    }
+
+    .option-btn {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 14px 18px;
+      margin-bottom: 10px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      background: var(--etkm-white);
+      font-size: 0.95em;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: var(--etkm-black);
+    }
+
+    .option-btn:hover { border-color: var(--etkm-red); background: #fdf2f0; }
+    .option-btn.selected { border-color: var(--etkm-red); background: #fdf2f0; font-weight: 600; }
+
+    .text-input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 0.95em;
+      font-family: inherit;
+      resize: vertical;
+      min-height: 80px;
+      transition: border-color 0.2s;
+    }
+
+    .text-input:focus { outline: none; border-color: var(--etkm-red); }
+
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+
+    .nav-btn {
+      padding: 12px 28px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .nav-btn.back { background: #e0e0e0; color: var(--etkm-gray-dark); }
+    .nav-btn.back:hover { background: #d0d0d0; }
+    .nav-btn.next { background: var(--etkm-red); color: var(--etkm-white); }
+    .nav-btn.next:hover { background: var(--etkm-red-dark); }
+    .nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* Gate overlay */
+    .gate-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .gate-overlay.active { display: flex; }
+
+    .gate-card {
+      background: var(--etkm-white);
+      border-radius: 16px;
+      padding: 36px 32px;
+      max-width: 440px;
+      width: 90%;
+      text-align: center;
+    }
+
+    .gate-card h2 {
+      font-size: 1.4em;
+      margin-bottom: 8px;
+      color: var(--etkm-black);
+    }
+
+    .gate-card p {
+      color: var(--etkm-gray-mid);
+      margin-bottom: 22px;
+      font-size: 0.95em;
+    }
+
+    .gate-input {
+      width: 100%;
+      padding: 13px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1em;
+      margin-bottom: 12px;
+      font-family: inherit;
+    }
+
+    .gate-input:focus { outline: none; border-color: var(--etkm-red); }
+
+    .gate-submit {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      background: var(--etkm-red);
+      color: var(--etkm-white);
+      font-size: 1.05em;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 6px;
+    }
+
+    .gate-submit:hover { background: var(--etkm-red-dark); }
+    .gate-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .gate-privacy {
+      font-size: 0.8em;
+      color: var(--etkm-gray-mid);
+      margin-top: 14px;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .quiz-container { padding: 12px; }
+      .question-card { padding: 22px 18px; }
+      .quiz-header h1 { font-size: 1.4em; }
+      .gate-card { padding: 28px 22px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="quiz-container">
+  <div class="quiz-header">
+    <h1>Personal Safety Readiness Assessment</h1>
+    <p>Honest answers. Real results. About 3 minutes.</p>
+  </div>
+
+  <div class="progress-text" id="progressText">Question 1 of 16</div>
+  <div class="progress-bar-container">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <!-- Q0: Entry Reason (open text, unscored) -->
+  <div class="question-card active" data-question="0">
+    <h2>What brought you here today?</h2>
+    <p class="q-subtitle">There's no wrong answer. We just want to understand what's on your mind.</p>
+    <textarea class="text-input" id="q0_entryReason" placeholder="Type your answer here..."></textarea>
+    <div class="nav-buttons">
+      <div></div>
+      <button class="nav-btn next" onclick="nextQuestion()">Next</button>
+    </div>
+  </div>
+
+  <!-- Q1: Identity Statement (open text, unscored) -->
+  <div class="question-card" data-question="1">
+    <h2>When it comes to personal safety, how would you describe yourself right now?</h2>
+    <p class="q-subtitle">Not how you want to be — how you honestly see yourself today.</p>
+    <textarea class="text-input" id="q1_identityStatement" placeholder="Type your answer here..."></textarea>
+    <div class="nav-buttons">
+      <button class="nav-btn back" onclick="prevQuestion()">Back</button>
+      <button class="nav-btn next" onclick="nextQuestion()">Next</button>
+    </div>
+  </div>
+
+  <!-- Q2: Reality Acceptance (scored) -->
+  <div class="question-card" data-question="2">
+    <h2>How do you feel about the possibility of facing a real physical threat?</h2>
+    <p class="q-subtitle">Pick the statement closest to your honest reaction.</p>
+    <button class="option-btn" data-value="denial" data-score="2" onclick="selectOption(this)">It probably won't happen to me</button>
+    <button class="option-btn" data-value="uncertain" data-score="4" onclick="selectOption(this)">I know it could, but I try not to think about it</button>
+    <button class="option-btn" data-value="aware" data-score="7" onclick="selectOption(this)">I've accepted it's possible and think about it sometimes</button>
+    <button class="option-btn" data-value="integrated" data-score="10" onclick="selectOption(this)">I've fully accepted it — it's part of why I'm here</button>
+    <div class="nav-buttons">
+      <button class="nav-btn back" onclick="prevQuestion()">Back</button>
+      <button class="nav-btn next" onclick="nextQuestion()">Next</button>
+    </div>
+  </div>
+
+  <!-- Q3: Awareness Action (scored) -->
+  <div class="question-card" data-question="3">
+    <h2>When you walk into a room or parking lot, what do you typically do?</h2>
+    <p class="q-subtitle">Be honest — not what you think you should do.</p>
+    <button class="option-btn" data-value="unaware" data-score="2" onclick="selectOption(this)">I don't really think about it — I just go in</button>
+    <button class="option-btn" data-value="passive" data-score="4" onclick="selectOption(this)">I glance around but don't have a specific habit</button>
+    <button class="option-btn" data-value="developing" data-score="7" onclick="selectOption(this)">I notice exits, people, and anything unusual</button>
+    <button class="option-btn" data-value="trained" data-score="10" onclick="selectOption(this)">I scan exits, assess threats, and position myself deliberately</button>
+    <div class="nav-buttons">
+      <button class="nav-btn back" onclick="prevQuestion()">Back</button>
+      <button class="nav-btn next" onclick="nextQuestion()">Next</button>
+    </div>
+  </div>
+
+  <!-- Q4: Confidence (scored) -->
+  <div class="question-card" data-question="4">
+    <h2>How confident are you that you could protect yourself or someone you love in a sudden confrontation?</h2>
+    <button class="option-btn" data-value="not_confident" data-score="2" onclick="selectOption(this)">Not confident at all — I'd freeze or panic</button>
+    <button class="option-btn" data-value="slightly" data-score="4" onclick="selectOption(this)">Slightly confident — I'd try, but I'm not sure what I'd do</button>
+    <button class="option-btn" data-value="moderate" data-score="7" onclick="selectOption(this)">Fairly confident — I have some idea what I'd do</button>
+    <button class="option-btn" data-value="very" data-score="10" onclick="selectOption(this)">Very confident — I've trained or practiced for this</button>
+    <div class="nav-buttons">
+      <button class="nav-btn back" onclick="prevQuestion()">Back</button>
+      <button class="nav-btn next" onclick="nextQuestion()">Next</button>
+    </div>
+  </div>
+
+  <!-- Q5: Confidence Validated (scored) -->
+  <div class="question-card" data-question="5">
+    <h2>Has your confidence ever been tested in a real or high-pressure situation?</h2>
+    <p class="q-subtitle">Training, a real incident, or anything that put you under genuine stress.</p>
+    <button class="option-btn" data-value="never" data-score="2" onclick="selectOption(this)">No — I've never been tested</button>
+    <button class="option-btn" data-value="once" data-score="5" onclick="selectOption(this)">Once or twice, and it shook me</button>
+    <button class="option-btn" data-value="tested_partial" data-score="7" onclick="selectOption(this)">Yes, and I handled some of it but not all</button>
+    <button class="option-btn" data-value="tested_validated" data-score="10" onclick="selectOption(this)">Yes — I performed well under pressure</button>
+    <div class="nav-buttons">
+      <button class="nav-btn back" onclick="prevQuestion()">Back</button>
+      <button class="nav-btn next" onclick="nextQuestion()">Next</button>
+    </div>
+  </div>
+
+  <!-- Q6: Decision — Onset (scored) -->
+  <div class="question-card" data-question="6">
+    <h2>If a stranger approached you aggressively right now, what would your first instinct be?</h2>
+    <button class="option-btn" data-value="freeze" data-score="2" onclick="selectOption(this)">Freeze — I honestly don't know what I'd do</button>
+    <button class="option-btn" data-value="run" data-score="5" onclick="selectOption(this)">Get away as fast as possible</button>
+    <button class="option-btn" data-value="deescalate" data-score="7" onclick="selectOption(this)">Try to de-escalate or create distance</button>
+    <button class="option-btn" data-value="assess_act" data-score="10" onclick="selectOption(this)">Assess the threat immediately and act based on what I see</button>
+    <div class="nav-buttons">
+      <button class="nav-btn back" onclick="prevQuestion()">Back</button>
+      <button class="nav-btn next" onclick="nextQuestion()">Next</button>
+    </div>
+  </div>
+
+  <!-- Q7: Decision — Action (scored) -->
+  <div class="question-card" data-question="7">
+    <h2>If de-escalation failed and you had to physically defend yourself, how ready are you?</h2>
+    <button class="option-btn" data-value="not_ready" data-score="2" onclick="selectOption(this)">Not at all — I'd have no idea what to do</button>
+    <button class="option-btn" data-value="improvise" data-score="4" onclick="selectOption(this)">I'd try to fight back, but I'd be improvising</button>
+    <button class="option-btn" data-value="some_skills" data-score="7" onclick="selectOption(this)">I have some training — I'd fall back on what I know</button>
+    <button class="option-btn" data-value="prepared" data-score="10" onclick="selectOption(this)">I train regularly and have a practiced response</button>
+    <div class="nav-buttons">
+      <button class="nav-btn back" onclick="prevQuestion()">Back</button>
+      <button class="nav-btn next" onclick="nextQuestion()">Next</button>
+    </div>
+  </div>
+
+  <!-- Q8: Experience (scored) -->
+  <div class="question-card" data-question="8">
+    <h2>Have you ever been in a situation where you felt genuinely unsafe?</h2>
+    <p class="q-subtitle">A real moment — not a movie, not a hypothetical.</p>
+    <button class="option-btn" data-value="never" data-score="3" onclick="selectOption(this)">No, never</button>
+    <button class="option-btn" data-value="once" data-score="5" onclick="selectOption(this)">Yes — once, and it stuck with me</button>
+    <button class="option-btn" data-value="multiple" data-score="7" onclick="selectOption(this)">Yes — more than once</button>
+    <button class="option-btn" data-value="regular" data-score="5" onclick="selectOption(this)">It's a regular part of my life or work</button>
+    <div class="nav-buttons">
+      <button class="nav-btn back" onclick="prevQuestion()">Back</button>
+      <button class="nav-btn next" onclick="nextQuestion()">Next</button>
+    </div>
+  </div>
+
+  <!-- Q9: Motivation (scored) -->
+  <div class="question-card" data-question="9">
+    <h2>Who are you most motivated to protect?</h2>
+    <button class="option-btn" data-value="myself" data-score="5" onclick="selectOption(this)">Myself</button>
+    <button class="option-btn" data-value="family" data-score="7" onclick="selectOption(this)">My family — spouse, kids, or parents</button>
+    <button class="option-btn" data-value="public" data-score="7" onclick="selectOption(this)">People in my care — students, clients, community</button>
+    <button class="option-btn" data-value="all" data-score="8" onclick="selectOption(this)">All of the above — whoever needs it</button>
+    <div class="nav-buttons">
+      <button class="nav-btn back" onclick="prevQuestion()">Back</button>
+      <button class="nav-btn next" onclick="nextQuestion()">Next</button>
+    </div>
+  </div>
+
+  <!-- Q10: Firearm Ownership (scored) -->
+  <div class="question-card" data-question="10">
+    <h2>Do you own a firearm?</h2>
+    <p class="q-subtitle">No judgment either way — this helps us understand your full safety picture.</p>
+    <button class="option-btn" data-value="no" data-score="3" onclick="selectOption(this)">No</button>
+    <button class="option-btn" data-value="yes_home" data-score="5" onclick="selectOption(this)">Yes — kept at home</button>
+    <button class="option-btn" data-value="yes_carry" data-score="5" onclick="selectOption(this)">Yes — and I carry regularly</button>
+    <button class="option-btn" data-value="considering" data-score="4" onclick="selectOption(this)">No, but I'm considering it</button>
+    <div class="nav-buttons">
+      <button class="nav-btn back" onclick="prevQuestion()">Back</button>
+      <button class="nav-btn next" onclick="nextQuestion()">Next</button>
+    </div>
+  </div>
+
+  <!-- Q11: Carry Status (scored) -->
+  <div class="question-card" data-question="11">
+    <h2>If you carry or plan to carry, how much training have you had beyond basic firearms?</h2>
+    <p class="q-subtitle">Defensive shooting, force-on-force, scenario-based, etc.</p>
+    <button class="option-btn" data-value="none" data-score="2" onclick="selectOption(this)">None — just basic range time or none at all</button>
+    <button class="option-btn" data-value="some" data-score="5" onclick="selectOption(this)">Some — I've taken a class or two</button>
+    <button class="option-btn" data-value="regular" data-score="7" onclick="selectOption(this)">Regular training — I train with scenarios</button>
+    <button class="option-btn" data-value="na" data-score="3" onclick="selectOption(this)">Doesn't apply to me</button>
+    <div class="nav-buttons">
+      <button class="nav-btn back" onclick="prevQuestion()">Back</button>
+      <button class="nav-btn next" onclick="nextQuestion()">Next</button>
+    </div>
+  </div>
+
+  <!-- Q12: Physical Baseline (scored) -->
+  <div class="question-card" data-question="12">
+    <h2>How would you rate your current physical readiness?</h2>
+    <p class="q-subtitle">Not where you used to be or plan to be. Right now.</p>
+    <button class="option-btn" data-value="sedentary" data-score="2" onclick="selectOption(this)">I'm mostly sedentary — not active at all</button>
+    <button class="option-btn" data-value="light" data-score="4" onclick="selectOption(this)">Light activity — I walk or do some basic exercise</button>
+    <button class="option-btn" data-value="moderate" data-score="7" onclick="selectOption(this)">Moderately active — I work out a few times a week</button>
+    <button class="option-btn" data-value="high" data-score="10" onclick="selectOption(this)">Very active — I train hard and consistently</button>
+    <div class="nav-buttons">
+      <button class="nav-btn back" onclick="prevQuestion()">Back</button>
+      <button class="nav-btn next" onclick="nextQuestion()">Next</button>
+    </div>
+  </div>
+
+  <!-- Q13: Vision Statement (open text, unscored) -->
+  <div class="question-card" data-question="13">
+    <h2>Six months from now, what does "ready" look like for you?</h2>
+    <p class="q-subtitle">Paint the picture. What would change if you closed the gap?</p>
+    <textarea class="text-input" id="q13_visionStatement" placeholder="Type your answer here..."></textarea>
+    <div class="nav-buttons">
+      <button class="nav-btn back" onclick="prevQuestion()">Back</button>
+      <button class="nav-btn next" onclick="nextQuestion()">Next</button>
+    </div>
+  </div>
+
+  <!-- Q14: Objection / Barrier (unscored, qualitative) -->
+  <div class="question-card" data-question="14">
+    <h2>What's the biggest thing that's kept you from training until now?</h2>
+    <button class="option-btn" data-value="time" data-score="0" onclick="selectOption(this)">Time — my schedule is packed</button>
+    <button class="option-btn" data-value="cost" data-score="0" onclick="selectOption(this)">Cost — not sure I can afford it</button>
+    <button class="option-btn" data-value="intimidation" data-score="0" onclick="selectOption(this)">Intimidation — I'm afraid I won't fit in</button>
+    <button class="option-btn" data-value="unsure" data-score="0" onclick="selectOption(this)">Not sure where to start or what to look for</button>
+    <button class="option-btn" data-value="trained" data-score="0" onclick="selectOption(this)">Nothing — I already train or have trained</button>
+    <button class="option-btn" data-value="didnt_think" data-score="0" onclick="selectOption(this)">I never really thought about it until now</button>
+    <div class="nav-buttons">
+      <button class="nav-btn back" onclick="prevQuestion()">Back</button>
+      <button class="nav-btn next" onclick="nextQuestion()">Next</button>
+    </div>
+  </div>
+
+  <!-- Q15: Commitment (scored) -->
+  <div class="question-card" data-question="15">
+    <h2>If the right training existed for your situation, how likely are you to start?</h2>
+    <button class="option-btn" data-value="unlikely" data-score="2" onclick="selectOption(this)">Unlikely — I'm just curious right now</button>
+    <button class="option-btn" data-value="maybe" data-score="4" onclick="selectOption(this)">Maybe — if the timing and fit were right</button>
+    <button class="option-btn" data-value="likely" data-score="7" onclick="selectOption(this)">Likely — I'm actively looking</button>
+    <button class="option-btn" data-value="ready" data-score="10" onclick="selectOption(this)">I'm ready — just tell me where to show up</button>
+    <div class="nav-buttons">
+      <button class="nav-btn back" onclick="prevQuestion()">Back</button>
+      <button class="nav-btn next" onclick="showGate()">See My Score</button>
+    </div>
+  </div>
+</div>
+
+<!-- Gate Overlay -->
+<div class="gate-overlay" id="gateOverlay">
+  <div class="gate-card">
+    <h2>Your results are ready.</h2>
+    <p>Enter your name and email to see your Personal Safety Readiness Score.</p>
+    <input type="text" class="gate-input" id="gateName" placeholder="Your first name" autocomplete="given-name">
+    <input type="email" class="gate-input" id="gateEmail" placeholder="Your email address" autocomplete="email">
+    <button class="gate-submit" onclick="submitGate()">Show My Score</button>
+    <p class="gate-privacy">We respect your privacy. No spam. Unsubscribe anytime.</p>
+  </div>
+</div>
+
+<script>
+  // ── State ──
+  let currentQuestion = 0;
+  const totalQuestions = 16;
+  const answers = {};
+  const scores = {};
+
+  // ── Navigation ──
+  function updateProgress() {
+    const pct = ((currentQuestion + 1) / totalQuestions) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+    document.getElementById('progressText').textContent = `Question ${currentQuestion + 1} of ${totalQuestions}`;
+  }
+
+  function showQuestion(index) {
+    document.querySelectorAll('.question-card').forEach(c => c.classList.remove('active'));
+    const target = document.querySelector(`.question-card[data-question="${index}"]`);
+    if (target) target.classList.add('active');
+    currentQuestion = index;
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function nextQuestion() {
+    // Save text inputs for open-text questions
+    if (currentQuestion === 0) {
+      answers.entryReason = document.getElementById('q0_entryReason').value.trim();
+    } else if (currentQuestion === 1) {
+      answers.identityStatement = document.getElementById('q1_identityStatement').value.trim();
+    } else if (currentQuestion === 13) {
+      answers.visionStatement = document.getElementById('q13_visionStatement').value.trim();
+    }
+
+    if (currentQuestion < totalQuestions - 1) {
+      showQuestion(currentQuestion + 1);
+    }
+  }
+
+  function prevQuestion() {
+    if (currentQuestion > 0) {
+      showQuestion(currentQuestion - 1);
+    }
+  }
+
+  // ── Option selection ──
+  const questionKeyMap = {
+    2: 'realityAcceptance',
+    3: 'awarenessAction',
+    4: 'confidence',
+    5: 'confidenceValidated',
+    6: 'decisionOnset',
+    7: 'decisionAction',
+    8: 'experience',
+    9: 'motivation',
+    10: 'firearmOwnership',
+    11: 'carryStatus',
+    12: 'physicalBaseline',
+    14: 'objection',
+    15: 'commitment'
+  };
+
+  function selectOption(btn) {
+    const card = btn.closest('.question-card');
+    card.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+
+    const qIndex = parseInt(card.dataset.question);
+    const key = questionKeyMap[qIndex];
+    if (key) {
+      answers[key] = btn.dataset.value;
+      scores[key] = parseInt(btn.dataset.score) || 0;
+    }
+  }
+
+  // ── Score calculation ──
+  function calculateScore() {
+    const scoredKeys = [
+      'realityAcceptance', 'awarenessAction', 'confidence', 'confidenceValidated',
+      'decisionOnset', 'decisionAction', 'experience', 'motivation',
+      'firearmOwnership', 'carryStatus', 'physicalBaseline', 'commitment'
+    ];
+    let total = 0;
+    let maxPossible = 0;
+    for (const key of scoredKeys) {
+      if (scores[key] !== undefined) {
+        total += scores[key];
+      }
+      maxPossible += 10;
+    }
+    // Normalize to 0-100 scale
+    return Math.round((total / maxPossible) * 100);
+  }
+
+  // ── Flag generation ──
+  function generateFlags() {
+    const flags = [];
+
+    // HIGH_URGENCY: high commitment + low baseline
+    if (answers.commitment === 'ready' && (scores.physicalBaseline || 0) <= 4) {
+      flags.push('HIGH_URGENCY');
+    }
+
+    // AWARENESS_GAP
+    if (answers.awarenessAction === 'unaware' || answers.awarenessAction === 'passive') {
+      flags.push('AWARENESS_GAP');
+    }
+
+    // AWARENESS_SUPPRESSED
+    if (answers.realityAcceptance === 'denial') {
+      flags.push('AWARENESS_SUPPRESSED');
+    }
+
+    // NO_BASELINE_SKILLS_GAP
+    if (answers.decisionAction === 'not_ready') {
+      flags.push('NO_BASELINE_SKILLS_GAP');
+    }
+
+    // FALSE_CONFIDENCE_URGENT
+    if ((answers.confidence === 'very' || answers.confidence === 'moderate') &&
+        (answers.confidenceValidated === 'never')) {
+      flags.push('FALSE_CONFIDENCE_URGENT');
+    }
+
+    // HIGH_COACHABILITY
+    if (answers.commitment === 'ready' || answers.commitment === 'likely') {
+      flags.push('HIGH_COACHABILITY');
+    }
+
+    // NO_ONSET_PLAN
+    if (answers.decisionOnset === 'freeze') {
+      flags.push('NO_ONSET_PLAN');
+    }
+
+    // NO_ACTION_PLAN
+    if (answers.decisionAction === 'not_ready' || answers.decisionAction === 'improvise') {
+      flags.push('NO_ACTION_PLAN');
+    }
+
+    // PRIOR_INCIDENT_CONSULT_CARE
+    if (answers.experience === 'multiple' || answers.experience === 'regular') {
+      flags.push('PRIOR_INCIDENT_CONSULT_CARE');
+    }
+
+    // REALITY_EXPOSURE_GAP
+    if (answers.realityAcceptance === 'denial' || answers.realityAcceptance === 'uncertain') {
+      flags.push('REALITY_EXPOSURE_GAP');
+    }
+
+    // PARENT_FAMILY_ARC
+    if (answers.motivation === 'family') {
+      flags.push('PARENT_FAMILY_ARC');
+    }
+
+    // MUST_PROTECT_CONSULT_FIRST
+    if (answers.motivation === 'public') {
+      flags.push('MUST_PROTECT_CONSULT_FIRST');
+    }
+
+    // NO_FIREARM_ACT_AWARENESS
+    if ((answers.firearmOwnership === 'yes_carry') && (answers.carryStatus === 'none')) {
+      flags.push('NO_FIREARM_ACT_AWARENESS');
+    }
+
+    // ACT_CONSULT_PRIORITY
+    if (answers.firearmOwnership === 'considering') {
+      flags.push('ACT_CONSULT_PRIORITY');
+    }
+
+    // ACT_CANDIDATE_ADVANCED
+    if (answers.firearmOwnership === 'yes_carry' && answers.carryStatus === 'regular') {
+      flags.push('ACT_CANDIDATE_ADVANCED');
+    }
+
+    // RETURNING_PRACTITIONER_PRIORITY
+    if (answers.objection === 'trained') {
+      flags.push('RETURNING_PRACTITIONER_PRIORITY');
+    }
+
+    // IDENTITY_BARRIER_OPEN_WITH_INCLUSION
+    if (answers.objection === 'intimidation') {
+      flags.push('IDENTITY_BARRIER_OPEN_WITH_INCLUSION');
+    }
+
+    // PHYSICAL_FLAG_Q12_ACTIVE
+    if (answers.physicalBaseline === 'high') {
+      flags.push('PHYSICAL_FLAG_Q12_ACTIVE');
+    }
+
+    // COACHABILITY_NEEDS_WARMUP
+    if (answers.commitment === 'unlikely' || answers.commitment === 'maybe') {
+      flags.push('COACHABILITY_NEEDS_WARMUP');
+    }
+
+    // ENCOURAGEMENT_PATH
+    if (answers.confidence === 'not_confident' && answers.commitment !== 'unlikely') {
+      flags.push('ENCOURAGEMENT_PATH');
+    }
+
+    // ACT_CONFIRMED
+    if (answers.firearmOwnership === 'yes_carry' && answers.carryStatus !== 'none') {
+      flags.push('ACT_CONFIRMED');
+    }
+
+    // FAMILY_ARC_CONFIRMED
+    if (answers.motivation === 'family' || answers.motivation === 'all') {
+      flags.push('FAMILY_ARC_CONFIRMED');
+    }
+
+    // FEAR_BARRIER_CONFIRMED
+    if (answers.confidence === 'not_confident' && answers.objection === 'intimidation') {
+      flags.push('FEAR_BARRIER_CONFIRMED');
+    }
+
+    return flags;
+  }
+
+  // ── Gate ──
+  function showGate() {
+    // Save Q13 vision if on that page
+    if (currentQuestion === 13) {
+      answers.visionStatement = document.getElementById('q13_visionStatement').value.trim();
+    }
+    document.getElementById('gateOverlay').classList.add('active');
+  }
+
+  // ── Submit Gate — Web3Forms Integration ──
+  async function submitGate() {
+    const name = document.getElementById('gateName').value.trim();
+    const email = document.getElementById('gateEmail').value.trim();
+
+    if (!name || !email) {
+      alert('Please enter your name and email to see your score.');
+      return;
+    }
+    if (!email.includes('@') || !email.includes('.')) {
+      alert('Please enter a valid email address.');
+      return;
+    }
+
+    // Disable button to prevent double submit
+    const btn = document.querySelector('.gate-submit');
+    if (btn) { btn.disabled = true; btn.textContent = 'Loading...'; }
+
+    const score = calculateScore();
+    const tier = score <= 29 ? 1 : score <= 59 ? 2 : 3;
+    const tierName = score <= 29 ? 'Exposed' : score <= 59 ? 'Aware of the Gap' : 'Closing the Gap';
+
+    // Build payload
+    const flags = generateFlags();
+    const payload = {
+      firstName: name,
+      email: email,
+      score: score,
+      tier: tier,
+      tierName: tierName,
+      flags: flags,
+      answers: {
+        entryReason: answers.entryReason || '',
+        identityStatement: answers.identityStatement || '',
+        visionStatement: answers.visionStatement || '',
+        realityAcceptance: answers.realityAcceptance || '',
+        awarenessAction: answers.awarenessAction || '',
+        confidence: answers.confidence || '',
+        confidenceValidated: answers.confidenceValidated || '',
+        decisionOnset: answers.decisionOnset || '',
+        decisionAction: answers.decisionAction || '',
+        experience: answers.experience || '',
+        motivation: answers.motivation || '',
+        firearmOwnership: answers.firearmOwnership || '',
+        carryStatus: answers.carryStatus || '',
+        objection: answers.objection || '',
+        physicalBaseline: answers.physicalBaseline || '',
+        commitment: answers.commitment || ''
+      },
+      timestamp: new Date().toISOString()
+    };
+
+    // POST to Web3Forms
+    try {
+      await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          access_key: '[KEY]',
+          subject: `New Assessment Contact — ${name} (Score: ${score} / ${tierName})`,
+          from_name: 'ETKM Quiz System',
+          full_name: name,
+          email: email,
+          score: score,
+          tier: tierName,
+          flags: payload.flags.join(', ') || 'none',
+          entry_reason: payload.answers.entryReason || '(not provided)',
+          identity_statement: payload.answers.identityStatement || '(not provided)',
+          vision_statement: payload.answers.visionStatement || '(not provided)',
+          reality_acceptance: payload.answers.realityAcceptance,
+          awareness_action: payload.answers.awarenessAction,
+          confidence: payload.answers.confidence,
+          confidence_validated: payload.answers.confidenceValidated,
+          decision_onset: payload.answers.decisionOnset,
+          decision_action: payload.answers.decisionAction,
+          experience: payload.answers.experience,
+          motivation: payload.answers.motivation,
+          firearm_ownership: payload.answers.firearmOwnership,
+          carry_status: payload.answers.carryStatus,
+          objection: payload.answers.objection,
+          physical_baseline: payload.answers.physicalBaseline,
+          commitment: payload.answers.commitment,
+          timestamp: payload.timestamp
+        })
+      });
+    } catch(e) {
+      // Silent fail — never block the user
+      console.log('Form submission error:', e);
+    }
+
+    // Always redirect regardless of submission result
+    window.location.href = `https://etxkravmaga.com/your-score/?score=${score}&name=${encodeURIComponent(name)}`;
+  }
+
+  // ── Init ──
+  updateProgress();
+</script>
+
+</body>
+</html>
