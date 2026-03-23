@@ -17,7 +17,7 @@ description: >
 
 # ETKM Event Page Build System
 
-**Version:** 2.0
+**Version:** 2.1
 **Updated:** March 2026
 **Templates:** TYPE 1 (Seminar/Workshop) + TYPE 3 (Specialty/Guest Instructor)
 **Deployment target:** WordPress via Raw HTML block (Visual Composer)
@@ -55,11 +55,11 @@ Load `references/type1-seminar.md` for full CSS + HTML for all 10 sections.
 |---|---------|-------|
 | 1 | Top Bar | Red background, event name + "Spots Are Limited" |
 | 2 | Hero | Full-bleed B&W background image, headline, event bar |
-| 3 | Registration | Ecwid widget + price + 3-cell meta — JUST UNDER FOLD |
+| 3 | Registration | Ecwid buy now embed + price + 3-cell meta — JUST UNDER FOLD |
 | 4 | Who This Is For | 6-card audience grid |
 | 5 | Insight Block | Red left-border quote, core training truth |
 | 6 | Seminar Content | 2×2 level/module cards with ghost numbers |
-| 7 | Testimonial | Pull quote (omit if none available) |
+| 7 | Testimonial | Pull quote (omit section entirely if none available) |
 | 8 | Location | Venue address + ETKM contact |
 | 9 | Final CTA | Headline + button that scrolls to `#register` |
 | 10 | Footer | ETKM address/phone/URL |
@@ -90,7 +90,7 @@ Load `references/type1-seminar.md` for full CSS + HTML for all 10 sections.
 - [etxkravmaga.com/cbltac-professionals/](http://etxkravmaga.com/cbltac-professionals/) (professional)
 - [etxkravmaga.com/events/cbltac-first-responders/](http://etxkravmaga.com/events/cbltac-first-responders/) (first responder)
 
-**Checkout system:** Stripe (NOT Ecwid)
+**Checkout system:** Ecwid (Multiple Embeds)
 
 Load `references/components.md` for full CSS + HTML for all sections.
 
@@ -107,14 +107,13 @@ Load `references/components.md` for full CSS + HTML for all sections.
 | 7 | [Format Block] | Optional interactive/hands-on explainer |
 | 8 | Courses | Two-column course blocks |
 | 9 | Combined/Best Value | Red-top combo block |
-| 10 | Instructor | Photo card + bio |
+| 10 | Instructor | B&W photo card + bio |
 | 11 | Location | Venue + ETKM info |
-| 12 | Final CTA | Pricing options + main button |
+| 12 | Final CTA | Pricing options + main buy now button |
 | 13 | Footer | ETKM address/phone/URL |
 
 ### TYPE 3 Key Rules
 
-- **Stripe buttons:** Always `target="_blank"`. Main hero CTA + main bottom CTA link to best-value (Both Sessions) option.
 - **Audience variants:** Hero, who-grid, insight copy, and instructor framing change per variant. Course content, pricing, and structure stay identical. See `references/variants.md`.
 
 ---
@@ -136,12 +135,31 @@ All CSS MUST be scoped to a unique wrapper ID. Never reuse a wrapper ID from ano
 
 ---
 
-## Checkout Systems
+## Checkout System — All Events Use Ecwid Embedded Buy Now
 
-| Template | System | Pattern |
-|---------|--------|---------|
-| TYPE 1 (seminars) | **Ecwid** | Embed widget in `.reg-block` at `#register`. Final CTA scrolls to `#register` — never re-embeds Ecwid. |
-| TYPE 3 (specialty) | **Stripe** | Direct `<a>` links with `target="_blank"`. Main CTA → best value option. |
+**All ETKM event pages use Ecwid embedded buy now code. No external payment links.**
+Nathan provides the Ecwid embed code per product. Claude drops it in exactly as provided and never modifies it.
+
+### TYPE 1 — Single Ecwid Embed
+One Ecwid widget lives in the Registration block (section 3). The Final CTA button uses `href="#register"` to scroll up to the widget. Ecwid is **never embedded twice** on the same page.
+- Registration block → Ecwid buy now widget (the widget)
+- Final CTA button → `href="#register"` (scrolls to widget)
+
+### TYPE 3 — Multiple Ecwid Embeds
+Each course option gets its own Ecwid embed — one per product. The main bottom button uses the Both Sessions product embed.
+- Course 1 card → Ecwid embed (Course 1 product)
+- Course 2 card → Ecwid embed (Course 2 product)
+- Combo block → Ecwid embed (Both Sessions product)
+- Final CTA option 1 → Ecwid embed (Course 1 product)
+- Final CTA option 2 → Ecwid embed (Course 2 product)
+- Final CTA option 3 → Ecwid embed (Both Sessions product)
+- Main bottom button → Ecwid embed (Both Sessions product)
+
+### Ecwid Placement Rules
+- Wrap each embed in a plain `<div>` with no extra styling
+- Never modify the embed code
+- Never add CSS to Ecwid elements — it breaks the widget
+- Load the Ecwid `<script>` tag only once per page (the first embed carries it; subsequent product embeds call `xProduct()` only)
 
 ---
 
@@ -260,8 +278,14 @@ b64 = base64.b64encode(buf.getvalue()).decode()
 ## Build Workflow
 
 ### Step 1 — Gather Inputs
-**TYPE 1:** Event name, date, time, price, Ecwid embed code + product ID, venue, hero image, testimonial (optional)
-**TYPE 3:** Event name, audience variant, course 1 & 2 details + Stripe URLs, both-sessions Stripe URL, venue, instructor photo, classroom photo (optional), discount (optional)
+- Event name, type, audience
+- Date(s), time(s), price(s)
+- **Ecwid embed code(s)** — Nathan provides per product
+- Venue name and address
+- Hero background image (URL or upload)
+- Instructor photo (URL or upload) — TYPE 3 only
+- Any discount or special pricing
+- Testimonial quote (if available)
 
 ### Step 2 — Fetch & Process Images
 ```bash
@@ -271,7 +295,7 @@ Then run Python conversion (see Image Handling above).
 
 ### Step 3 — Build HTML
 Use unique wrapper ID. Apply full CSS from the appropriate reference file.
-Insert all sections in standard order. Wire all payment links. Embed all images as base64.
+Insert all sections in standard order. Embed all Ecwid codes exactly as provided. Embed all images as base64.
 
 ### Step 4 — Screenshot & QC
 Use Playwright to screenshot hero, mid-page, and bottom sections.
@@ -285,20 +309,16 @@ Present file to Nathan via `present_files`.
 
 ## QC Gates (All Must Pass Before Delivery)
 
-- [ ] No `href="#"` placeholders — all buttons have real URLs or scroll targets
+- [ ] No placeholder text or comments remaining in the HTML
+- [ ] All Ecwid embed code present and unmodified
 - [ ] No external image src — all images embedded as base64
 - [ ] WP override block present in CSS
-- [ ] All CSS scoped to wrapper ID
-- [ ] Wrapper ID is unique (not reused from another page)
-- [ ] Fade animation JS uses correct wrapper ID selector
-- [ ] TYPE 1: Final CTA uses `href="#register"` — not a re-embedded Ecwid widget
-- [ ] TYPE 3: Hero CTA and main bottom CTA both link to best-value option
-- [ ] Red only used once per visible section (brand rule)
+- [ ] All CSS scoped to unique wrapper ID
+- [ ] TYPE 1: Final CTA button is `href="#register"`, not a second embed
+- [ ] Red used max once per visible section
 - [ ] Responsive breakpoint at 860px present
-- [ ] No `#000` shorthand — use `#000000` or CSS var
 - [ ] `target="_blank"` on all external links
 - [ ] Google Fonts link included
-- [ ] No placeholder text or `<!-- -->` comments remaining
 
 ---
 
@@ -326,9 +346,5 @@ Present file to Nathan via `present_files`.
 
 ## Nathan's Filter for This Project
 
-Every deliverable must produce:
-- **More revenue** — registrations, conversions
-- **Less time wasted** — fast to build, easy to deploy, no rework
-
-A technically impressive page that takes three sessions to build has failed.
-A clean, deployable page that gets registrations has succeeded.
+Every deliverable must produce **more revenue** or **less time wasted**. Both if possible.
+A technically impressive page that takes three sessions to build has failed. A clean, deployable page that gets registrations has succeeded.

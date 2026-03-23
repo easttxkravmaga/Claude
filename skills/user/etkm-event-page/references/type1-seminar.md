@@ -14,11 +14,11 @@ Do not add, remove, or reorder sections.
 |---|---------|-------|
 | 1 | Top Bar | Red background, event name + "Spots Are Limited" |
 | 2 | Hero | Full-bleed B&W background image, headline, event bar |
-| 3 | Registration | Ecwid widget + price + 3-cell meta — JUST UNDER FOLD |
+| 3 | Registration | Ecwid buy now embed + price + 3-cell meta — JUST UNDER FOLD |
 | 4 | Who This Is For | 6-card audience grid |
 | 5 | Insight Block | Red left-border quote, core training truth |
 | 6 | Seminar Content | 2×2 level/module cards with ghost numbers |
-| 7 | Testimonial | Pull quote (omit if none available) |
+| 7 | Testimonial | Pull quote (omit section entirely if none available) |
 | 8 | Location | Venue address + ETKM contact |
 | 9 | Final CTA | Headline + button that scrolls to `#register` |
 | 10 | Footer | ETKM address/phone/URL |
@@ -484,12 +484,12 @@ TYPE 1 pages use Ecwid, not Stripe. The Ecwid widget embeds in Section 3 (Regist
 - [ ] Hero headline spans exactly two lines (controlled `<br>`)
 - [ ] Hero background image is B&W and embedded as base64
 - [ ] Registration section has `id="register"`
-- [ ] Ecwid embed code is live (not placeholder)
+- [ ] All Ecwid embed code present and unmodified
 - [ ] Final CTA button uses `href="#register"` — not a re-embedded Ecwid widget
 - [ ] All CSS scoped to unique wrapper ID
 - [ ] WP override block present in CSS
 - [ ] Red used max once per visible section
 - [ ] Responsive breakpoint at 860px present
 - [ ] `target="_blank"` on all external links
-- [ ] No placeholder text remaining
+- [ ] No placeholder text or comments remaining in the HTML
 - [ ] Google Fonts link included

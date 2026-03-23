@@ -94,9 +94,9 @@ Only for first responder or special pricing variants.
       [LINE 3 — optional]
     </h1>
     <p class="hero-sub fd">[Subheadline — 2 sentences max]</p>
-    <div class="cta-grp fd">
-      <a href="[STRIPE_BOTH]" class="btn-p">Register Now</a>
-      <a href="#courses" class="btn-g">See the Courses &darr;</a>
+    <div class="hero-btns fd">
+      <a href="#register" class="btn-p">Register Now</a>
+      <a href="#courses" class="btn-g">View Courses</a>
     </div>
     <!-- EVENT BAR goes here -->
   </div>
@@ -290,7 +290,10 @@ Two-column layout. Course 1: meta left, content right. Course 2: content left, m
     <p class="cdesc">[2-3 sentence overview]</p>
     <div class="cprice"><sup>$</sup>[PRICE]</div>
     <div class="cpnote">Per Person &middot; Single Session</div>
-    <a href="[STRIPE_C1]" class="ccta" target="_blank">Register for Course 1</a>
+    <!-- Ecwid embed (Course 1 product) -->
+    <div class="ccta-wrap">
+      [ECWID_EMBED_C1]
+    </div>
   </div>
   <div class="cc">  <!-- CONTENT: right column -->
     <div class="cc-lbl">What You'll Learn</div>
@@ -311,7 +314,10 @@ Two-column layout. Course 1: meta left, content right. Course 2: content left, m
   </div>
   <div class="cm-r">  <!-- META: right -->
     ...
-    <a href="[STRIPE_C2]" class="ccta" target="_blank">Register for Course 2</a>
+    <!-- Ecwid embed (Course 2 product) -->
+    <div class="ccta-wrap">
+      [ECWID_EMBED_C2]
+    </div>
   </div>
 </div>
 ```
@@ -336,8 +342,8 @@ Two-column layout. Course 1: meta left, content right. Course 2: content left, m
 #W .combo-why { background:#000; border:1px solid #1e1e1e; border-left:3px solid #CC0000; padding:26px 30px; margin-bottom:32px; }
 #W .combo-why p { font-size:15.5px; color:#BBBBBB; line-height:1.7; }
 #W .combo-why p strong { color:#fff; }
-#W .combo-cta { background:#CC0000; color:#fff; font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:17px; letter-spacing:.12em; text-transform:uppercase; text-decoration:none; padding:19px 44px; display:inline-block; transition:background .2s; }
-#W .combo-cta:hover { background:#aa0000; }
+/* Ecwid handles the button styling now, but we keep the wrapper clean */
+#W .combo-cta-wrap { margin-top: 20px; }
 ```
 
 ---
@@ -380,12 +386,11 @@ Two-column layout. Course 1: meta left, content right. Course 2: content left, m
 #W .fcta h2 em { font-style:normal; color:#CC0000; }
 #W .fcta p { font-size:16.5px; color:#BBBBBB; max-width:520px; margin:0 auto 36px; line-height:1.7; }
 #W .fopts { display:flex; justify-content:center; flex-wrap:wrap; gap:14px; }
-#W .fopt { background:#000; border:1px solid #2a2a2a; padding:22px 28px; text-align:center; text-decoration:none; transition:border-color .2s,background .2s; min-width:185px; }
+#W .fopt { background:#000; border:1px solid #2a2a2a; padding:22px 28px; text-align:center; transition:border-color .2s,background .2s; min-width:185px; }
 #W .fopt:hover { border-color:#CC0000; background:#1a1a1a; }
 #W .fopt-p { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:32px; color:#fff; }
-#W .fopt-l { font-size:11px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:#BBBBBB; margin-top:4px; }
-#W .fcta-main { background:#CC0000; color:#fff; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:19px; letter-spacing:.12em; text-transform:uppercase; text-decoration:none; padding:21px 52px; display:block; margin:36px auto 0; width:fit-content; transition:background .2s; }
-#W .fcta-main:hover { background:#aa0000; }
+#W .fopt-l { font-size:11px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:#BBBBBB; margin-top:4px; margin-bottom:16px; }
+#W .fcta-main-wrap { margin:36px auto 0; width:fit-content; }
 ```
 
 ```html
@@ -394,20 +399,25 @@ Two-column layout. Course 1: meta left, content right. Course 2: content left, m
     <h2 class="fd">[LINE 1]<br><em>[RED LINE]</em></h2>
     <p class="fd">Seats are limited. Reserve your seat now.</p>
     <div class="fopts fd">
-      <a href="[STRIPE_C1]" target="_blank" class="fopt">
+      <div class="fopt">
         <div class="fopt-p">$[C1_PRICE]</div>
         <div class="fopt-l">Course 1 Only<br>[DAY], [MONTH DATE]</div>
-      </a>
-      <a href="[STRIPE_C2]" target="_blank" class="fopt">
+        <div class="ccta-wrap">[ECWID_EMBED_C1]</div>
+      </div>
+      <div class="fopt">
         <div class="fopt-p">$[C2_PRICE]</div>
         <div class="fopt-l">Course 2 Only<br>[DAY], [MONTH DATE]</div>
-      </a>
-      <a href="[STRIPE_BOTH]" target="_blank" class="fopt" style="border-color:#CC0000;">
+        <div class="ccta-wrap">[ECWID_EMBED_C2]</div>
+      </div>
+      <div class="fopt" style="border-color:#CC0000;">
         <div class="fopt-p" style="color:#CC0000;">$[BOTH_PRICE]</div>
         <div class="fopt-l">Both Sessions<br>Best Value &mdash; Save $[SAVINGS]</div>
-      </a>
+        <div class="ccta-wrap">[ECWID_EMBED_BOTH]</div>
+      </div>
     </div>
-    <a href="[STRIPE_BOTH]" class="fcta-main fd" target="_blank">Register Now</a>
+    <div class="fcta-main-wrap fd">
+      [ECWID_EMBED_BOTH]
+    </div>
   </div>
 </section>
 ```
