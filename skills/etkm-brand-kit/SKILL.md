@@ -15,8 +15,10 @@ description: >
 
 # ETKM Brand Kit
 
-**Version:** 3.1
-**Last Updated:** 2026-03-15
+**Version:** 4.0
+**Last Updated:** 2026-03-23
+**Change:** Typography system locked — Montserrat Black 900 is the permanent
+            ETKM headline font across all deliverables. No exceptions.
 
 ---
 
@@ -26,7 +28,7 @@ description: >
 |-------|-----|------|
 | Black | #000000 | Primary background, primary text |
 | White | #FFFFFF | Primary background, primary text |
-| Red | #FF0000 | Attention only — one element per view |
+| Red | #CC0000 | Attention only — one element per view |
 | Gray | #575757 | Supporting elements, secondary text |
 | Lite Gray | #BBBBBB | Dividers, borders, subtle structure |
 
@@ -45,51 +47,118 @@ description: >
 Red is a weapon, not decoration. It draws the eye to exactly one thing.
 
 - Use for: One word, one short phrase, one command, one warning, one decision point.
-- Do NOT use for: Paragraphs, backgrounds, multiple elements, decorative bars, borders on multiple sides.
+- Do NOT use for: Paragraphs, backgrounds, multiple elements, decorative bars on multiple sides.
 - Principle: When red appears, all other elements must be neutral (black, white, gray).
-- Maximum: One red element per visual section. If you are tempted to add a second, remove the first or choose which matters more.
+- Maximum: One red element per visual section. If tempted to add a second — remove the first.
 
 ### Proven Red Applications
 
 | Context | Red Usage |
 |---------|-----------|
+| Social graphics | Category label OR supporting line — never both |
 | PDFs and documents | Single attention phrase (e.g., "Train Hard.") |
 | HTML pages and forms | CTA button background, single accent line |
 | Email templates | Red top bar, red CTA button |
-| Social media image briefs | One accent element per image |
 | Curriculum sheets | Single red accent line below header |
-| Visual aide tools | Available in palette but applied sparingly |
 
 ---
 
-## 3. Typography System
+## 3. Typography System (LOCKED 2026-03-23)
 
-### Primary Type Stack
+### THE LOCKED FONT STACK
 
-| Role | Font | Weight |
-|------|------|--------|
-| Headlines (Title, H1, H2) | Helvetica Now Display | Black or Bold |
-| Body Text (Paragraphs, H3, H4) | Inter (free) or Helvetica Now Text (paid) | Regular or Medium |
-| Form headlines and labels | Barlow Condensed | Bold or SemiBold |
-| Data labels, captions, small text | Inter | Medium, uppercase with letter-spacing |
+| Role | Font | Weight | Source |
+|------|------|--------|--------|
+| **Display Headlines** | **Montserrat Black** | **900** | **Google Fonts / CDN — FREE** |
+| Body / UI Text | Inter | 400 Regular, 600 SemiBold | Google Fonts / CDN — FREE |
+| Category Labels | Inter | 600 SemiBold, uppercase + letter-spacing | Google Fonts / CDN — FREE |
+| Data / Captions | Inter | 400 Regular, uppercase + letter-spacing | Google Fonts / CDN — FREE |
+
+### Why Montserrat Black 900
+
+Montserrat Black 900 is the confirmed ETKM display font as of 2026-03-23.
+Selected from a live comparison of Manrope 800, Montserrat 900, Oswald 700,
+and Barlow Condensed 900. Nathan selected Montserrat Black immediately.
+This is not a fallback — it is the standard.
+
+- Free font — no licensing issues, available in all environments
+- Available via CDN: `https://cdn.jsdelivr.net/fontsource/fonts/montserrat@latest/latin-900-normal.ttf`
+- Available via Google Fonts: `https://fonts.googleapis.com/css2?family=Montserrat:wght@900`
+- Embed as base64 in HTML files for offline/rendering environments
+
+### Implementation — HTML / Social Graphics
+
+```css
+@font-face {
+  font-family: 'Montserrat';
+  font-weight: 900;
+  src: url('data:font/ttf;base64,[BASE64]') format('truetype');
+}
+@font-face {
+  font-family: 'Inter';
+  font-weight: 400;
+  src: url('data:font/ttf;base64,[BASE64]') format('truetype');
+}
+@font-face {
+  font-family: 'Inter';
+  font-weight: 600;
+  src: url('data:font/ttf;base64,[BASE64]') format('truetype');
+}
+
+/* Headline usage */
+.headline {
+  font-family: 'Montserrat', 'Arial Black', sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+/* Body / UI usage */
+.body, .label, .url {
+  font-family: 'Inter', Arial, sans-serif;
+}
+```
+
+### Implementation — PDF (ReportLab)
+
+Download and register Montserrat Black TTF before any PDF build:
+```python
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+pdfmetrics.registerFont(TTFont('Montserrat-Black', 'Montserrat-Black.ttf'))
+```
+
+### Implementation — PPTX
+
+Use Arial Black as the closest system fallback when Montserrat is
+not embeddable. Note in the Manus brief to substitute Montserrat Black
+if the target machine has it installed.
 
 ### Typography Rules
 
-- Never stretch, distort, or embellish typography.
-- Uppercase with wide letter-spacing for labels and category headers.
-- Headlines can be massive — Swiss International style embraces oversized type.
-- Body text stays clean and readable. No decorative fonts anywhere.
-
-### Web and App Fallbacks
-
-When Helvetica Now is not available (HTML artifacts, React components, web pages):
-- Headlines: system sans-serif stack or Barlow Condensed from Google Fonts
-- Body: Inter from Google Fonts
-- Never fall back to serif fonts or decorative alternatives
+- Montserrat Black headlines are ALWAYS uppercase in ETKM graphics
+- Letter-spacing on headlines: -2px to -4px (tight — the weight earns it)
+- Line height on headlines: 0.85–0.92 (stacked tight, Swiss International)
+- Category labels (Inter SemiBold): uppercase, letter-spacing 6–8px, small size
+- Body copy (Inter Regular): sentence case, normal letter-spacing
+- Never stretch, distort, or embellish typography
+- No decorative fonts anywhere in the system
 
 ---
 
-## 4. Visual Style and Geometry
+## 4. Social Graphics Typography Scale
+
+For 1080×1080 social graphics specifically:
+
+| Element | Font | Weight | Size | Case | Color |
+|---------|------|--------|------|------|-------|
+| Category label | Inter | 600 | 22–26px | UPPER | #CC0000 |
+| Main headline | Montserrat | 900 | 130–170px | UPPER | #FFFFFF |
+| Supporting line | Montserrat | 900 | 38–48px | UPPER | #CC0000 |
+| URL footer | Inter | 400 | 20–24px | UPPER | #444444 |
+
+---
+
+## 5. Visual Style and Geometry
 
 ### Layout Doctrine: Swiss International
 
@@ -97,76 +166,81 @@ When Helvetica Now is not available (HTML artifacts, React components, web pages
 - Asymmetric grids — not centered, not symmetrical
 - Aggressive use of negative space
 - Massive typography as a design element, not just text
-- Clean geometric shapes — no rounded corners unless functional (buttons)
+- Clean geometric shapes — no rounded corners unless functional
 - Hard edges, sharp lines, defined boundaries
 
-### Layout Patterns (Proven in Production)
+### Layout Patterns
 
 | Pattern | When to Use |
 |---------|-------------|
-| Bold Black Foundation | Default for high-impact pieces — black background, white type, red accent |
-| Clean White Canvas | Documents, forms, instructional content — white background, black type |
-| Split Screen | Before/after comparisons, two-concept layouts |
-| Red Accent Block | Single red bar or block draws attention to one element |
-| Minimalist Text-Only | Quotes, slogans, PEACE framework posts |
-| Structured Grid | Multi-section content, dashboards, comparison tables |
-| Asymmetric Bold | Hero sections, landing pages, cinematic image briefs |
+| Bold Black Foundation | Default for high-impact pieces — black bg, white type, red accent |
+| Clean White Canvas | Documents, forms, instructional content |
+| Split Screen | Before/after, two-concept layouts, event announcements |
+| Red Accent Block | Single red bar draws attention to one element |
+| Minimalist Text-Only | Quotes, slogans, Type B social graphics |
+| Structured Grid | Multi-section content, dashboards, tables |
+| Asymmetric Bold | Hero sections, landing pages, cinematic images |
 
-### Specific Layout Standards
+### HTML Output Standard (LOCKED)
 
-- PDF documents: Clean White Canvas base, black header bar, single red accent line
-- HTML forms: Black/white/red palette, tile-style inputs, animated step transitions
-- Email templates: Red top bar, black footer, Swiss grid, red CTA buttons
-- Social image briefs: Black or white background only, one red accent per image, no gradients
-- Curriculum sheets: All-white background, black font, black header bar, red accent line
-- Visual aide tools: White workspace, brand palette in controls, transparent PNG export
+All HTML deliverables follow this standard without exception:
 
-### HTML Output Standard (LOCKED — 2026-03-15)
-
-All HTML deliverables — pages, email templates, artifacts, tools, portals — MUST follow this standard without exception:
-
-- **Body background:** `#000000` (pure black)
-- **Card / surface background:** `#111111` (near-black for layered depth)
-- **Text:** `#FFFFFF` white on black always. Never dark text on dark bg.
-- **Accent color:** `#CC0000` (dark red — NOT `#FF0000` in HTML contexts)
-- **No light or white backgrounds** permitted on any HTML deliverable
-- This is a brand consistency rule. It applies to all HTML regardless of content type (tools, cheat sheets, forms, portals, email HTML, React artifacts).
-- If a deliverable mixes formats (e.g., HTML email), the HTML portions follow this rule.
+- Body background: `#000000`
+- Card / surface background: `#111111`
+- Text: `#FFFFFF` on black always
+- Accent: `#CC0000`
+- No light or white backgrounds on any HTML deliverable
 
 ---
 
-## 5. Logo and Identity
+## 6. Logo Standards
 
-- ETKM circle logo is the primary mark
-- No star in the logo (removed per Nathan's direction)
-- Logo can be embedded as base64 for self-contained HTML/PDF deployments
-- Logo placement: top-left or centered in headers, never competing with content
+Three logo variants — use the correct one per background:
+
+| Variant | File | Use On |
+|---------|------|--------|
+| White/Red circle | ETKM_Circle_Logo_White_Red.png | Dark backgrounds (social graphics, HTML) |
+| White circle | ETKM_Circle_Logo_White.png | Dark backgrounds where red conflicts |
+| Black/Red circle | ETKM_Circle_Logo_Black_Red.png | Light backgrounds (PDFs, DOCX) |
+
+- Placement on social graphics: bottom right, always
+- Size on 1080×1080: 110–120px
+- Never compete with headline copy
+- Embed as base64 in self-contained HTML/PDF files
 
 ---
 
-## 6. Image and Photography Direction
-
-For AI-generated image briefs and Canva designs:
+## 7. Image and Photography Direction
 
 - Cinematic, not stock photo
-- Desaturated or monochromatic base with red as the single color accent
+- B&W only — no color photography in graphics
 - Subjects positioned with intentional sightlines and spatial awareness
-- Back-turned or profile subjects preferred over direct-to-camera poses
-- Environmental storytelling — the setting communicates the message
-- No martial arts action shots unless specifically requested
-- The mood is quiet confidence, not aggression
+- Back-turned or profile subjects preferred over direct-to-camera
+- Environmental storytelling — setting communicates the message
+- No violence in progress — awareness moment only
+- Mood: quiet confidence, not aggression
 
 ---
 
-## 7. What This Kit Prohibits
+## 8. What This Kit Prohibits
 
 - Gradients of any kind
 - Colors outside the 5-color palette
 - Multiple red elements in a single view
+- Any headline font other than Montserrat Black 900
 - Rounded, playful, or whimsical design elements
-- Stock photo aesthetic
-- Centered-and-symmetrical layouts (Swiss style is asymmetric)
-- Decorative fonts or script typography
-- Drop shadows (unless subtle and functional in layered UI)
-- Borders on all four sides of an element (use one or two sides maximum)
-- Specific year counts for Nathan's experience in any asset copy ("42 years", "43 years", etc.) — evergreen phrasing only: "decades of experience", "over four decades", or "a lifetime of experience in self-protection"
+- Stock photo aesthetic or color photography
+- Centered-and-symmetrical layouts
+- Decorative or script typography
+- Drop shadows (unless subtle and functional)
+- Borders on all four sides of an element
+- Specific year counts for Nathan's experience —
+  evergreen phrasing only: "a lifetime dedicated to self-protection",
+  "over four decades", or "decades of experience"
+
+---
+
+*Version 4.0 — 2026-03-23*
+*Montserrat Black 900 locked as permanent ETKM display font*
+*Selected by Nathan Lundstrom from live comparison 2026-03-23*
+*Maintained in: easttxkravmaga/Claude → skills/etkm-brand-kit/SKILL.md*
