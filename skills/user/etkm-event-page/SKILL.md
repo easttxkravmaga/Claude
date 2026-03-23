@@ -344,6 +344,26 @@ Present file to Nathan via `present_files`.
 
 ---
 
+## Operational Rules (All Event Pages)
+
+### Update vs. Rebuild
+If only date, price, or Ecwid embed changes — update the existing file, do not rebuild. Pull the current HTML, swap those specific values, re-deliver. A full rebuild is only needed when wording or images change significantly. Treat the file as a living document, not a one-time build.
+
+### Ecwid Not Yet Provided
+If Nathan hasn't sent the embed code yet: insert a clearly marked comment block — `<!-- ECWID EMBED: [PRODUCT NAME] GOES HERE -->` — and deliver the page as complete except for that block. Never use a fake button or `href="#"` as a stand-in. Flag it explicitly in the delivery note.
+
+### File Naming Convention
+Always: `etkm-[event-slug].html` — lowercase, hyphenated, matches the WordPress page slug.
+- Women's Self Defense → `etkm-wsd.html`
+- Youth Self Defense → `etkm-youth-sd.html`
+- Intro to Krav → `etkm-intro-km.html`
+- College Ready → `etkm-college.html`
+
+### Screenshot Before Rebuilding a Live Page
+Before rebuilding or updating any page that is already deployed: fetch the live URL and screenshot it first. Confirm the current deployed state matches the last known local file before making changes. If they differ, surface the discrepancy to Nathan before proceeding.
+
+---
+
 ## Nathan's Filter for This Project
 
 Every deliverable must produce **more revenue** or **less time wasted**. Both if possible.

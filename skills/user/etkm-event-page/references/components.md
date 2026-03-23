@@ -463,3 +463,190 @@ Two-column layout. Course 1: meta left, content right. Course 2: content left, m
   #W .disc-inner { flex-direction:column; text-align:center; }
 }
 ```
+
+---
+
+## WSD TEMPLATE — TYPE 1 ADDITIONAL COMPONENTS
+
+These components are specific to the TYPE 1 Seminar/Workshop template. Load these when building any TYPE 1 page.
+
+---
+
+## HERO WITH BACKGROUND IMAGE (TYPE 1)
+
+Hero background opacity: **28%** — never raise above 35%, never drop below 20%.
+Gradient overlay: `linear-gradient(to right, rgba(0,0,0,.72) 0%, rgba(0,0,0,.45) 55%, rgba(0,0,0,.65) 100%)`
+
+```css
+#W .hero { padding:80px 0 64px; border-bottom:1px solid #1e1e1e; position:relative; overflow:hidden; background:#000; }
+#W .hero-bg { position:absolute; inset:0; background-image:url("data:image/jpeg;base64,[B64]"); background-size:cover; background-position:center 40%; opacity:.28; filter:grayscale(100%); z-index:0; }
+#W .hero::after { content:''; position:absolute; inset:0; background:linear-gradient(to right, rgba(0,0,0,.72) 0%, rgba(0,0,0,.45) 55%, rgba(0,0,0,.65) 100%); z-index:0; pointer-events:none; }
+#W .hero .cp { position:relative; z-index:1; }
+#W .hero h1 { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:clamp(52px,7.5vw,104px); line-height:.88; text-transform:uppercase; letter-spacing:-.01em; max-width:860px; margin-bottom:32px; color:#fff; }
+#W .hero h1 em { font-style:normal; color:#CC0000; display:block; }
+#W .hero-sub { font-size:18px; font-weight:400; color:#BBBBBB; max-width:580px; line-height:1.75; margin-bottom:48px; }
+```
+
+```html
+<section class="hero">
+  <div class="hero-bg"></div>  <!-- background image lives here -->
+  <div class="cp">
+    <div class="hero-ey fd">...</div>
+    <h1 class="fd">[LINE 1]<em>[RED LINE — payoff/outcome]</em></h1>
+    <p class="hero-sub fd">...</p>
+    <div class="cta-grp fd">
+      <a href="#register" class="btn-p">Secure Your Spot</a>
+      <a href="#levels" class="btn-g">See the Seminars &darr;</a>
+    </div>
+    <div class="evbar fd">...</div>
+  </div>
+</section>
+```
+
+**Hero headline rule:** Two-line structure. Red on the **payoff/outcome** line (line 2), not the setup.
+- Go Home Safe. / **EVERY TIME.**
+- Know What to Do. / **Before You Need It.**
+- Protect Your Family. / **Starting Today.**
+
+---
+
+## REGISTRATION BLOCK (TYPE 1 — Ecwid)
+
+Sits second on page, just under fold. Contains price, 3-cell meta, and Ecwid widget. Must have `id="register"`.
+
+```css
+#W .reg-section { padding:80px 0; border-bottom:1px solid #1a1a1a; background:#111; }
+#W .reg-block { background:#000; border:1px solid #222; border-top:4px solid #CC0000; padding:52px 48px; }
+#W .reg-hdr { display:grid; grid-template-columns:1fr auto; gap:28px; align-items:start; margin-bottom:40px; }
+#W .reg-ttl { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:clamp(28px,3.5vw,44px); line-height:1.0; text-transform:uppercase; color:#fff; }
+#W .reg-detail { text-align:right; }
+#W .reg-price { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:52px; color:#fff; line-height:1; }
+#W .reg-price sup { font-size:24px; vertical-align:super; }
+#W .reg-price-note { font-size:11px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:#575757; margin-top:4px; }
+#W .reg-meta { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-bottom:36px; }
+#W .rm { background:#111; border:1px solid #1e1e1e; padding:20px; }
+#W .rm-lbl { font-size:10px; font-weight:600; letter-spacing:.18em; text-transform:uppercase; color:#575757; margin-bottom:6px; }
+#W .rm-val { font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:18px; text-transform:uppercase; color:#fff; }
+```
+
+```html
+<section class="reg-section" id="register">
+  <div class="cp">
+    <div class="reg-block fd">
+      <div class="reg-hdr">
+        <div>
+          <span class="eyebrow" style="display:block;margin-bottom:12px;">Secure Your Spot</span>
+          <div class="reg-ttl">[EVENT NAME] Registration</div>
+        </div>
+        <div class="reg-detail">
+          <div class="reg-price"><sup>$</sup>[PRICE]</div>
+          <div class="reg-price-note">Per Person &middot; Single Seminar</div>
+        </div>
+      </div>
+      <div class="reg-meta">
+        <div class="rm"><div class="rm-lbl">Location</div><div class="rm-val">East Texas Krav Maga</div></div>
+        <div class="rm"><div class="rm-lbl">Time</div><div class="rm-val">[TIME RANGE]</div></div>
+        <div class="rm"><div class="rm-lbl">Ages</div><div class="rm-val">[AGE RANGE]</div></div>
+      </div>
+      <!-- ECWID EMBED CODE GOES HERE -->
+    </div>
+  </div>
+</section>
+```
+
+---
+
+## LEVELS/MODULES GRID (2×2 — TYPE 1)
+
+Four-quadrant content section for seminar levels or workshop modules.
+
+```css
+#W .levels-grid { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:#1e1e1e; border:1px solid #1e1e1e; }
+#W .lc { background:#111; padding:40px 36px; transition:background .2s; position:relative; }
+#W .lc:hover { background:#1a1a1a; }
+#W .lc-num { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:80px; color:#1a1a1a; line-height:1; position:absolute; top:24px; right:28px; }
+#W .lc-tag { font-size:10px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:#CC0000; margin-bottom:12px; }
+#W .lc-ttl { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:26px; text-transform:uppercase; color:#fff; margin-bottom:16px; line-height:1.05; max-width:280px; }
+#W .lc-desc { font-size:13.5px; color:#BBBBBB; line-height:1.6; margin-bottom:20px; }
+#W .lc-list { list-style:none; }
+#W .lc-list li { font-size:13px; color:#BBBBBB; padding:7px 0 7px 16px; border-bottom:1px solid #1e1e1e; position:relative; line-height:1.5; }
+#W .lc-list li::before { content:'—'; position:absolute; left:0; color:#CC0000; font-weight:700; }
+```
+
+```html
+<div class="levels-grid fd">
+  <div class="lc">
+    <div class="lc-num">01</div>
+    <div class="lc-tag">Level 1</div>
+    <div class="lc-ttl">[LEVEL TITLE]</div>
+    <p class="lc-desc">[1–2 sentences]</p>
+    <ul class="lc-list">
+      <li>[Skill or learning point]</li>
+    </ul>
+  </div>
+  <!-- Repeat for 02, 03, 04 -->
+</div>
+```
+
+**For workshops with fewer than 4 modules:** Use `grid-template-columns:1fr` for single column or adjust grid as needed.
+
+---
+
+## TESTIMONIAL BLOCK (TYPE 1)
+
+```css
+#W .testi-block { background:#000; border:1px solid #1e1e1e; border-left:4px solid #CC0000; padding:40px 44px; }
+#W .testi-quote { font-size:18px; color:#BBBBBB; line-height:1.75; font-style:italic; margin-bottom:20px; }
+#W .testi-name { font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:16px; text-transform:uppercase; color:#fff; margin-bottom:4px; }
+#W .testi-role { font-size:11px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:#CC0000; }
+```
+
+```html
+<div class="testi-block fd">
+  <p class="testi-quote">&ldquo;[QUOTE]&rdquo;</p>
+  <div class="testi-name">[NAME]</div>
+  <div class="testi-role">[ETKM STUDENT — CONTEXT]</div>
+  <div style="margin-top:20px;">
+    <a href="[LINK]" class="btn-g" target="_blank">Read [Name]'s Full Story &rarr;</a>
+  </div>
+</div>
+```
+
+If no testimonial is available: **omit the entire section** — do not use a placeholder quote.
+
+---
+
+## FINAL CTA (TYPE 1 — scrolls back to #register)
+
+The final CTA for TYPE 1 pages does NOT re-embed Ecwid. It scrolls back up to the registration section.
+
+```html
+<section class="fcta">
+  <div class="cp">
+    <h2 class="fd">[LINE 1]<br><em>[RED LINE]</em></h2>
+    <p class="fd">Spots are limited and fill quickly. Reserve your spot today.</p>
+    <div style="max-width:480px;margin:0 auto;" class="fd">
+      <a href="#register" class="btn-p" style="font-size:18px;padding:20px 56px;letter-spacing:.14em;">
+        Secure Your Spot &mdash; $[PRICE]
+      </a>
+    </div>
+    <p class="fd" style="margin-top:28px;font-size:14px;color:#575757;">
+      <a href="tel:9035900085" style="color:#BBBBBB;text-decoration:none;">(903) 590-0085</a>
+      &nbsp;&middot;&nbsp;
+      <a href="https://etxkravmaga.com" target="_blank" style="color:#BBBBBB;text-decoration:none;">etxkravmaga.com</a>
+    </p>
+  </div>
+</section>
+```
+
+**Responsive additions for TYPE 1 (add to existing responsive block):**
+```css
+@media(max-width:860px){
+  #W .levels-grid { grid-template-columns:1fr; }
+  #W .reg-hdr { grid-template-columns:1fr; }
+  #W .reg-detail { text-align:left; }
+  #W .reg-meta { grid-template-columns:1fr; }
+  #W .reg-block { padding:32px 24px; }
+  #W .testi-block { padding:28px 24px; }
+}
+```
