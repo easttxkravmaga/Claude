@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nano Banana Pro — AI Image Generator</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0c0c0f;
+      --surface:   #13131a;
+      --surface2:  #1c1c28;
+      --border:    #2a2a3d;
+      --primary:   #7c3aed;
+      --primary-h: #6d28d9;
+      --accent:    #a855f7;
+      --text:      #f0f0f5;
+      --muted:     #8888aa;
+      --success:   #22c55e;
+      --danger:    #ef4444;
+      --radius:    12px;
+      --sidebar-w: 340px;
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ── Header ─────────────────────────────────────────── */
+    header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 24px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.3px;
+    }
+
+    .logo span { color: var(--accent); }
+
+    .model-badge {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      background: rgba(168,85,247,0.12);
+      border: 1px solid rgba(168,85,247,0.3);
+      border-radius: 20px;
+      padding: 3px 10px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .header-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .api-key-toggle {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 12px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .api-key-toggle:hover { border-color: var(--accent); color: var(--text); }
+
+    /* ── Layout ─────────────────────────────────────────── */
+    .layout {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* ── Sidebar ─────────────────────────────────────────── */
+    aside {
+      width: var(--sidebar-w);
+      min-width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      gap: 20px;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    textarea, input[type="text"], input[type="password"], select {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-size: 14px;
+      padding: 10px 12px;
+      resize: vertical;
+      outline: none;
+      font-family: inherit;
+      transition: border-color 0.15s;
+    }
+
+    textarea:focus, input:focus, select:focus {
+      border-color: var(--primary);
+    }
+
+    textarea { min-height: 90px; line-height: 1.5; }
+    #negative-prompt { min-height: 60px; }
+
+    .char-count {
+      font-size: 11px;
+      color: var(--muted);
+      text-align: right;
+      margin-top: 4px;
+    }
+
+    /* style presets */
+    .style-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+
+    .style-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 7px 4px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+    }
+
+    .style-btn:hover { border-color: var(--accent); color: var(--text); }
+    .style-btn.active {
+      border-color: var(--primary);
+      color: var(--accent);
+      background: rgba(124,58,237,0.15);
+    }
+
+    /* ratio / count / model selectors */
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .pill {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 6px 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    .pill:hover { border-color: var(--accent); color: var(--text); }
+    .pill.active {
+      border-color: var(--primary);
+      color: var(--accent);
+      background: rgba(124,58,237,0.15);
+    }
+
+    /* count slider */
+    .count-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    input[type="range"] {
+      flex: 1;
+      appearance: none;
+      background: var(--border);
+      height: 4px;
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--primary);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover { background: var(--accent); }
+
+    .count-val {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      min-width: 20px;
+      text-align: center;
+    }
+
+    /* Generate button */
+    #generate-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.15s, transform 0.1s;
+      letter-spacing: 0.3px;
+    }
+
+    #generate-btn:hover:not(:disabled) { background: var(--primary-h); }
+    #generate-btn:active:not(:disabled) { transform: scale(0.98); }
+    #generate-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* API key panel */
+    #api-key-panel {
+      display: none;
+      padding: 12px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+
+    #api-key-panel label {
+      font-size: 12px;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    /* ── Main canvas ─────────────────────────────────────── */
+    main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* empty state */
+    .empty-state {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      color: var(--muted);
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .empty-icon {
+      font-size: 64px;
+      opacity: 0.4;
+      line-height: 1;
+    }
+
+    .empty-state h2 {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text);
+      opacity: 0.6;
+    }
+
+    .empty-state p { font-size: 14px; max-width: 320px; line-height: 1.6; }
+
+    /* loading state */
+    .loading-state {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      padding: 60px 20px;
+      text-align: center;
+    }
+
+    .loading-pulse {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--accent), var(--primary));
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.15); opacity: 1; }
+    }
+
+    .loading-state p { color: var(--muted); font-size: 14px; }
+    .loading-state strong { color: var(--text); display: block; font-size: 16px; margin-bottom: 4px; }
+
+    /* results */
+    #results { display: none; }
+
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .results-header h3 { font-size: 14px; color: var(--muted); font-weight: 500; }
+
+    .clear-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 12px;
+      padding: 5px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .clear-btn:hover { border-color: var(--danger); color: var(--danger); }
+
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .image-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: border-color 0.15s, transform 0.15s;
+      position: relative;
+      group: true;
+    }
+
+    .image-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .image-card img {
+      width: 100%;
+      display: block;
+      aspect-ratio: var(--img-ratio, 1);
+      object-fit: cover;
+    }
+
+    .image-actions {
+      display: flex;
+      gap: 8px;
+      padding: 10px 12px;
+      background: var(--surface2);
+      border-top: 1px solid var(--border);
+    }
+
+    .img-btn {
+      flex: 1;
+      padding: 7px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .img-btn:hover { border-color: var(--accent); color: var(--text); background: rgba(168,85,247,0.08); }
+
+    /* prompt replay badge */
+    .prompt-badge {
+      font-size: 11px;
+      color: var(--muted);
+      padding: 8px 12px;
+      border-top: 1px solid var(--border);
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      max-width: 360px;
+      z-index: 999;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.2s, transform 0.2s;
+      pointer-events: none;
+    }
+
+    #toast.show { opacity: 1; transform: translateY(0); }
+    #toast.error { background: #2d0f0f; border: 1px solid var(--danger); color: #fca5a5; }
+    #toast.success { background: #0d2d1a; border: 1px solid var(--success); color: #86efac; }
+
+    /* scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+    /* responsive */
+    @media (max-width: 768px) {
+      .layout { flex-direction: column; }
+      aside { width: 100%; min-width: unset; border-right: none; border-bottom: 1px solid var(--border); }
+      main { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ───────────────────────────────────────────── -->
+<header>
+  <div class="logo">Nano <span>Banana</span> Pro</div>
+  <div class="model-badge" id="active-model-badge">Imagen 3</div>
+  <div class="header-right">
+    <button class="api-key-toggle" onclick="toggleApiPanel()">⚙ API Key</button>
+  </div>
+</header>
+
+<!-- ── Layout ───────────────────────────────────────────── -->
+<div class="layout">
+
+  <!-- ── Sidebar ────────────────────────────────────────── -->
+  <aside>
+
+    <!-- API Key panel -->
+    <div id="api-key-panel">
+      <label for="api-key-input">Gemini API Key</label>
+      <input type="password" id="api-key-input" placeholder="AIza..." autocomplete="off" />
+    </div>
+
+    <!-- Prompt -->
+    <div>
+      <div class="section-label">Prompt</div>
+      <textarea id="prompt" placeholder="Describe the image you want to generate…" maxlength="2000"></textarea>
+      <div class="char-count"><span id="prompt-count">0</span> / 2000</div>
+    </div>
+
+    <!-- Negative Prompt -->
+    <div>
+      <div class="section-label">Negative Prompt <span style="opacity:0.4;font-size:10px">optional</span></div>
+      <textarea id="negative-prompt" placeholder="Things to exclude from the image…" maxlength="1000"></textarea>
+    </div>
+
+    <!-- Style Presets -->
+    <div>
+      <div class="section-label">Style</div>
+      <div class="style-grid">
+        <button class="style-btn active" data-suffix="" data-key="none">None</button>
+        <button class="style-btn" data-suffix="photorealistic, 8k, sharp detail" data-key="photo">Photo</button>
+        <button class="style-btn" data-suffix="cinematic, film grain, dramatic lighting" data-key="cinematic">Cinematic</button>
+        <button class="style-btn" data-suffix="digital art, concept art, highly detailed" data-key="digital">Digital Art</button>
+        <button class="style-btn" data-suffix="oil painting, brushstrokes, textured canvas" data-key="oil">Oil Paint</button>
+        <button class="style-btn" data-suffix="anime, vibrant colors, cel-shaded" data-key="anime">Anime</button>
+        <button class="style-btn" data-suffix="watercolor, soft edges, pastel tones" data-key="watercolor">Watercolor</button>
+        <button class="style-btn" data-suffix="3D render, octane render, studio lighting" data-key="3d">3D Render</button>
+        <button class="style-btn" data-suffix="minimalist, flat design, vector art" data-key="minimal">Minimal</button>
+      </div>
+    </div>
+
+    <!-- Aspect Ratio -->
+    <div>
+      <div class="section-label">Aspect Ratio</div>
+      <div class="pill-row" id="ratio-row">
+        <button class="pill active" data-val="1:1">1:1</button>
+        <button class="pill" data-val="16:9">16:9</button>
+        <button class="pill" data-val="9:16">9:16</button>
+        <button class="pill" data-val="4:3">4:3</button>
+        <button class="pill" data-val="3:4">3:4</button>
+      </div>
+    </div>
+
+    <!-- Count -->
+    <div>
+      <div class="section-label">Number of Images</div>
+      <div class="count-row">
+        <input type="range" id="count-range" min="1" max="4" value="2" step="1" />
+        <span class="count-val" id="count-val">2</span>
+      </div>
+    </div>
+
+    <!-- Model -->
+    <div>
+      <div class="section-label">Model</div>
+      <div class="pill-row" id="model-row">
+        <button class="pill" data-val="nano-banana">Nano Banana <span style="opacity:0.5;font-size:10px">Fast</span></button>
+        <button class="pill active" data-val="nano-banana-pro">Nano Banana Pro</button>
+      </div>
+    </div>
+
+    <!-- Generate -->
+    <button id="generate-btn" onclick="generate()">
+      <div class="spinner" id="spinner"></div>
+      <span id="btn-label">✦ Generate</span>
+    </button>
+
+  </aside>
+
+  <!-- ── Main ───────────────────────────────────────────── -->
+  <main id="main">
+
+    <div class="empty-state" id="empty-state">
+      <div class="empty-icon">🍌</div>
+      <h2>Ready to generate</h2>
+      <p>Enter a prompt on the left and hit Generate. Your images will appear here.</p>
+    </div>
+
+    <div class="loading-state" id="loading-state">
+      <div class="loading-pulse"></div>
+      <div>
+        <strong>Generating your image<span id="loading-count-label"></span>…</strong>
+        <p>Nano Banana Pro is thinking. This can take up to 30 seconds.</p>
+      </div>
+    </div>
+
+    <div id="results">
+      <div class="results-header">
+        <h3 id="results-meta"></h3>
+        <button class="clear-btn" onclick="clearResults()">Clear all</button>
+      </div>
+      <div class="image-grid" id="image-grid"></div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+  // ── State ─────────────────────────────────────────────
+  let selectedStyle = '';
+  let selectedRatio = '1:1';
+  let selectedModel = 'nano-banana-pro';
+  let generating = false;
+  let allImages = [];
+
+  // ── Pill selectors ────────────────────────────────────
+  document.querySelectorAll('#ratio-row .pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#ratio-row .pill').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedRatio = btn.dataset.val;
+    });
+  });
+
+  document.querySelectorAll('#model-row .pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#model-row .pill').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedModel = btn.dataset.val;
+      const badge = document.getElementById('active-model-badge');
+      badge.textContent = selectedModel === 'nano-banana-pro' ? 'Imagen 3 Pro' : 'Imagen 3 Fast';
+    });
+  });
+
+  document.querySelectorAll('.style-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedStyle = btn.dataset.suffix;
+    });
+  });
+
+  // ── Count slider ──────────────────────────────────────
+  const countRange = document.getElementById('count-range');
+  const countVal   = document.getElementById('count-val');
+  countRange.addEventListener('input', () => { countVal.textContent = countRange.value; });
+
+  // ── Char counter ──────────────────────────────────────
+  const promptEl   = document.getElementById('prompt');
+  const countLabel = document.getElementById('prompt-count');
+  promptEl.addEventListener('input', () => { countLabel.textContent = promptEl.value.length; });
+
+  // ── Enter to generate ─────────────────────────────────
+  promptEl.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) generate();
+  });
+
+  // ── API Key panel ─────────────────────────────────────
+  function toggleApiPanel() {
+    const panel = document.getElementById('api-key-panel');
+    panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+  }
+
+  // ── Ratio → CSS var ───────────────────────────────────
+  function ratioCss(r) {
+    const map = { '1:1': '1', '16:9': '16/9', '9:16': '9/16', '4:3': '4/3', '3:4': '3/4' };
+    return map[r] || '1';
+  }
+
+  // ── Generate ──────────────────────────────────────────
+  async function generate() {
+    if (generating) return;
+    const prompt = promptEl.value.trim();
+    if (!prompt) { toast('Please enter a prompt.', 'error'); promptEl.focus(); return; }
+
+    const apiKey = document.getElementById('api-key-input').value.trim();
+    const negPrompt = document.getElementById('negative-prompt').value.trim();
+    const count = parseInt(countRange.value);
+
+    generating = true;
+    setGenerating(true);
+
+    try {
+      const res = await fetch('/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt,
+          negative_prompt: negPrompt,
+          style_suffix: selectedStyle,
+          aspect_ratio: selectedRatio,
+          count,
+          model: selectedModel,
+          api_key: apiKey,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!data.ok) {
+        toast(data.error || 'Generation failed.', 'error');
+        return;
+      }
+
+      renderImages(data.images, prompt, data.model);
+      toast(`${data.images.length} image${data.images.length > 1 ? 's' : ''} generated!`, 'success');
+
+    } catch (err) {
+      toast('Network error: ' + err.message, 'error');
+    } finally {
+      generating = false;
+      setGenerating(false);
+    }
+  }
+
+  function setGenerating(on) {
+    const btn     = document.getElementById('generate-btn');
+    const spinner = document.getElementById('spinner');
+    const label   = document.getElementById('btn-label');
+    const loading = document.getElementById('loading-state');
+    const empty   = document.getElementById('empty-state');
+    const countN  = parseInt(countRange.value);
+
+    btn.disabled = on;
+    spinner.style.display = on ? 'block' : 'none';
+    label.textContent = on ? 'Generating…' : '✦ Generate';
+
+    if (on) {
+      empty.style.display = 'none';
+      document.getElementById('results').style.display = 'none';
+      loading.style.display = 'flex';
+      document.getElementById('loading-count-label').textContent =
+        countN > 1 ? `s (${countN})` : '';
+    } else {
+      loading.style.display = 'none';
+    }
+  }
+
+  function renderImages(images, prompt, modelId) {
+    const grid  = document.getElementById('image-grid');
+    const res   = document.getElementById('results');
+    const meta  = document.getElementById('results-meta');
+    const empty = document.getElementById('empty-state');
+
+    empty.style.display = 'none';
+
+    allImages = [...allImages, ...images];
+    const totalCount = allImages.length;
+    meta.textContent = `${totalCount} image${totalCount !== 1 ? 's' : ''} · ${modelId}`;
+
+    images.forEach((img, i) => {
+      const card = document.createElement('div');
+      card.className = 'image-card';
+      card.style.setProperty('--img-ratio', ratioCss(selectedRatio));
+
+      const src = `data:${img.mime};base64,${img.data}`;
+
+      card.innerHTML = `
+        <img src="${src}" alt="Generated image" loading="lazy" />
+        <div class="prompt-badge">${escHtml(prompt)}</div>
+        <div class="image-actions">
+          <a class="img-btn" href="${src}" download="nanobananapro_${Date.now()}_${i}.jpg">
+            ⬇ Download
+          </a>
+          <button class="img-btn" onclick="copyImg(this, '${img.data}', '${img.mime}')">
+            ⎘ Copy
+          </button>
+        </div>
+      `;
+
+      grid.prepend(card);
+    });
+
+    res.style.display = 'block';
+  }
+
+  function clearResults() {
+    allImages = [];
+    document.getElementById('image-grid').innerHTML = '';
+    document.getElementById('results').style.display = 'none';
+    document.getElementById('empty-state').style.display = 'flex';
+  }
+
+  async function copyImg(btn, b64, mime) {
+    try {
+      const blob = await fetch(`data:${mime};base64,${b64}`).then(r => r.blob());
+      await navigator.clipboard.write([new ClipboardItem({ [mime]: blob })]);
+      btn.textContent = '✓ Copied!';
+      setTimeout(() => { btn.innerHTML = '⎘ Copy'; }, 2000);
+    } catch {
+      toast('Copy failed — use Download instead.', 'error');
+    }
+  }
+
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── Toast ─────────────────────────────────────────────
+  let toastTimer;
+  function toast(msg, type = 'success') {
+    const el = document.getElementById('toast');
+    el.className = `${type} show`;
+    el.textContent = msg;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { el.classList.remove('show'); }, 4000);
+  }
+</script>
+</body>
+</html>
