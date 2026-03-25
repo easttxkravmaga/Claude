@@ -6,18 +6,19 @@ Location: `skills/contact-scraper/SKILL.md`
 
 ## PURPOSE
 
-Run the ETKM contact scraper to extract emails, phones, and social links from any website. One command. Results in CSV + JSON.
+Run the ETKM contact scraper to extract emails, phones, and social links from any website. One command. Results delivered as `output/scrape_contacts.xlsx`.
 
 ---
 
 ## WHEN TO LOAD THIS SKILL
 
 Load when Nate says any of:
+- "scrape [any URL or list of URLs]"
+- "/scrape [URL]"
 - "scrape this site"
 - "get contacts from"
 - "find emails on"
 - "pull contacts from these URLs"
-- "scrape [any URL or list of URLs]"
 - "who's the contact at [company/site]"
 
 ---
