@@ -1,7 +1,7 @@
 ---
 name: etkm-deliverable-qc
 version: 2.1
-updated: 2026-03-18
+updated: 2026-03-25
 description: >
   Non-negotiable QC gate for ALL ETKM deliverables before they reach Nathan.
   Triggers any time a PDF, DOCX, HTML page, email sequence, slide deck, or printed
@@ -47,7 +47,7 @@ mandatory check items that will never be skipped.
 
 ---
 
-## The 9 QC Gates — Run In Order
+## The 8 QC Gates — Run In Order
 
 ---
 
@@ -78,6 +78,7 @@ This gate is non-negotiable for any PDF containing tables, multi-column layouts,
 dense content blocks.
 
 **Run this procedure:**
+
 ```python
 from pdf2image import convert_from_path
 from PIL import Image
@@ -163,98 +164,32 @@ actual table of contents.
 ### GATE 4 — Brand and Visual Standards
 *Does this look like an ETKM document?*
 
-Reference `etkm-brand-kit` skill for full standards. Key checks:
+Reference `etkm-brand-kit` v4.0 for full standards. Key checks:
 
-- [ ] Color palette: black (#000000/#111111), white (#FFFFFF), red (#FF0000), gray (#575757), light gray (#BBBBBB) only — no other colors
+**Color:**
+- [ ] Color palette: #000000 (black body), #111111 (surfaces), #FFFFFF (headlines),
+  #BBBBBB (body text on dark), #CC0000 (red accent), #575757 (gray) only — no other colors
 - [ ] No gradients anywhere
-- [ ] Typography: Helvetica/Helvetica-Bold for PDFs. Barlow Condensed + Inter for HTML
+- [ ] HTML deliverables: body background is #000000, surfaces are #111111 — never white or gray backgrounds
+- [ ] PDF deliverables: cover is black background, interior pages are white background
+- [ ] DOCX deliverables: white background, black text throughout
+
+**Typography — LOCKED:**
+- [ ] HTML deliverables: Montserrat (headlines, labels) + Inter (body) via Google Fonts CDN
+- [ ] PDF deliverables: Montserrat (headlines) + Inter (body) — base64-embedded via etkm-pdf-pipeline
+- [ ] DOCX deliverables: Arial Bold (headings) + Arial (body) — system font substitute
+- [ ] NO Helvetica, NO Barlow Condensed, NO system sans-serif on HTML/PDF deliverables
+- [ ] Headline weight: Montserrat 900 Black for maximum impact — never lighter unless intentional
+
+**Layout:**
 - [ ] One red accent element per section — not multiple
 - [ ] Headers and footers consistent on every interior page
-- [ ] Cover page uses Bold Black Foundation (black background, white type, red accent)
-- [ ] Interior pages use Clean White Canvas (white background, black type)
-- [ ] ETKM logo present on cover page
+- [ ] PDF cover: black background, Montserrat 900 headline, red accent rule
+- [ ] PDF interior: white background, black header bar, 3px red rule
+- [ ] HTML: black body, #111 surface cards, white/ltgray text, red CTA buttons only
 - [ ] Swiss International layout — asymmetric, high contrast, no decorative elements
 - [ ] Visual hierarchy is clear — reader can navigate without confusion
 - [ ] No style drift between sections — consistent throughout
-
----
-
-### GATE 4A — Typography and Layout Precision
-*Is this document clean, professional, and easy to read at every point?*
-
-This gate exists because brand-compliant fonts and colors do not guarantee
-a readable document. Font too small, headings orphaned from their body,
-text jammed to margins — these create friction that breaks reader experience
-before the content gets a chance to work.
-
-#### Font Size Minimums (Non-Negotiable)
-
-**PDF (ReportLab):**
-| Element | Minimum Size |
-|---|---|
-| Body text / paragraphs | 10.5pt |
-| Table cell body | 9.5pt |
-| Section headers (H2) | 14pt |
-| Page title / H1 | 18pt |
-| Captions, footnotes, labels | 8.5pt — never go below this |
-
-**DOCX:**
-| Element | Minimum Size |
-|---|---|
-| Body text | 12pt (size: 24 in half-points) |
-| Table cell body | 10pt |
-| H1 | 16pt (size: 32) |
-| H2 | 14pt (size: 28) |
-| Captions, labels | 10pt |
-
-**HTML:**
-| Element | Minimum Size |
-|---|---|
-| Body text | 15px / 0.95rem |
-| Small text, labels, captions | 13px — never below |
-| H2 section headers | 20px |
-| H1 / page title | 26px |
-| Table cell body | 14px |
-
-**PPTX:**
-| Element | Minimum Size |
-|---|---|
-| Body / bullet text | 18pt |
-| Slide titles | 28pt |
-| Captions, footnotes | 14pt |
-
-**If any text falls below these minimums — fix it. Do not deliver.**
-
----
-
-#### Layout and Flow Checks
-
-- [ ] No heading (H1, H2, H3) appears as the last element on a page —
-      body content must follow on the same page (`keepWithNext` enforced)
-- [ ] No body paragraph is split so that only one line appears on a page
-      before or after a page break (`keepTogether` for short paragraphs)
-- [ ] Margins are consistent: 1 inch (72pt) on all sides for PDFs and DOCX
-- [ ] Text wraps correctly around all elements — no overflow into margins
-- [ ] Table columns are wide enough that no cell forces single-character-per-line wrapping
-- [ ] Line spacing is readable: minimum 1.2× leading for body text
-- [ ] Section spacing is consistent — headers breathe above and below
-- [ ] No wall-of-text blocks exceeding 6–7 lines without a visual break
-      (subhead, table, list, or whitespace)
-- [ ] Centered elements (cover titles, pull quotes) are intentionally centered —
-      body paragraphs are never accidentally centered
-- [ ] No runaway indentation — nested lists and blockquotes stay within readable margins
-
----
-
-#### The Reader Experience Test
-
-Read the document at normal zoom. Ask:
-- [ ] Can you read every element without leaning in or squinting?
-- [ ] Does your eye know where to go next on every page?
-- [ ] Does any page feel cramped, cluttered, or hard to enter?
-- [ ] Does any heading feel disconnected from the section it titles?
-
-**If any answer is yes — it needs fixing before delivery.**
 
 ---
 
@@ -271,9 +206,6 @@ Reference `etkm-brand-foundation` skill for full standards. Key checks:
 - [ ] Nathan's voice sections (closing statements, recommendations) sound like Nathan — advisor, not salesperson
 - [ ] Grammar and spelling correct throughout
 - [ ] If audience-facing: voice appropriate for the intended reader
-- [ ] No specific year count for Nathan's experience ("42 years", "43 years", etc.) —
-      evergreen phrasing only: "decades of experience", "over four decades",
-      or "a lifetime of experience in self-protection"
 
 ---
 
@@ -290,6 +222,7 @@ Reference `etkm-brand-foundation` skill for full standards. Key checks:
 - [ ] If the document contains fillable areas or reflection prompts, do they render correctly with adequate space?
 - [ ] For HTML deliverables: does the page render correctly in a browser? Is it mobile-responsive?
 - [ ] For DOCX deliverables: does the file open without errors and display correctly in Word?
+- [ ] For PDF deliverables: do all fonts render as Montserrat/Inter (thick, rounded strokes) — NOT system sans-serif (thin, sharp strokes)?
 
 ---
 
@@ -329,8 +262,9 @@ builder. Ask:
 When auditing multiple deliverables at once (e.g., a full book package):
 
 1. List every file in the batch
-2. Run all gates against each file independently
+2. Run all 8 gates against each file independently
 3. For each file, produce a findings report:
+
 ```
 FILE: [filename]
 STATUS: FAIL
@@ -350,10 +284,10 @@ ACTION REQUIRED: Rebuild tables with Paragraph objects. Add missing chapters. Re
 
 **Summary table format:**
 
-| File | Pages | G1 | G1.5 | G2 | G3 | G4 | G4A | G5 | G6 | G7 | G8 | Status |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 01_Field_Manual.pdf | 11 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | PASS |
-| 02_Validation_Brief.pdf | 7 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | PASS |
+| File | Pages | Gate 1 | Gate 1.5 | Gate 2 | Gate 3 | Gate 4 | Gate 5 | Gate 6 | Gate 7 | Gate 8 | Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 01_Field_Manual.pdf | 11 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | PASS |
+| 02_Validation_Brief.pdf | 7 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | PASS |
 
 ---
 
@@ -376,6 +310,8 @@ Every confirmed failure is logged here permanently. These are checked first in e
 | 2026-03-13 | Gift_of_Fear_Reading_Companion_v1.pdf | Chapter sequence skipping Ch. 12, 13, 14 | Gate 3 | Count chapters against source book's table of contents |
 | 2026-03-13 | Gift_of_Fear_Reading_Companion_v1.pdf | Blank final page | Gate 1 | Remove empty story entries at document end |
 | 2026-03-14 | Gift_of_Fear_Validation_Brief_v1.pdf | Validation table and vocab table — text clipped, not wrapping | Gate 1.5 | All table cells rebuilt with Paragraph objects and explicit styles |
+| 2026-03-25 | Multiple | Wrong font: Helvetica/Barlow Condensed used instead of Montserrat/Inter | Gate 4 | Font standard locked: Montserrat + Inter for HTML/PDF, Arial for DOCX |
+| 2026-03-25 | Multiple | White/gray background on HTML deliverables | Gate 4 | HTML black background rule locked: #000 body, #111 surfaces |
 
 When a new failure type is discovered, add it to this table immediately. It becomes a
 permanent check item for all future deliverables.
@@ -399,12 +335,15 @@ permanent check item for all future deliverables.
 **Wrong URL** (easttxkravmaga.com instead of etxkravmaga.com)
 → Always verify URLs against Gate 6 checklist
 
+**Wrong font** (thin system sans-serif instead of Montserrat)
+→ HTML: missing Google Fonts CDN import. PDF: fonts not base64-embedded.
+
+**White background on HTML** (should always be black)
+→ Missing `background: #000` on body. Load etkm-brand-kit before building any HTML.
+
 **Visual QC false positives** (dark pixels flagged at page edges)
 → Check if dark pixels are concentrated at top/bottom only (header/footer bars)
    vs. spread through middle (actual overflow). Middle = real problem.
-
-**Font too small**
-→ Check Gate 4A minimums. Body text never below 10.5pt (PDF), 12pt (DOCX), 15px (HTML), 18pt (PPTX).
 
 ---
 
@@ -412,6 +351,7 @@ permanent check item for all future deliverables.
 
 When processing books through the Book Intelligence System, run this QC skill
 after every build step:
+
 ```
 After build_01.py → QC Asset 01
 After build_02.py → QC Asset 02
@@ -425,7 +365,9 @@ Never batch-deliver without independent QC on each file.
 A passing Asset 01 does not mean Asset 02 passes.
 
 ---
-*Version 2.1 — Updated 2026-03-18*
-*Gate 4A added: typography minimums and layout precision checks*
-*Gate 5 updated: evergreen experience language rule added*
+
+*Version 2.1 — Updated 2026-03-25*
+*Gate 4 typography corrected: Montserrat + Inter locked. Helvetica/Barlow Condensed removed.*
+*Gate 4 HTML background rule added: #000 body, #111 surfaces — always.*
+*Two new entries added to Known Failure Pattern Registry.*
 *Maintained by: Nathan Lundstrom / East Texas Krav Maga*
