@@ -5,26 +5,33 @@ Uses Playwright with a real Chromium browser to bypass 403 blocks.
 Usage:
     python3 scripts/scrape_contacts.py <url> [url2] [url3] ...
     python3 scripts/scrape_contacts.py --file urls.txt
-Output: output/contacts.csv (appends each run)
+Output: output/scrape_contacts.xlsx (appends each run)
 """
 
 import sys
 import re
-import csv
-import json
 import argparse
 from pathlib import Path
 from datetime import datetime
 from playwright.sync_api import sync_playwright
 
-CHROMIUM_PATH = "/root/.cache/ms-playwright/chromium-1194/chrome-linux/chrome"
-OUTPUT_DIR = Path("/home/user/Claude/output")
-OUTPUT_CSV = OUTPUT_DIR / "contacts.csv"
+try:
+    import openpyxl
+    from openpyxl.styles import Font, PatternFill, Alignment
+except ImportError:
+    print("Installing openpyxl...")
+    import subprocess
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "openpyxl", "-q"])
+    import openpyxl
+    from openpyxl.styles import Font, PatternFill, Alignment
 
-# Patterns for extracting contact info from raw text
+CHROMIUM_PATH = "/root/.cache/ms-playwright/chromium-1194/chrome-linux/chrome"
+OUTPUT_DIR = Path(__file__).parent.parent / "output"
+OUTPUT_XLSX = OUTPUT_DIR / "scrape_contacts.xlsx"
+
 EMAIL_RE = re.compile(r"[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}")
 PHONE_RE = re.compile(r"(\(?\d{3}\)?[\s.\-]?\d{3}[\s.\-]?\d{4})")
-CSV_FIELDS = ["source_url", "name", "title", "email", "phone", "address", "department", "scraped_at"]
+FIELDS = ["Source URL", "Name", "Title", "Email", "Phone", "Address", "Department", "Scraped At"]
 
 
 def fetch_page_text(url: str, timeout: int = 20000) -> tuple[str, str]:
@@ -41,7 +48,6 @@ def fetch_page_text(url: str, timeout: int = 20000) -> tuple[str, str]:
             viewport={"width": 1280, "height": 800},
         )
         page = context.new_page()
-        # Hide automation markers
         page.add_init_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
         try:
             page.goto(url, wait_until="networkidle", timeout=timeout)
@@ -54,15 +60,11 @@ def fetch_page_text(url: str, timeout: int = 20000) -> tuple[str, str]:
 
 
 def extract_contacts(text: str, url: str) -> list[dict]:
-    """
-    Heuristic extraction of contact blocks from raw page text.
-    Returns a list of contact dicts.
-    """
+    """Heuristic extraction of contact blocks from raw page text."""
     emails = EMAIL_RE.findall(text)
     phones = PHONE_RE.findall(text)
     lines = [l.strip() for l in text.splitlines() if l.strip()]
 
-    # Build a simple contact per unique email found
     contacts = []
     used_emails = set()
 
@@ -71,21 +73,17 @@ def extract_contacts(text: str, url: str) -> list[dict]:
             continue
         used_emails.add(email)
 
-        # Look for a name/title near the email in the line list
         name, title, address, department = "", "", "", ""
         for i, line in enumerate(lines):
             if email in line:
-                # Scan surrounding lines for name/title clues
                 window = lines[max(0, i - 5):i + 5]
                 for wline in window:
                     if email in wline:
                         continue
-                    # Skip lines that are just phone numbers or URLs
                     if PHONE_RE.fullmatch(wline.strip()):
                         continue
                     if wline.startswith("http") or wline.startswith("www"):
                         continue
-                    # First non-email, non-phone line nearby → likely a name or title
                     if not name and len(wline) < 60 and not any(
                         w in wline.lower() for w in ["©", "privacy", "cookie", "menu", "navigation"]
                     ):
@@ -94,31 +92,28 @@ def extract_contacts(text: str, url: str) -> list[dict]:
                         title = wline
                 break
 
-        # Match a phone to this contact if only one phone on page, or leave blank
         phone = phones[0] if len(phones) == 1 else ""
-
         contacts.append({
-            "source_url": url,
-            "name": name,
-            "title": title,
-            "email": email,
-            "phone": phone,
-            "address": address,
-            "department": department,
-            "scraped_at": datetime.now().isoformat(timespec="seconds"),
+            "Source URL": url,
+            "Name": name,
+            "Title": title,
+            "Email": email,
+            "Phone": phone,
+            "Address": address,
+            "Department": department,
+            "Scraped At": datetime.now().isoformat(timespec="seconds"),
         })
 
-    # If no emails found, still record phones/address as a general org contact
     if not contacts and phones:
         contacts.append({
-            "source_url": url,
-            "name": "",
-            "title": "",
-            "email": "",
-            "phone": phones[0],
-            "address": "",
-            "department": "",
-            "scraped_at": datetime.now().isoformat(timespec="seconds"),
+            "Source URL": url,
+            "Name": "",
+            "Title": "",
+            "Email": "",
+            "Phone": phones[0],
+            "Address": "",
+            "Department": "",
+            "Scraped At": datetime.now().isoformat(timespec="seconds"),
         })
 
     return contacts
@@ -126,12 +121,35 @@ def extract_contacts(text: str, url: str) -> list[dict]:
 
 def save_contacts(contacts: list[dict]):
     OUTPUT_DIR.mkdir(exist_ok=True)
-    write_header = not OUTPUT_CSV.exists()
-    with open(OUTPUT_CSV, "a", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=CSV_FIELDS)
-        if write_header:
-            writer.writeheader()
-        writer.writerows(contacts)
+
+    # Load existing workbook or create new one
+    if OUTPUT_XLSX.exists():
+        wb = openpyxl.load_workbook(OUTPUT_XLSX)
+        ws = wb.active
+    else:
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = "Contacts"
+
+        # Header row styling
+        header_fill = PatternFill("solid", fgColor="CC0000")
+        header_font = Font(bold=True, color="FFFFFF")
+        for col, field in enumerate(FIELDS, 1):
+            cell = ws.cell(row=1, column=col, value=field)
+            cell.fill = header_fill
+            cell.font = header_font
+            cell.alignment = Alignment(horizontal="center")
+
+        # Column widths
+        col_widths = [40, 25, 30, 35, 18, 35, 25, 22]
+        for col, width in enumerate(col_widths, 1):
+            ws.column_dimensions[openpyxl.utils.get_column_letter(col)].width = width
+
+    # Append rows
+    for contact in contacts:
+        ws.append([contact[f] for f in FIELDS])
+
+    wb.save(OUTPUT_XLSX)
 
 
 def scrape(url: str):
@@ -144,7 +162,7 @@ def scrape(url: str):
             save_contacts(contacts)
             print(f"  Found {len(contacts)} contact(s):")
             for c in contacts:
-                print(f"    {c['name'] or '(unnamed)':30s}  {c['title'] or '':35s}  {c['email']}  {c['phone']}")
+                print(f"    {c['Name'] or '(unnamed)':30s}  {c['Title'] or '':35s}  {c['Email']}  {c['Phone']}")
         else:
             print("  No structured contacts found. Raw text sample:")
             print("  " + text[:500].replace("\n", " "))
@@ -169,7 +187,7 @@ def main():
     for url in urls:
         scrape(url)
 
-    print(f"\n✓ Contacts saved to {OUTPUT_CSV}")
+    print(f"\n✓ Contacts saved to {OUTPUT_XLSX}")
 
 
 if __name__ == "__main__":
