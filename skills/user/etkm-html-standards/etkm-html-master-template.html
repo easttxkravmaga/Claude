@@ -1,0 +1,1646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ETKM — Page Title</title>
+
+<!--
+╔══════════════════════════════════════════════════════════════════╗
+║  ETKM HTML MASTER TEMPLATE                                       ║
+║  Version: 1.0  |  Locked: 2026-03-25                            ║
+║                                                                  ║
+║  This is the bones for ALL ETKM web-facing HTML:                 ║
+║  Journey maps, landing pages, etxkravmaga.com, etkmstudent.com,  ║
+║  student guides, instructor guides, event pages.                 ║
+║                                                                  ║
+║  Rules that never change:                                        ║
+║  1. Body background is ALWAYS #000000                            ║
+║  2. Fonts are ALWAYS Montserrat (headlines) + Inter (body)       ║
+║  3. Red (#CC0000) is used ONCE per section — never decorative    ║
+║  4. All images and videos are B&W via CSS filter                 ║
+║  5. Load etkm-deliverable-qc before present_files                ║
+║                                                                  ║
+║  COMPANION SKILLS (load before building):                        ║
+║  → etkm-brand-kit (visual standards)                             ║
+║  → etkm-deliverable-qc (QC before delivery)                      ║
+╚══════════════════════════════════════════════════════════════════╝
+-->
+
+<!-- ── FONTS — always both, always from Google ── -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+
+/* ══════════════════════════════════════════════════
+   LAYER 0 — CSS VARIABLES (never change these)
+   ══════════════════════════════════════════════════ */
+:root {
+  /* Colors */
+  --black:      #000000;   /* body background — always */
+  --surface:    #111111;   /* cards, panels, elevated surfaces */
+  --surface-hi: #161616;   /* hover states */
+  --border:     #222222;   /* structural borders */
+  --border-lt:  #2a2a2a;   /* subtle borders */
+  --white:      #FFFFFF;   /* primary headlines */
+  --ltgray:     #BBBBBB;   /* body text on dark backgrounds */
+  --gray:       #575757;   /* secondary text, labels */
+  --red:        #CC0000;   /* attention — one element per section */
+
+  /* Typography scale */
+  --font-head:  'Montserrat', sans-serif;
+  --font-body:  'Inter', sans-serif;
+
+  /* Spacing */
+  --page-pad:   52px;
+  --section-gap: 80px;
+}
+
+/* ══════════════════════════════════════════════════
+   LAYER 1 — RESET & BASE
+   ══════════════════════════════════════════════════ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--black);    /* LOCKED — never change */
+  color: var(--white);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ══════════════════════════════════════════════════
+   LAYER 2 — TYPOGRAPHY SCALE
+   ══════════════════════════════════════════════════ */
+
+/* Display / Hero headline */
+.t-display {
+  font-family: var(--font-head);
+  font-weight: 900;
+  font-size: clamp(52px, 8vw, 96px);
+  line-height: 0.90;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--white);
+}
+
+/* H1 — Section headline */
+.t-h1 {
+  font-family: var(--font-head);
+  font-weight: 900;
+  font-size: clamp(32px, 5vw, 56px);
+  line-height: 0.95;
+  letter-spacing: -0.015em;
+  text-transform: uppercase;
+  color: var(--white);
+}
+
+/* H2 — Subsection headline */
+.t-h2 {
+  font-family: var(--font-head);
+  font-weight: 900;
+  font-size: clamp(22px, 3vw, 36px);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  color: var(--white);
+}
+
+/* H3 — Block headline */
+.t-h3 {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: clamp(14px, 1.8vw, 18px);
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--white);
+}
+
+/* Kicker / eyebrow label */
+.t-kicker {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--red);
+}
+
+/* Body copy */
+.t-body {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 1.72;
+  color: var(--ltgray);
+}
+
+/* Body — smaller */
+.t-body-sm {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 1.68;
+  color: var(--ltgray);
+}
+
+/* Caption / data label */
+.t-caption {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+
+/* Red accent on any text element */
+.t-red { color: var(--red); }
+
+/* ══════════════════════════════════════════════════
+   LAYER 3 — LAYOUT UTILITIES
+   ══════════════════════════════════════════════════ */
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--page-pad);
+}
+
+.container-narrow {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 var(--page-pad);
+}
+
+/* Section wrapper — standard vertical padding */
+.section {
+  padding: var(--section-gap) 0;
+}
+
+.section-lg {
+  padding: 120px 0;
+}
+
+/* Two column — asymmetric (Swiss default) */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: start;
+}
+
+/* Two column — 60/40 */
+.grid-60-40 {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 48px;
+  align-items: start;
+}
+
+/* Three column */
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+/* Four column */
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+/* Flex row */
+.flex-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+}
+
+/* Spacers */
+.gap-sm  { height: 16px; }
+.gap-md  { height: 32px; }
+.gap-lg  { height: 56px; }
+.gap-xl  { height: 80px; }
+
+/* ══════════════════════════════════════════════════
+   LAYER 4 — STRUCTURAL ELEMENTS
+   ══════════════════════════════════════════════════ */
+
+/* Red rule — 3px, the ETKM structural divider */
+.red-rule {
+  width: 100%;
+  height: 3px;
+  background: var(--red);
+  flex-shrink: 0;
+}
+
+.red-rule-short {
+  width: 56px;
+  height: 3px;
+  background: var(--red);
+}
+
+/* Section divider — subtle */
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 0;
+}
+
+/* Kicker + rule combination */
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ══════════════════════════════════════════════════
+   LAYER 5 — NAVIGATION
+   ══════════════════════════════════════════════════ */
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--black);
+  border-bottom: 1px solid var(--border);
+  padding: 0 var(--page-pad);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 64px;
+}
+
+.nav-logo {
+  font-family: var(--font-head);
+  font-weight: 900;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--white);
+}
+
+.nav-logo span { color: var(--red); }
+
+.nav-links {
+  display: flex;
+  gap: 32px;
+  list-style: none;
+}
+
+.nav-link {
+  font-family: var(--font-head);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ltgray);
+  transition: color 0.15s;
+}
+
+.nav-link:hover { color: var(--white); }
+.nav-link.active { color: var(--red); }
+
+/* ══════════════════════════════════════════════════
+   LAYER 6 — HERO SECTIONS
+   ══════════════════════════════════════════════════ */
+
+/* ── Hero: Text only (no image) ── */
+.hero-text {
+  padding: 120px var(--page-pad) 100px;
+  background: var(--black);
+  border-bottom: 3px solid var(--red);
+}
+
+/* ── Hero: Full-width background image ──
+   Usage: <div class="hero-image" style="background-image: url('your-image.jpg')">
+   Image is automatically B&W via filter + dark overlay for text legibility
+*/
+.hero-image {
+  position: relative;
+  min-height: 70vh;
+  display: flex;
+  align-items: flex-end;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: grayscale(100%);        /* B&W — non-negotiable */
+  overflow: hidden;
+}
+
+/* Dark overlay — makes text readable over any image */
+.hero-image::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.58);
+  z-index: 1;
+}
+
+/* Optional red tint overlay — add class .hero-image-red */
+.hero-image-red::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(204,0,0,0.12);
+  z-index: 2;
+}
+
+.hero-image-content {
+  position: relative;
+  z-index: 3;
+  padding: 80px var(--page-pad);
+  width: 100%;
+  filter: grayscale(0);           /* Re-saturate text/UI on top */
+}
+
+/* ── Hero: Cinematic (21:9) ── */
+.hero-cinematic {
+  aspect-ratio: 21/9;
+  min-height: 400px;
+}
+
+/* ── Hero: Video background ──
+   Usage: wrap a <video> tag inside this
+*/
+.hero-video-wrap {
+  position: relative;
+  min-height: 70vh;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+}
+
+.hero-video-wrap video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(100%);        /* B&W — non-negotiable */
+}
+
+.hero-video-wrap::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 1;
+}
+
+.hero-video-content {
+  position: relative;
+  z-index: 2;
+  padding: 80px var(--page-pad);
+  width: 100%;
+}
+
+/* ══════════════════════════════════════════════════
+   LAYER 7 — IMAGE COMPONENTS
+   All images default to B&W. Red accent applied
+   as overlay or border — never baked into the image.
+   ══════════════════════════════════════════════════ */
+
+/* ── Base image treatment — B&W always ── */
+.img-bw {
+  filter: grayscale(100%);
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: filter 0.3s ease;
+}
+
+/* Hover: reveal color (optional, use sparingly) */
+.img-bw:hover {
+  filter: grayscale(0%);
+}
+
+/* ── Red stripe accent — left edge ──
+   Usage: wrap image in <div class="img-stripe">
+*/
+.img-stripe {
+  position: relative;
+}
+
+.img-stripe::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--red);
+  z-index: 1;
+}
+
+/* ── Red corner accent — top-left ── */
+.img-corner::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 32px;
+  height: 4px;
+  background: var(--red);
+  z-index: 1;
+}
+
+.img-corner::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 4px;
+  height: 32px;
+  background: var(--red);
+  z-index: 1;
+}
+
+/* ── Image with text overlay ──
+   Usage: <div class="img-caption-wrap">
+            <img class="img-bw" ...>
+            <div class="img-caption">Caption text</div>
+          </div>
+*/
+.img-caption-wrap {
+  position: relative;
+  overflow: hidden;
+}
+
+.img-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px 20px 16px;
+  background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--white);
+}
+
+/* ── Half-split: image left or right ──
+   Usage: <div class="split-image">
+            <div class="split-img-side">img here</div>
+            <div class="split-content-side">content here</div>
+          </div>
+*/
+.split-image {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 480px;
+}
+
+.split-img-side {
+  position: relative;
+  overflow: hidden;
+}
+
+.split-img-side img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(100%);
+}
+
+.split-content-side {
+  background: var(--surface);
+  padding: 56px 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Reverse: image right */
+.split-image.reverse {
+  direction: rtl;
+}
+
+.split-image.reverse > * {
+  direction: ltr;
+}
+
+/* ── Thumbnail grid ──
+   Usage: <div class="thumb-grid">
+            <div class="thumb-item">...</div>
+          </div>
+*/
+.thumb-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  background: var(--border);
+}
+
+.thumb-item {
+  aspect-ratio: 16/9;
+  overflow: hidden;
+  position: relative;
+  background: var(--surface);
+}
+
+.thumb-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(100%);
+  transition: transform 0.4s ease, filter 0.3s ease;
+}
+
+.thumb-item:hover img {
+  transform: scale(1.04);
+  filter: grayscale(60%);
+}
+
+/* 4-up grid variant */
+.thumb-grid-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+/* ── Background image section ──
+   Usage: <div class="bg-image-section" style="background-image:url(...)">
+*/
+.bg-image-section {
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;   /* parallax */
+  padding: 120px var(--page-pad);
+}
+
+.bg-image-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.72);
+  /* B&W achieved via backdrop blend — image shows through dark overlay */
+  -webkit-backdrop-filter: grayscale(100%);
+  backdrop-filter: grayscale(100%);
+}
+
+.bg-image-section .bg-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* ══════════════════════════════════════════════════
+   LAYER 8 — VIDEO COMPONENTS
+   ══════════════════════════════════════════════════ */
+
+/* ── Responsive YouTube embed ──
+   Usage: <div class="video-embed">
+            <iframe src="https://www.youtube-nocookie.com/embed/VIDEO_ID"
+              frameborder="0" allowfullscreen></iframe>
+          </div>
+   Always use youtube-nocookie.com (no tracking)
+   B&W applied to the wrapper — works in most browsers
+*/
+.video-embed {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%;    /* 16:9 */
+  height: 0;
+  overflow: hidden;
+  filter: grayscale(100%);   /* B&W */
+  background: var(--surface);
+}
+
+.video-embed iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* ── Video thumbnail with play button ──
+   Usage: <div class="video-thumb" data-src="https://...youtube...">
+            <img class="img-bw" src="thumbnail.jpg" alt="">
+            <div class="video-play">▶</div>
+          </div>
+   JavaScript at bottom handles click → open in modal or navigate
+*/
+.video-thumb {
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+  aspect-ratio: 16/9;
+}
+
+.video-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(100%);
+  transition: filter 0.3s ease, transform 0.4s ease;
+}
+
+.video-thumb:hover img {
+  filter: grayscale(60%);
+  transform: scale(1.03);
+}
+
+.video-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 64px;
+  height: 64px;
+  background: var(--red);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: var(--white);
+  transition: background 0.2s, transform 0.2s;
+}
+
+.video-thumb:hover .video-play {
+  background: #aa0000;
+  transform: translate(-50%, -50%) scale(1.08);
+}
+
+/* ── Inline video (autoplay, muted, loop) ──
+   Usage: <div class="video-inline">
+            <video autoplay muted loop playsinline>
+              <source src="video.mp4" type="video/mp4">
+            </video>
+          </div>
+*/
+.video-inline {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  aspect-ratio: 16/9;
+}
+
+.video-inline video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(100%);   /* B&W */
+}
+
+/* ══════════════════════════════════════════════════
+   LAYER 9 — CONTENT BLOCKS
+   ══════════════════════════════════════════════════ */
+
+/* ── Black concept panel ── */
+.panel-dark {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--red);
+  padding: 32px 36px;
+}
+
+.panel-dark .panel-kicker {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 10px;
+}
+
+.panel-dark .panel-headline {
+  font-family: var(--font-head);
+  font-weight: 900;
+  font-size: 20px;
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: var(--white);
+  margin-bottom: 14px;
+}
+
+.panel-dark .panel-body {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 1.68;
+  color: var(--ltgray);
+}
+
+/* ── Quote block ── */
+.quote-block {
+  border-left: 4px solid var(--red);
+  padding: 20px 28px;
+  background: var(--surface);
+  margin: 28px 0;
+}
+
+.quote-text {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 1.45;
+  color: var(--white);
+  margin-bottom: 10px;
+}
+
+.quote-attr {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+
+/* ── Pull quote — large display treatment ── */
+.pull-quote {
+  border-top: 3px solid var(--red);
+  border-bottom: 1px solid var(--border);
+  padding: 28px 0;
+  margin: 32px 0;
+}
+
+.pull-quote-text {
+  font-family: var(--font-head);
+  font-weight: 900;
+  font-size: clamp(18px, 2.5vw, 26px);
+  line-height: 1.15;
+  text-transform: uppercase;
+  color: var(--white);
+}
+
+.pull-quote-text em {
+  color: var(--red);
+  font-style: normal;
+}
+
+/* ── Stat callout ── */
+.stat-block {
+  border-top: 3px solid var(--red);
+  padding-top: 14px;
+}
+
+.stat-num {
+  font-family: var(--font-head);
+  font-weight: 900;
+  font-size: 48px;
+  line-height: 1;
+  color: var(--white);
+  margin-bottom: 6px;
+}
+
+.stat-label {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gray);
+  margin-bottom: 8px;
+}
+
+.stat-desc {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--ltgray);
+}
+
+/* ── Three-box row ── */
+.three-box {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  background: var(--border);
+}
+
+.box-item {
+  padding: 20px 18px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+}
+
+.box-item:last-child { border-right: none; }
+
+.box-item-red {
+  background: var(--red);
+}
+
+.box-head {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--white);
+  margin-bottom: 8px;
+}
+
+.box-body {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 1.58;
+  color: var(--ltgray);
+}
+
+.box-item-red .box-body {
+  color: rgba(255,255,255,0.8);
+}
+
+/* ── Item list (numbered) ── */
+.item-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.item {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+}
+
+.item-num {
+  font-family: var(--font-head);
+  font-weight: 900;
+  font-size: 32px;
+  color: var(--border-lt);
+  line-height: 1;
+  min-width: 34px;
+  flex-shrink: 0;
+}
+
+.item-title {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  color: var(--white);
+  margin-bottom: 4px;
+}
+
+.item-desc {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--ltgray);
+}
+
+/* ── Full-width accent strip ── */
+.accent-strip {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 20px var(--page-pad);
+  margin: 0 calc(-1 * var(--page-pad));
+}
+
+.accent-strip-text {
+  font-family: var(--font-head);
+  font-weight: 900;
+  font-size: clamp(14px, 2vw, 18px);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--white);
+}
+
+.accent-strip-text em {
+  color: var(--red);
+  font-style: normal;
+}
+
+/* ══════════════════════════════════════════════════
+   LAYER 10 — BUTTONS & LINKS
+   ══════════════════════════════════════════════════ */
+
+/* Primary CTA — red filled */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 28px;
+  background: var(--red);
+  color: var(--white);
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.btn-primary:hover { background: #aa0000; }
+
+/* Secondary — outline */
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 26px;
+  background: transparent;
+  color: var(--ltgray);
+  font-family: var(--font-head);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border: 1px solid #444;
+  cursor: pointer;
+  text-decoration: none;
+  transition: border-color 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+
+.btn-secondary:hover {
+  border-color: var(--ltgray);
+  color: var(--white);
+}
+
+/* PDF download button — red, bold, prominent */
+.btn-pdf {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: var(--red);
+  color: var(--white);
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+
+.btn-pdf::before { content: '↓  '; }
+.btn-pdf:hover { background: #aa0000; }
+
+/* Text link */
+.link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-head);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ltgray);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.link-arrow::after { content: ' →'; }
+.link-arrow:hover { color: var(--white); }
+
+/* ══════════════════════════════════════════════════
+   LAYER 11 — CARDS
+   ══════════════════════════════════════════════════ */
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid transparent;
+  padding: 24px;
+  transition: border-left-color 0.2s, background 0.2s;
+}
+
+.card:hover {
+  border-left-color: var(--red);
+  background: var(--surface-hi);
+}
+
+.card-image {
+  aspect-ratio: 16/9;
+  overflow: hidden;
+  margin: -24px -24px 20px;
+}
+
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(100%);
+  transition: transform 0.4s ease;
+}
+
+.card:hover .card-image img {
+  transform: scale(1.03);
+}
+
+/* ══════════════════════════════════════════════════
+   LAYER 12 — FORMS
+   ══════════════════════════════════════════════════ */
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ltgray);
+  margin-bottom: 8px;
+}
+
+.form-input {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-bottom: 2px solid var(--border);
+  color: var(--white);
+  font-family: var(--font-body);
+  font-size: 14px;
+  padding: 12px 16px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus {
+  border-bottom-color: var(--red);
+}
+
+.form-input::placeholder {
+  color: var(--gray);
+}
+
+textarea.form-input {
+  resize: vertical;
+  min-height: 120px;
+}
+
+/* ══════════════════════════════════════════════════
+   LAYER 13 — FOOTER
+   ══════════════════════════════════════════════════ */
+
+.footer {
+  background: var(--surface);
+  border-top: 3px solid var(--red);
+  padding: 52px var(--page-pad) 32px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 48px;
+  margin-bottom: 48px;
+}
+
+.footer-brand .footer-logo {
+  font-family: var(--font-head);
+  font-weight: 900;
+  font-size: 28px;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--white);
+  margin-bottom: 16px;
+}
+
+.footer-brand .footer-logo span { color: var(--red); }
+
+.footer-brand p {
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--ltgray);
+  max-width: 280px;
+}
+
+.footer-col-head {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gray);
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.footer-links {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer-links a {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--ltgray);
+  transition: color 0.15s;
+}
+
+.footer-links a:hover { color: var(--white); }
+
+.footer-bottom {
+  border-top: 1px solid var(--border);
+  padding-top: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-bottom p {
+  font-family: var(--font-body);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--gray);
+}
+
+/* ══════════════════════════════════════════════════
+   LAYER 14 — MOBILE RESPONSIVE
+   ══════════════════════════════════════════════════ */
+
+@media (max-width: 1024px) {
+  :root { --page-pad: 40px; }
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --page-pad: 24px;
+    --section-gap: 56px;
+  }
+
+  .grid-2,
+  .grid-60-40,
+  .split-image,
+  .three-box { grid-template-columns: 1fr; }
+
+  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+  .grid-4 { grid-template-columns: 1fr; }
+
+  .hero-text { padding: 80px var(--page-pad) 64px; }
+  .hero-image { min-height: 50vh; }
+
+  .footer-grid { grid-template-columns: 1fr; gap: 32px; }
+  .footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
+
+  .thumb-grid { grid-template-columns: repeat(2, 1fr); }
+  .thumb-grid-4 { grid-template-columns: repeat(2, 1fr); }
+
+  .split-img-side { aspect-ratio: 16/9; }
+
+  .nav-links { display: none; } /* add hamburger menu as needed */
+}
+
+@media (max-width: 480px) {
+  .grid-3 { grid-template-columns: 1fr; }
+  .thumb-grid { grid-template-columns: 1fr; }
+}
+
+</style>
+</head>
+<body>
+
+<!--
+╔══════════════════════════════════════════════════════════════════╗
+║  COMPONENT REFERENCE                                             ║
+║  Copy any block below and replace the placeholder content.       ║
+║  Delete everything you don't need. Keep the CSS above intact.    ║
+╚══════════════════════════════════════════════════════════════════╝
+-->
+
+
+<!-- ════════════════════════════════════════════════
+  COMPONENT: Navigation
+  ════════════════════════════════════════════════ -->
+<nav class="nav">
+  <div class="nav-logo">ETKM<span>.</span></div>
+  <ul class="nav-links">
+    <li><a href="#" class="nav-link active">Home</a></li>
+    <li><a href="#" class="nav-link">Training</a></li>
+    <li><a href="#" class="nav-link">Events</a></li>
+    <li><a href="#" class="nav-link">Resources</a></li>
+    <li><a href="#" class="nav-link">Contact</a></li>
+  </ul>
+  <a href="#" class="btn-primary">Get Started</a>
+</nav>
+
+
+<!-- ════════════════════════════════════════════════
+  HERO A: Text only — no image
+  ════════════════════════════════════════════════ -->
+<section class="hero-text">
+  <div class="container">
+    <div class="t-kicker" style="margin-bottom:16px;">East Texas Krav Maga</div>
+    <h1 class="t-display" style="margin-bottom:24px;">
+      Train Hard.<br><span class="t-red">Go Home Safe.</span>
+    </h1>
+    <div class="red-rule-short" style="margin-bottom:28px;"></div>
+    <p class="t-body" style="max-width:540px; margin-bottom:36px;">
+      Real-world self-defense training built for everyday people. No experience needed. Just the decision to show up.
+    </p>
+    <div class="flex-row">
+      <a href="#" class="btn-primary">Start Training</a>
+      <a href="#" class="btn-secondary">Learn More</a>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════
+  HERO B: Full-width background image
+  — Image is B&W via CSS filter on .hero-image
+  — Replace URL in style attribute
+  ════════════════════════════════════════════════ -->
+<section class="hero-image" style="background-image: url('https://etxkravmaga.com/wp-content/uploads/YOUR-IMAGE.jpg');">
+  <div class="hero-image-content">
+    <div class="container">
+      <div class="t-kicker" style="margin-bottom:16px;">Real-World Self Defense</div>
+      <h1 class="t-h1" style="margin-bottom:20px;">
+        The Decision<br>You Make <span class="t-red">Today.</span>
+      </h1>
+      <p class="t-body" style="max-width:480px; margin-bottom:32px;">
+        Placeholder body text. Replace with real copy.
+      </p>
+      <a href="#" class="btn-primary">Take the First Step</a>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════
+  HERO C: Background video (autoplay, muted, B&W)
+  — Replace src with actual video file
+  — YouTube cannot be used as a background video source
+  ════════════════════════════════════════════════ -->
+<div class="hero-video-wrap">
+  <video autoplay muted loop playsinline>
+    <source src="your-training-footage.mp4" type="video/mp4">
+  </video>
+  <div class="hero-video-content">
+    <div class="container">
+      <h1 class="t-display" style="margin-bottom:20px;">
+        Built for<br><span class="t-red">Real Life.</span>
+      </h1>
+      <a href="#" class="btn-primary">See Training Options</a>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════
+  SECTION: Content + image split (Swiss asymmetric)
+  ════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="container">
+    <div class="split-image">
+      <div class="split-img-side">
+        <!-- Image is B&W via CSS — use any real ETKM training photo -->
+        <img src="https://etxkravmaga.com/wp-content/uploads/YOUR-PHOTO.jpg"
+             alt="ETKM training" class="img-bw">
+      </div>
+      <div class="split-content-side">
+        <div class="t-kicker" style="margin-bottom:12px;">Why It Works</div>
+        <h2 class="t-h2" style="margin-bottom:20px;">
+          Principle Over<br><span class="t-red">Technique.</span>
+        </h2>
+        <div class="red-rule-short" style="margin-bottom:24px;"></div>
+        <p class="t-body" style="margin-bottom:20px;">
+          Body copy goes here. Replace with real ETKM content.
+        </p>
+        <a href="#" class="btn-primary">Read More</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════
+  SECTION: Stat callouts — three across
+  ════════════════════════════════════════════════ -->
+<section class="section" style="background:var(--surface); border-top:1px solid var(--border);">
+  <div class="container">
+    <div class="grid-3">
+      <div class="stat-block">
+        <div class="stat-num">2x</div>
+        <div class="stat-label">Per Week Minimum</div>
+        <div class="stat-desc">The training frequency that builds durable skill and real confidence.</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-num">4–6</div>
+        <div class="stat-label">Months to Yellow Belt</div>
+        <div class="stat-desc">A realistic, achievable milestone with a clear path to get there.</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-num">100%</div>
+        <div class="stat-label">Principle-Based</div>
+        <div class="stat-desc">Every technique is built on a principle that works under real pressure.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════
+  SECTION: Image thumbnail grid — 3-up
+  All images B&W via .img-bw class
+  ════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="container">
+    <div class="section-label" style="margin-bottom:32px;">
+      <span class="t-kicker">Training in Action</span>
+    </div>
+    <div class="thumb-grid">
+      <div class="thumb-item">
+        <img src="https://etxkravmaga.com/wp-content/uploads/IMAGE-1.jpg"
+             alt="Krav Maga training" class="img-bw">
+      </div>
+      <div class="thumb-item">
+        <img src="https://etxkravmaga.com/wp-content/uploads/IMAGE-2.jpg"
+             alt="Self defense class" class="img-bw">
+      </div>
+      <div class="thumb-item">
+        <img src="https://etxkravmaga.com/wp-content/uploads/IMAGE-3.jpg"
+             alt="Ground training" class="img-bw">
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════
+  SECTION: YouTube video embed — responsive 16:9
+  Always use youtube-nocookie.com
+  B&W via filter on .video-embed wrapper
+  ════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="container-narrow">
+    <div class="section-label" style="margin-bottom:28px;">
+      <span class="t-kicker">See It in Action</span>
+    </div>
+    <div class="video-embed">
+      <!-- Replace VIDEO_ID with actual YouTube ID from @easttxkravmaga -->
+      <iframe
+        src="https://www.youtube-nocookie.com/embed/VIDEO_ID?rel=0&modestbranding=1"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen>
+      </iframe>
+    </div>
+    <p class="t-caption" style="margin-top:12px;">
+      East Texas Krav Maga · youtube.com/@easttxkravmaga
+    </p>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════
+  SECTION: Video thumbnails — 3-up with play button
+  Click triggers navigation to YouTube (see script below)
+  ════════════════════════════════════════════════ -->
+<section class="section" style="background:var(--surface); border-top:1px solid var(--border);">
+  <div class="container">
+    <div class="section-label" style="margin-bottom:32px;">
+      <span class="t-kicker">Training Videos</span>
+    </div>
+    <div class="thumb-grid">
+      <!-- Replace VIDEO_ID and thumbnail with real YouTube data -->
+      <div class="video-thumb" data-src="https://www.youtube.com/watch?v=VIDEO_ID_1">
+        <img src="https://img.youtube.com/vi/VIDEO_ID_1/maxresdefault.jpg"
+             alt="Krav Maga technique" class="img-bw">
+        <div class="video-play">▶</div>
+      </div>
+      <div class="video-thumb" data-src="https://www.youtube.com/watch?v=VIDEO_ID_2">
+        <img src="https://img.youtube.com/vi/VIDEO_ID_2/maxresdefault.jpg"
+             alt="Self defense drill" class="img-bw">
+        <div class="video-play">▶</div>
+      </div>
+      <div class="video-thumb" data-src="https://www.youtube.com/watch?v=VIDEO_ID_3">
+        <img src="https://img.youtube.com/vi/VIDEO_ID_3/maxresdefault.jpg"
+             alt="Ground work" class="img-bw">
+        <div class="video-play">▶</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════
+  SECTION: Background image with text overlay
+  Image as atmosphere — content on top
+  B&W via backdrop-filter on ::before
+  ════════════════════════════════════════════════ -->
+<section class="bg-image-section"
+  style="background-image: url('https://etxkravmaga.com/wp-content/uploads/YOUR-IMAGE.jpg');">
+  <div class="bg-content container">
+    <div class="t-kicker" style="margin-bottom:16px;">The Standard</div>
+    <h2 class="t-h1" style="margin-bottom:20px; max-width:600px;">
+      Train for the World<br><span class="t-red">As It Actually Is.</span>
+    </h2>
+    <p class="t-body" style="max-width:480px; margin-bottom:32px;">
+      Body copy over image background. Keep short — image should breathe.
+    </p>
+    <a href="#" class="btn-primary">Start Here</a>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════
+  SECTION: Quote block
+  ════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="container-narrow">
+    <div class="quote-block">
+      <div class="quote-text">"The warrior mentality — the will to survive, to do what is necessary — that can be taught, trained, and developed in any human being willing to make the decision."</div>
+      <div class="quote-attr">— Dave Grossman · On Combat</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════
+  SECTION: Dark concept panel
+  ════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="container">
+    <div class="panel-dark">
+      <div class="panel-kicker">The Core Principle</div>
+      <div class="panel-headline">Mindset Before Technique.</div>
+      <div class="panel-body">
+        Body copy inside dark panel. Replace with real content. This block is used
+        for high-emphasis concepts — the most important idea on the page gets this treatment.
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════
+  SECTION: Three-box callout row
+  ════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="container">
+    <div class="three-box">
+      <div class="box-item box-item-red">
+        <div class="box-head">Without Training</div>
+        <div class="box-body">Freeze response takes over. Instinct defaults to fear. No answer loaded.</div>
+      </div>
+      <div class="box-item">
+        <div class="box-head">With Training</div>
+        <div class="box-body">Pre-loaded response. Deliberate movement. Trained answer available.</div>
+      </div>
+      <div class="box-item">
+        <div class="box-head">The Goal</div>
+        <div class="box-body">Automatic. Under pressure. Every time — on and off the mat.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════
+  SECTION: Button examples
+  ════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="container">
+    <div class="flex-row" style="flex-wrap:wrap;">
+      <a href="#" class="btn-primary">Primary CTA Button</a>
+      <a href="#" class="btn-secondary">Secondary Outline Button</a>
+      <a href="#" class="btn-pdf">Download PDF</a>
+      <a href="#" class="link-arrow">Text Link</a>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════
+  SECTION: Contact form
+  ════════════════════════════════════════════════ -->
+<section class="section" style="background:var(--surface); border-top:1px solid var(--border);">
+  <div class="container-narrow">
+    <div class="t-kicker" style="margin-bottom:12px;">Get in Touch</div>
+    <h2 class="t-h2" style="margin-bottom:8px;">Questions? <span class="t-red">We have answers.</span></h2>
+    <p class="t-body" style="margin-bottom:36px;">
+      Reach out before or after class, by email, or fill out the form below.
+    </p>
+    <form>
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          <input class="form-input" type="text" placeholder="Your first name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name</label>
+          <input class="form-input" type="text" placeholder="Your last name">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" placeholder="your@email.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Message</label>
+        <textarea class="form-input" placeholder="What would you like to know?"></textarea>
+      </div>
+      <button type="submit" class="btn-primary">Send Message</button>
+    </form>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════
+  FOOTER
+  ════════════════════════════════════════════════ -->
+<footer class="footer">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="footer-logo">ETKM<span>.</span></div>
+      <p>Real-world self-defense training for everyday people in Tyler, TX. Train More. Fear Less.</p>
+    </div>
+    <div>
+      <div class="footer-col-head">Training</div>
+      <ul class="footer-links">
+        <li><a href="https://etxkravmaga.com/programs/self-defense/">Self Defense</a></li>
+        <li><a href="https://etxkravmaga.com/fight-back-etx/">Fight Back ETX</a></li>
+        <li><a href="https://etxkravmaga.com/programs/firearms-training/">Firearms</a></li>
+        <li><a href="https://etxkravmaga.com/programs/youth-self-defense-2/">Youth</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-head">Resources</div>
+      <ul class="footer-links">
+        <li><a href="https://etxkravmaga.com/etkm-student/">Student Portal</a></li>
+        <li><a href="https://etxkravmaga.com/etkm-student/new-student-guide/">New Student Guide</a></li>
+        <li><a href="https://etxkravmaga.com/events/">Events</a></li>
+        <li><a href="https://etxkravmaga.com/blog/">Blog</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-head">Contact</div>
+      <ul class="footer-links">
+        <li><a href="tel:9035900085">(903) 590-0085</a></li>
+        <li><a href="/cdn-cgi/l/email-protection#bad3d4dcd5fadfdbc9cecec2d1c8dbccd7dbdddb94d9d5d7"><span class="__cf_email__" data-cfemail="e1888f878ea18480929595998a9380978c808680cf828e8c">[email&#160;protected]</span></a></li>
+        <li><a href="https://etxkravmaga.com/contact-us/">Contact Page</a></li>
+      </ul>
+      <p class="t-caption" style="margin-top:16px; line-height:1.7;">
+        2918 E. Grande Blvd<br>Tyler, TX 75707
+      </p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 East Texas Krav Maga · etxkravmaga.com</p>
+    <p>Train More. Fear Less.</p>
+  </div>
+</footer>
+
+
+<!-- ════════════════════════════════════════════════
+  JAVASCRIPT — video thumbnail click handler
+  Opens YouTube link in new tab on click
+  ════════════════════════════════════════════════ -->
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  // Video thumbnail click → ope
