@@ -482,6 +482,29 @@ MCP_TOOLS = [
             },
             "required": ["qa_response"]
         }
+    },
+    {
+        "name": "scrape_contacts",
+        "description": "Scrape emails, phones, and social links from a list of URLs. Deduplicates results. Optionally crawls /contact and /about pages.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "urls": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "List of URLs to scrape."
+                },
+                "follow_links": {
+                    "type": "boolean",
+                    "description": "Crawl internal contact/about pages. Default: false."
+                },
+                "max_concurrent": {
+                    "type": "integer",
+                    "description": "Max parallel requests. Default: 10."
+                }
+            },
+            "required": ["urls"]
+        }
     }
 ]
 
@@ -541,6 +564,19 @@ def handle_mcp_tool(tool_name: str, tool_input: dict) -> dict:
                     "classification_method": "keyword_match"
                 })
             }
+
+        elif tool_name == "scrape_contacts":
+            from contact_scraper import scrape_contacts
+            urls = tool_input.get("urls", [])
+            follow = tool_input.get("follow_links", False)
+            concurrent = tool_input.get("max_concurrent", 10)
+            result = asyncio.run(scrape_contacts(
+                urls=urls,
+                follow_links=follow,
+                max_concurrent=concurrent,
+                output_dir="/tmp/scraper_output",
+            ))
+            return {"type": "text", "text": json.dumps(result)}
 
         else:
             return {"type": "text", "text": f"Unknown tool: {tool_name}"}
