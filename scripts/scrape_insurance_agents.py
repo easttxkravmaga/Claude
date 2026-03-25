@@ -1,9 +1,11 @@
 """
 Smith County, TX — Insurance Agents & Adjusters Scraper
+Coverage: Tyler, Lindale, Whitehouse, Bullard, Troup, Winona, Arp, Flint + surrounding
 Sources:
   1. TDI Open Data Portal (Socrata API) — primary, authoritative
+     Queries by every Smith County city name AND every Smith County ZIP code
   2. IIA of Tyler (iiatyler.org) — independent agents, has emails
-  3. YellowPages — supplemental phone/address
+  3. YellowPages — supplemental phone/address (all Smith County cities)
   4. Allstate, State Farm, Farmers, Progressive, Texas Farm Bureau — carrier finders
 """
 
@@ -31,9 +33,30 @@ HEADERS = {
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
 }
 
-TYLER_ZIPS = {
+SMITH_COUNTY_ZIPS = {
+    # Tyler
     "75701", "75702", "75703", "75704", "75705",
     "75708", "75709", "75711", "75712", "75713",
+    # Lindale / Hideaway
+    "75771",
+    # Whitehouse
+    "75791",
+    # Bullard (partly Smith, partly Cherokee)
+    "75757",
+    # Troup (partly Smith, partly Cherokee)
+    "75789",
+    # Winona
+    "75792",
+    # Arp
+    "75750",
+    # Flint / Noonday / New Chapel Hill / Chapel Hill
+    "75762",
+}
+
+SMITH_COUNTY_CITIES = {
+    "TYLER", "LINDALE", "WHITEHOUSE", "BULLARD",
+    "TROUP", "WINONA", "ARP", "FLINT", "NOONDAY",
+    "NEW CHAPEL HILL", "CHAPEL HILL", "HIDEAWAY",
 }
 
 FIELDS = [
@@ -61,122 +84,87 @@ def get(url, session, params=None, json_mode=False, timeout=15):
 # SOURCE 1: TDI Open Data Portal (Socrata API)
 # ─────────────────────────────────────────────────────────────────────────────
 
+def _tdi_row_to_record(row):
+    first = row.get("first_name", "").strip().title()
+    last  = row.get("last_name", "").strip().title()
+    name  = f"{first} {last}".strip()
+    if not name or name == " ":
+        name = row.get("business_name", "").strip().title()
+    agency = row.get("business_name", "").strip().title()
+    return {
+        "name":           name,
+        "phone":          "",
+        "email":          "",
+        "agency":         agency if agency.lower() != name.lower() else "",
+        "license_type":   row.get("license_type_description", "").strip(),
+        "license_number": row.get("license_number", "").strip(),
+        "address":        row.get("address_line_1", "").strip().title(),
+        "city":           row.get("city", "").strip().title(),
+        "state":          row.get("state_code", "TX"),
+        "zip":            row.get("zip_code", "").strip()[:5],
+        "carrier":        "",
+        "source":         "TDI Open Data Portal",
+        "notes":          "",
+    }
+
+
 def scrape_tdi(session):
-    """Pull all insurance agents & adjusters licensed in Tyler, TX from TDI."""
+    """Pull all insurance agents & adjusters licensed in Smith County, TX from TDI."""
     print("\n[1/5] TDI Open Data Portal...")
     records = []
-    base = "https://data.texas.gov/resource/kxv3-diwf.json"
-
-    license_types = [
-        "General Lines - Property & Casualty",
-        "General Lines - Life, Accident, Health & HMO",
-        "Adjuster - All Lines",
-        "Adjuster - Property & Casualty",
-        "Personal Lines - Property & Casualty",
-        "Life & Health",
-        "Title",
-    ]
-
     seen = set()
-
-    # Query by TYLER city name
-    offset = 0
+    base = "https://data.texas.gov/resource/kxv3-diwf.json"
     limit = 1000
-    while True:
-        params = {
-            "$where": "upper(city) = 'TYLER' AND upper(state_code) = 'TX'",
-            "$limit": limit,
-            "$offset": offset,
-            "$order": "last_name ASC",
-        }
-        batch = get(base, session, params=params, json_mode=True)
-        if not batch:
-            break
+
+    def _key(row):
+        return (
+            row.get("first_name", "") + row.get("last_name", "") +
+            row.get("license_number", "")
+        )
+
+    def _add_batch(batch):
         for row in batch:
-            key = (
-                row.get("first_name", "") + row.get("last_name", "") +
-                row.get("license_number", "")
-            )
-            if key in seen:
+            k = _key(row)
+            if k in seen:
                 continue
-            seen.add(key)
+            seen.add(k)
+            records.append(_tdi_row_to_record(row))
 
-            first = row.get("first_name", "").strip().title()
-            last  = row.get("last_name", "").strip().title()
-            name  = f"{first} {last}".strip()
-            if not name or name == " ":
-                name = row.get("business_name", "").strip().title()
+    # --- Pass 1: query each Smith County city name ---
+    for city_name in sorted(SMITH_COUNTY_CITIES):
+        offset = 0
+        while True:
+            params = {
+                "$where": f"upper(city) = '{city_name}' AND upper(state_code) = 'TX'",
+                "$limit": limit,
+                "$offset": offset,
+                "$order": "last_name ASC",
+            }
+            batch = get(base, session, params=params, json_mode=True)
+            if not batch:
+                break
+            _add_batch(batch)
+            print(f"  {city_name}: {len(records)} total so far (offset {offset})...")
+            if len(batch) < limit:
+                break
+            offset += limit
+            sleep(0.5, 1.0)
 
-            agency = row.get("business_name", "").strip().title()
-            lic_type = row.get("license_type_description", "").strip()
-            lic_num  = row.get("license_number", "").strip()
-            addr     = row.get("address_line_1", "").strip().title()
-            city_val = row.get("city", "").strip().title()
-            state_val= row.get("state_code", "TX")
-            zip_val  = row.get("zip_code", "").strip()[:5]
-
-            records.append({
-                "name":         name,
-                "phone":        "",
-                "email":        "",
-                "agency":       agency if agency.lower() != name.lower() else "",
-                "license_type": lic_type,
-                "license_number": lic_num,
-                "address":      addr,
-                "city":         city_val,
-                "state":        state_val,
-                "zip":          zip_val,
-                "carrier":      "",
-                "source":       "TDI Open Data Portal",
-                "notes":        "",
-            })
-
-        print(f"  Fetched {len(records)} records so far (offset {offset})...")
-        if len(batch) < limit:
-            break
-        offset += limit
-        sleep(0.5, 1.0)
-
-    # Also query by Tyler-area ZIP codes to catch any missed records
-    for z in TYLER_ZIPS:
+    # --- Pass 2: query by every Smith County ZIP to catch records with non-standard city names ---
+    for z in sorted(SMITH_COUNTY_ZIPS):
         params = {
             "$where": f"zip_code = '{z}' AND upper(state_code) = 'TX'",
-            "$limit": 1000,
+            "$limit": limit,
             "$offset": 0,
         }
         batch = get(base, session, params=params, json_mode=True)
         if not batch:
             continue
-        for row in batch:
-            key = (
-                row.get("first_name", "") + row.get("last_name", "") +
-                row.get("license_number", "")
-            )
-            if key in seen:
-                continue
-            seen.add(key)
-            first = row.get("first_name", "").strip().title()
-            last  = row.get("last_name", "").strip().title()
-            name  = f"{first} {last}".strip()
-            if not name or name == " ":
-                name = row.get("business_name", "").strip().title()
-
-            agency = row.get("business_name", "").strip().title()
-            records.append({
-                "name":         name,
-                "phone":        "",
-                "email":        "",
-                "agency":       agency if agency.lower() != name.lower() else "",
-                "license_type": row.get("license_type_description", "").strip(),
-                "license_number": row.get("license_number", "").strip(),
-                "address":      row.get("address_line_1", "").strip().title(),
-                "city":         row.get("city", "").strip().title(),
-                "state":        row.get("state_code", "TX"),
-                "zip":          row.get("zip_code", "").strip()[:5],
-                "carrier":      "",
-                "source":       "TDI Open Data Portal",
-                "notes":        "",
-            })
+        before = len(records)
+        _add_batch(batch)
+        added = len(records) - before
+        if added:
+            print(f"  ZIP {z}: +{added} new records")
         sleep(0.3, 0.8)
 
     print(f"  TDI total: {len(records)} unique records")
@@ -297,71 +285,72 @@ def scrape_yellowpages(session):
     seen = set()
     base = "https://www.yellowpages.com"
 
-    for search_term in ["insurance-agents", "insurance-adjusters"]:
-        page = 1
-        while True:
-            url = f"{base}/tyler-tx/{search_term}"
-            params = {"page": page} if page > 1 else {}
-            sleep(2.0, 4.0)
-            resp = get(url, session, params=params)
-            if not resp:
-                break
+    yp_cities = [
+        "tyler-tx", "lindale-tx", "whitehouse-tx", "bullard-tx",
+        "troup-tx", "winona-tx", "arp-tx",
+    ]
 
-            soup = BeautifulSoup(resp.text, "html.parser")
-            listings = soup.select(".result")
-            if not listings:
-                listings = soup.select("[class*='srp-listing']")
-            if not listings:
-                break
+    for city_slug in yp_cities:
+        for search_term in ["insurance-agents", "insurance-adjusters"]:
+            page = 1
+            while True:
+                url = f"{base}/{city_slug}/{search_term}"
+                params = {"page": page} if page > 1 else {}
+                sleep(2.0, 4.0)
+                resp = get(url, session, params=params)
+                if not resp:
+                    break
 
-            new_count = 0
-            for listing in listings:
-                # Name
-                name_el = listing.select_one(".business-name, .n, h2 a")
-                name = name_el.get_text(strip=True) if name_el else ""
-                if not name or name in seen:
-                    continue
-                seen.add(name)
-                new_count += 1
+                soup = BeautifulSoup(resp.text, "html.parser")
+                listings = soup.select(".result")
+                if not listings:
+                    listings = soup.select("[class*='srp-listing']")
+                if not listings:
+                    break
 
-                # Phone
-                phone_el = listing.select_one(".phone, .phones")
-                phone = phone_el.get_text(strip=True) if phone_el else ""
+                new_count = 0
+                for listing in listings:
+                    name_el = listing.select_one(".business-name, .n, h2 a")
+                    name = name_el.get_text(strip=True) if name_el else ""
+                    if not name or name in seen:
+                        continue
+                    seen.add(name)
+                    new_count += 1
 
-                # Address
-                street_el = listing.select_one(".street-address, .adr .street-address")
-                city_el   = listing.select_one(".city, .locality")
-                street = street_el.get_text(strip=True) if street_el else ""
-                city_text = city_el.get_text(strip=True) if city_el else "Tyler"
+                    phone_el = listing.select_one(".phone, .phones")
+                    phone = phone_el.get_text(strip=True) if phone_el else ""
 
-                # Categories
-                cats = [c.get_text(strip=True) for c in listing.select(".categories a")]
-                notes = ", ".join(cats)
+                    street_el = listing.select_one(".street-address, .adr .street-address")
+                    city_el   = listing.select_one(".city, .locality")
+                    street    = street_el.get_text(strip=True) if street_el else ""
+                    city_text = city_el.get_text(strip=True) if city_el else city_slug.split("-")[0].title()
 
-                records.append({
-                    "name":         name,
-                    "phone":        phone,
-                    "email":        "",
-                    "agency":       name,
-                    "license_type": "Insurance Agent/Adjuster",
-                    "license_number": "",
-                    "address":      street,
-                    "city":         city_text or "Tyler",
-                    "state":        "TX",
-                    "zip":          "",
-                    "carrier":      "",
-                    "source":       "YellowPages",
-                    "notes":        notes,
-                })
+                    cats  = [c.get_text(strip=True) for c in listing.select(".categories a")]
+                    notes = ", ".join(cats)
 
-            print(f"  Page {page} ({search_term}): {new_count} new")
-            if new_count == 0:
-                break
-            # Check for next page
-            next_el = soup.select_one("a.next")
-            if not next_el:
-                break
-            page += 1
+                    records.append({
+                        "name":           name,
+                        "phone":          phone,
+                        "email":          "",
+                        "agency":         name,
+                        "license_type":   "Insurance Agent/Adjuster",
+                        "license_number": "",
+                        "address":        street,
+                        "city":           city_text or city_slug.split("-")[0].title(),
+                        "state":          "TX",
+                        "zip":            "",
+                        "carrier":        "",
+                        "source":         "YellowPages",
+                        "notes":          notes,
+                    })
+
+                print(f"  {city_slug} / page {page} ({search_term}): {new_count} new")
+                if new_count == 0:
+                    break
+                next_el = soup.select_one("a.next")
+                if not next_el:
+                    break
+                page += 1
 
     print(f"  YellowPages total: {len(records)}")
     return records
