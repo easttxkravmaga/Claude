@@ -141,10 +141,10 @@ These rules prevent overwrite conflicts. They are absolute.
 4. The QA Agent reads all files but writes only to `output/qa-report.md`
 5. If an agent needs content from another agent's file, it requests it via message
 
-**Standard output directory:** `output/`  
-**Standard docs directory:** `docs/`  
-**Handoff notes always at:** `output/handoff-notes.md`  
-**QA report always at:** `output/qa-report.md`
+**Standard output directory:** `/home/user/Downloads/`
+**Standard docs directory:** `docs/`
+**Handoff notes always at:** `/home/user/Downloads/handoff-notes.md`
+**QA report always at:** `/home/user/Downloads/qa-report.md`
 
 ---
 
