@@ -141,10 +141,10 @@ These rules prevent overwrite conflicts. They are absolute.
 4. The QA Agent reads all files but writes only to `output/qa-report.md`
 5. If an agent needs content from another agent's file, it requests it via message
 
-**Standard output directory:** `/home/user/Downloads/`
+**Standard output directory:** `downloads/` (tracked in git — all deliverables committed and pushed here so Nathan can download directly from GitHub)
 **Standard docs directory:** `docs/`
-**Handoff notes always at:** `/home/user/Downloads/handoff-notes.md`
-**QA report always at:** `/home/user/Downloads/qa-report.md`
+**Handoff notes always at:** `downloads/handoff-notes.md`
+**QA report always at:** `downloads/qa-report.md`
 
 ---
 
