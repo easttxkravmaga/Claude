@@ -15,206 +15,319 @@ description: >
 
 # ETKM CRM Operating Doctrine
 
-**Version:** 2.0
-**Last Updated:** 2026-03-11
-**Audit status:** Verified against live Pipedrive via API — all stages, labels,
-and field names confirmed accurate as of this date.
+**Version:** 1.3
+**Last Updated:** 2026-03-27
+
+This is the permanent structural reference for how ETKM manages client
+relationships in Pipedrive. It governs every pipeline, stage, label, and
+transition in the system. Claude and Manus treat this as fixed architecture.
+Nothing changes without Nathan's explicit authorization.
+
+---
+
+## WHY THIS STRUCTURE EXISTS
+
+ETKM manages people at fundamentally different stages of their journey —
+a first-time prospect, a brand-new Yellow Belt student, a 3-year Blue Belt,
+and a lapsed member all need different communication, different tracking, and
+different responses from the system. A single pipeline cannot do this well.
+
+The multi-pipeline architecture gives every person a home that reflects where
+they actually are. It prevents people from falling through the cracks, ensures
+the right communication fires at the right moment, and gives the CRM the same
+intentionality as the training program itself.
+
+**The complete client lifecycle in five words:**
+Prospect → Develop → Progress → Retain → Specialize
 
 ---
 
 ## THE FIVE PIPELINES
 
-| ID | Pipeline Name | Purpose |
-|----|--------------|---------|
-| P1 | Prospects | Convert trial interest to signed membership |
-| P2 | Level 1 Students | Onboard, retain, build identity. Highest dropout risk. |
-| P3 | Adv / Exp. Students | Long-term progression, retention, promotion tracking |
-| P4 | At-Risk / Retention | Escalated retention + proactive financial triggers |
-| P5 | Private Lessons | Personalized training consultation and delivery |
+| ID | Pipeline Name | Who Lives Here | Purpose |
+|----|--------------|----------------|---------|
+| P1 | Prospects | Pre-enrollment contacts | Convert trial interest to signed membership |
+| P2 | Level 1 Students | Yellow Belt students, first 90 days | Onboard, retain, build identity. Highest dropout risk. |
+| P3 | Adv / Exp. Students | Orange through Black Belt Prep | Long-term progression, retention, promotion tracking |
+| P4 | At Risk / Retention | Escalated retention cases from P2 or P3 | Deeper intervention when P2/P3 at-risk response fails |
+| P5 | Private Lesson | Private lesson clients | Personalized training consultation and delivery |
 
-Events are NOT a pipeline. Make.com manages event sequences and deposits
-warm contacts into P1 with labels applied.
+**Note on Events:** Events are NOT a Pipedrive pipeline. Events are managed
+entirely by Make.com. Make runs the email sequence and deposits warm contacts
+into P1 with labels already applied when ready to pursue.
 
----
-
-## P1 — PROSPECTS (live stage IDs)
-
-| Stage ID | Name | Order |
-|----------|------|-------|
-| 2 | Contact Made | 1 |
-| 1 | Qualified | 2 |
-| 3 | Free Trial Lesson | 3 — ACQ-WF-001 fires here |
-| 8 | Trial Attended | 4 — Nate moves manually |
-| 7 | No Show | 5 — Nate moves manually |
-| 6 | Signed Up | 6 — Triggers P2 entry + ACQ-WF-002 |
-| 4 | Discussed Membership Options | 7 |
-| 9 | Decision Pending | 8 — Auto after 48hrs in Trial Attended |
+**Note on Intake Form:** The Calendly intake flow landing point will be updated
+to align with P1 — Prospects after the current build is complete. This is a
+separate task. Do not modify the intake flow during the pipeline build.
 
 ---
 
-## P2 — LEVEL 1 DEVELOPMENT (live stage IDs)
+## PIPELINE 1 — PROSPECTS
 
-| Stage ID | Name | Order |
-|----------|------|-------|
-| 11 | Orientation | 1 |
-| 12 | Foundations | 2 |
-| 13 | Confidence | 3 |
-| 14 | Applying Skills | 4 |
-| 15 | Testing Prep | 5 |
-| 16 | Earned Advancement | 6 — Yellow Belt. P2→P3 handoff. |
+| Stage | Name | Notes |
+|-------|------|-------|
+| 1 | New Lead | First contact. No activity. |
+| 2 | Contacted | Initial outreach made. |
+| 3 | Free Trial Lesson | Calendly confirmed. WF-001 fires. |
+| 4 | Trial Attended | Nate manually moves after attendance confirmed. |
+| 5 | Decision Pending | Auto after 48hrs in Stage 4, no movement. |
+| 6 | Needs Time | Nate manually moves when prospect says so. |
+| 7 | Cold Nurture | No-show or no response after follow-up window. |
+| 8 | Signed Up | Conversion confirmed. Triggers P2 entry. |
 
-At-Risk trigger: 2 missed classes → create P4 deal at Stage 24 while P2 stays active.
-
----
-
-## P3 — LEVELS 2-6 DEVELOPMENT (live stage IDs)
-
-| Stage ID | Name | Order |
-|----------|------|-------|
-| 17 | Orientation | 1 |
-| 18 | Foundation | 2 |
-| 19 | Operational Capability | 3 |
-| 20 | Proficiency Confirmed | 4 |
-| 21 | Testing | 5 |
-| 22 | Earned Advancement | 6 — Promotion loop back to Stage 17 |
-
-At-Risk trigger: 2 weeks no attendance → create P4 deal at Stage 24 while P3 stays active.
+**Handoff:** Stage 8 → auto-creates P2 deal. Applies ETKM Student + Level 1.
+Drops all temperature labels.
 
 ---
 
-## P4 — AT-RISK / RETENTION (live stage IDs)
+## PIPELINE 2 — LEVEL 1 DEVELOPMENT
 
-| Stage ID | Name | Order | Notes |
-|----------|------|-------|-------|
-| 23 | Active Monitoring | 1 | Manual entry only. 7-day task created. No email. |
-| 24 | At-Risk | 2 | Escalated from P2/P3. Email + SMS fires. |
-| 25 | Intervention | 3 | Automated comms. Nate makes personal call if no response. |
-| 26 | Re-Engaged | 4 | Student returned. 48hr hold → exits P4, returns to P2/P3. |
-| 27 | Payment Due | 5 | Auto: Square failure → Make.com → creates deal here. |
-| 29 | PIF Due | 6 | Proactive — fires BEFORE PIF period expires. |
-| 28 | Alumni | 7 | Long-term nurture only. No active outreach. |
+| Stage | Name | Meaning |
+|-------|------|---------|
+| 1 | Orientation | Enter the ETKM community |
+| 2 | Foundations | Build core skills |
+| 3 | Confidence | Develop comfort and coordination |
+| 4 | Applying Skills | Use techniques in realistic drills |
+| 5 | Testing Prep | Refine and review the material |
+| 6 | At-Risk | Attendance dropped — first internal flag. NOT escalation to P4 yet. |
+| 7 | Earned Advancement | Yellow Belt passed. P2→P3 handoff stage. |
 
-Retired: "Lapsed" does not exist. Never use this stage name or label.
+**At-Risk in P2:** Triggers when student misses 2 consecutive classes.
+Check-in email fires. If no re-engagement in 14 days → escalate to P4.
+Student can be active in P2 and P4 simultaneously.
 
----
-
-## P5 — PRIVATE LESSONS (live stage IDs)
-
-| Stage ID | Name | Order |
-|----------|------|-------|
-| 30 | Consultation | 1 |
-| 31 | Orientation | 2 |
-| 32 | Assessment | 3 |
-| 33 | Building a Plan | 4 |
-| 34 | Plan Execution | 5 |
-| 35 | Advancement | 6 |
+**Handoff:** Stage 7 → 48-hour celebration hold → auto-creates P3 deal.
+Atomic label swap: DROP Level 1, ADD Level 2. Same step, no gap.
 
 ---
 
-## DEAL LABELS — 2 Active (audited 2026-03-11)
+## PIPELINE 3 — LEVELS 2-6 DEVELOPMENT
 
-| Label | ID | Purpose |
-|-------|-----|---------|
-| Not Interested | 39 | Prospect closed — not converting |
-| Invalid | 44 | Bad data, spam, or duplicate |
+Belt level is tracked via labels (Level 2–6), not via separate stages or pipelines.
+One stage set serves all belt levels. The promotion loop (Stage 7 → Stage 1)
+repeats at every level.
 
-ALL other deal labels retired. Pipeline stages handle status tracking.
-Retired: Webform Leads, Lead Contacted, Engaged Lead, Meeting Scheduled,
-Qualified Prospect, Qualified Lead, Free Trial Scheduled, Call Back, Lead Nurturing.
+| Stage | Name | Meaning |
+|-------|------|---------|
+| 1 | Orientation | Understand the mission of the level |
+| 2 | Foundation | Build the mechanics and structure |
+| 3 | Operational Capability | Apply techniques in realistic situations |
+| 4 | Proficiency Confirmed | Demonstrate consistent performance |
+| 5 | Testing | Perform under evaluation and pressure |
+| 6 | At-Risk | Attendance dropped — first internal flag within P3. |
+| 7 | Earned Advancement | Test passed. Label swap. 48hr hold, return to Stage 1. |
 
----
+**At-Risk in P3:** Triggers when student has no attendance for 2 weeks.
+Check-in email fires. If no re-engagement in 30 days → escalate to P4.
+Student can be active in P3 and P4 simultaneously.
 
-## PERSON LABELS — 17 Active (audited 2026-03-11)
-
-**Student Status**
-- ETKM Student (id: 30) — applied at signup, drops on departure
-- Former Student (id: 34) — applied when ETKM Student drops
-
-**Program Affiliation**
-- Fight Back (id: 29) — ALL female students at enrollment, no exceptions, permanent
-- Youth (id: 32)
-- Armed Citizen Tactics (id: 47)
-- Private Lesson (id: 31) — transient, P5 only
-- Seminar Attendee (id: 33) — transient, applied by Make.com
-
-**Audience / Segment**
-- Law Enforcement (id: 28) — aligns with LE/Mil arc
-- Military (id: 54) — aligns with LE/Mil arc
-- Private Security (id: 51)
-
-**Operational (Permanent)**
-- Sponsor (id: 49)
-- Instructor (id: 50)
-- Coach (id: 56)
-- School Admin (id: 57)
-- Hosting Seminars (id: 55)
-- Paladin Security (id: 48)
-
-**System**
-- Invalid (id: 46)
-
-RETIRED person labels: Cold lead, Hot lead, Warm lead — replaced by ETKM Arc Type field.
+**Promotion loop:** Stage 7 (Earned Advancement) → ATOMIC label swap
+(DROP current level, ADD next level, same step) → 48-hour hold →
+auto-move to Stage 1 (Orientation) at new level → "welcome to your new era"
+email fires.
 
 ---
 
-## CUSTOM PERSON FIELDS
+## PIPELINE 4 — AT RISK / RETENTION
 
-| Field | Key (first 20 chars) | Values |
-|-------|---------------------|--------|
-| ETKM Arc Type | eed887654d2c1f82908c | Safety, Parent, Fitness, LE/Mil, Former MA, Default |
-| CBLTAC Enrolled Date | (duplicate — Manus resolving) | Date |
-| CBLTAC Status | 95f1cd40004d4277a98d | active, complete, paused |
-| Sakari Opt In | 8cae8f528afa52fd268f | Date |
-| Sakari Opt Out | 624eeb304949f6989717 | Date |
+Receives escalations from P2 and P3 when At-Risk response fails.
+Student remains active in their development pipeline simultaneously.
+Also handles proactive financial triggers (PIF and Payment Due).
 
-Do NOT write to CBLTAC Enrolled Date until Manus confirms duplicate resolved.
+| Stage | Name | What Happens |
+|-------|------|--------------|
+| 1 | Active Monitoring | Nate's gut feel — manual entry only. System creates 7-day follow-up task. No email fires. |
+| 2 | At-Risk | Formal flag. Escalated from P2/P3. Email + SMS fires. Nate task created. |
+| 3 | Intervention | Automated email/SMS delivered. Nate task: make personal call if no response within window. Human-action stage. |
+| 4 | Re-Engaged | Student returned. 48-hour hold. After 48hrs, exits P4, returns to development pipeline at same stage they left. |
+| 5 | PIF Due | Proactive trigger — fires BEFORE PIF period expires. Communication: appreciative, forward-looking tone. On renewal: drop PIF Due stage, student returns to P2/P3 uninterrupted. |
+| 6 | Payment Due | Reactive trigger — Square payment failure fires Make scenario, creates P4 deal at this stage. Payment Due label applied. On resolution: drop label, close P4 deal, student returns to development pipeline. |
+| 7 | Alumni | Re-engagement window closed. Long-term nurture only. No active outreach. |
 
----
+**Retired stage:** "Lapsed" does not exist in the active system. Do not
+use this label or stage name. It was retired in v1.2. Students who do
+not respond to intervention move directly to Alumni.
 
-## LABEL RULES
+**Critical rule:** At-Risk label persists after re-engagement. It is a
+permanent history marker. A student who carries the At-Risk label and goes
+quiet again is flagged faster — lower threshold, quicker escalation.
 
-- Permanent labels travel through all pipelines — never drop without explicit instruction
-- Multiple program affiliation labels can coexist (Fight Back + LE + ACT is valid)
-- At-Risk label persists after re-engagement — intentional history marker
-- Fight Back on ALL female students — no exceptions
-- Cold/Warm/Hot lead labels are RETIRED — use ETKM Arc Type instead
+**PIF label:** Permanent Financial Status label. Visible across P2 and P3.
+Stays as long as the PIF arrangement continues. PIF Due stage in P4 is
+the proactive trigger — it fires before the period ends, not after.
 
----
+**Payment Due label:** Transient Student Status label. Applied when Square
+payment fails. Removed when payment is resolved. Student's training is
+not interrupted during this process.
 
-## KEY TRANSITIONS
-
-**P1 Stage 6 (Signed Up) → P2:**
-Auto-create P2 deal at Stage 11. Apply: ETKM Student. Fire: ACQ-WF-002.
-
-**P2 Stage 16 → P3 (Yellow Belt):**
-Fire congratulations. ATOMIC: DROP Level 1, ADD Level 2.
-Create P3 deal at Stage 17. 48hr hold. Fire "welcome to your new era."
-
-**P3 Stage 22 → Promotion Loop:**
-Fire congratulations. ATOMIC: DROP current level, ADD next level.
-48hr hold. Auto-move to Stage 17. Fire "welcome to your new era."
-
-**At-Risk P2/P3 → P4:**
-Create P4 deal at Stage 24. P2/P3 deal stays active. Dual pipeline.
-
-**Re-Engaged P4 Stage 26:**
-48hr hold. Close P4 deal. Student stays in P2/P3 at same stage. At-Risk label stays.
-
-**Payment Failure → P4:**
-Square → Make.com → P4 deal at Stage 27. Payment Due label on person.
-On resolution: drop label, close P4 deal.
+**Returning from P4:** Student exits at Stage 4 (Re-Engaged), returns to
+P2 or P3 at the same stage they left. The At-Risk label stays.
 
 ---
 
-## HARD RULES — NEVER VIOLATE
+## PIPELINE 5 — PRIVATE LESSON
 
-1. Never use "Lapsed" — retired, does not exist
-2. Never use Cold/Warm/Hot lead labels — retired
-3. Never change pipeline or stage names without Nathan's authorization
-4. Never move a student between pipelines without a defined trigger
-5. Never stack two belt level labels simultaneously
-6. Never let a student carry zero belt level labels during a promotion swap
-7. Never write to CBLTAC Enrolled Date until duplicate field resolved
+| Stage | Name | Meaning |
+|-------|------|---------|
+| 1 | Consultation | Discuss goals and needs |
+| 2 | Orientation | Explain training structure and expectations |
+| 3 | Assessment | Evaluate skill level and specific needs |
+| 4 | Building a Plan | Develop personalized training plan |
+| 5 | Plan Execution | Conduct private training sessions |
+| 6 | Advancement | Transition to group classes or build new plan |
 
-Load etkm-pipedrive-manus for automation mechanics.
-Load etkm-cowork-protocol for Cowork monitoring integration.
+---
+
+## THE 33 LABELS
+
+Full definitions in: ETKM_Pipedrive_Label_Reference_v1.1.docx
+
+### Label Categories
+
+**Temperature (Transient — mutually exclusive, one at a time)**
+Cold Lead | Warm Lead | Hot Lead
+
+**Student Status (Transient)**
+ETKM Student | Former Student | At-Risk | Payment Due | Alumni
+
+**Financial Status (Permanent while active)**
+PIF
+
+**Retired Labels — Do Not Use**
+Lapsed (retired v1.2 — does not exist in the active system)
+
+**Belt Level (Transient — mutually exclusive, one at a time)**
+Level 1 | Level 2 | Level 3 | Level 4 | Level 5 | Level 6
+
+**Arc Classification (Single-select within category — assigned at classification, persists through prospect phase)**
+Arc: Default | Arc: Safety | Arc: Parent | Arc: Fitness | Arc: LE/Mil | Arc: Former MA
+
+Arc labels are applied when a prospect enters the system. Web form leads
+are classified by the interest dropdown value. Calendly leads are classified
+by Manus reading the Q&A response and matching keyword signals. Arc labels
+persist through the entire P1 prospect journey. They are not modified after
+initial classification unless Nate explicitly reclassifies. Only one Arc
+label active at a time — they are mutually exclusive within the Arc category.
+
+**Role (Permanent)**
+Instructor | Coach | School Admin | Sponsor
+
+**Program Affiliation (Permanent except Private Lesson)**
+Fight Back | Youth | Private Lesson (Transient) | Armed Citizen Tactics |
+Law Enforcement | Private Security
+
+**Partner & Event (Mixed)**
+Seminar Attendee (Transient — applied by Make.com) |
+Hosting Seminar (Transient) | Paladin Security (Permanent)
+
+---
+
+## CUSTOM FIELDS
+
+**Group Inquiry** (Deal-level, Single option: Yes / No)
+Applied when a web form submission has interest = group. Provides a durable
+system marker for any automation to filter on. Any automated email sequence
+must check this field and exclude deals where Group Inquiry = Yes. This field
+is set by the Make.com web form scenario and is not manually managed.
+
+---
+
+## LABEL RULES — Non-Negotiable
+
+**Permanent labels travel through all pipelines.**
+Fight Back, Law Enforcement, Armed Citizen Tactics, Private Security, Instructor,
+Coach, Sponsor, School Admin, Paladin Security — these never drop unless a
+specific condition explicitly removes them. They apply in P1, P2, P3, P4, P5.
+
+**Transient labels reflect current status only.**
+Only one Temperature label active at a time. Only one Belt Level label active
+at a time. Drop the old one when the new one is applied.
+
+**Belt level swap is atomic.**
+On promotion: DROP old level AND ADD new level in the same automation step.
+There must never be a window where a student carries no level label.
+
+**At-Risk label persists after re-engagement.**
+This is intentional. It marks history, not just current status.
+
+**Fight Back applies to ALL female students at enrollment.**
+No exceptions. It stays for the life of membership.
+
+**Multiple Program Affiliation labels can coexist.**
+A student can carry Fight Back + Law Enforcement + Armed Citizen Tactics
+simultaneously. These are not mutually exclusive.
+
+**Arc labels are mutually exclusive within their category.**
+Only one Arc label active at a time. Arc is assigned at classification
+(web form interest field or Calendly Q&A keyword match) and persists
+through the P1 prospect phase. Do not modify Arc classification after
+initial assignment unless Nate explicitly reclassifies. Arc labels
+coexist with all other label categories — a prospect can carry
+Warm Lead + Arc: Parent + Fight Back simultaneously.
+
+---
+
+## KEY TRANSITION EVENTS
+
+### P1 → P2 (Signed Up)
+1. Nate moves deal to Stage 8 (Signed Up) in P1
+2. Auto-create deal in P2 Stage 1 (Orientation)
+3. Apply: ETKM Student, Level 1
+4. Drop: all temperature labels
+5. Fire: WF-002 onboarding sequence
+
+### P2 → P3 (Earned Advancement — Yellow Belt)
+1. Nate moves to Stage 7 (Earned Advancement) in P2
+2. Fire: congratulations email immediately
+3. ATOMIC: DROP Level 1, ADD Level 2
+4. Create deal in P3 Stage 7 (Earned Advancement)
+5. 48-hour hold
+6. Auto-move P3 deal to Stage 1 (Orientation)
+7. Fire: "welcome to your new era" email
+
+### P3 Belt Promotion Loop
+1. Nate moves to Stage 7 (Earned Advancement)
+2. Fire: congratulations email immediately
+3. ATOMIC: DROP current level, ADD next level
+4. 48-hour hold
+5. Auto-move to Stage 1 (Orientation) at new level
+6. Fire: "welcome to your new era" email
+
+### At-Risk Escalation (P2 or P3 → P4)
+1. At-Risk stage in P2 or P3 produces no re-engagement within window
+2. Create deal in P4 Stage 2 (At-Risk)
+3. Student remains active in P2 or P3 at same stage — dual pipeline
+4. At-Risk label already applied from P2/P3 trigger
+
+### Re-Engagement from P4
+1. Student returns — move P4 deal to Stage 4 (Re-Engaged)
+2. 48-hour hold
+3. P4 deal closes, student remains in P2 or P3 at same stage they left
+4. At-Risk label stays permanently
+
+---
+
+## WHAT CLAUDE AND MANUS NEVER DO
+
+- Change pipeline names, stage names, or label names without Nathan's authorization
+- Apply the retired "Lapsed" label — it does not exist in the active system
+- Move a student between pipelines without a defined trigger event
+- Remove a permanent label without explicit instruction
+- Stack two temperature labels simultaneously
+- Stack two belt level labels simultaneously
+- Stack two Arc labels simultaneously
+- Let a student carry zero belt level labels at any point
+- Modify Arc classification after initial assignment without Nate's explicit instruction
+- Modify the Calendly intake flow during the current build phase
+- Rebuild this structure from scratch — changes are amendments, not replacements
+
+---
+
+## REFERENCE DOCUMENTS
+
+| Document | Purpose |
+|----------|---------|
+| ETKM_Pipedrive_Label_Reference_v1.2.docx | Full label dictionary — updated with PIF, Payment Due, retired Lapsed |
+| ETKM_Manus_Pipedrive_Phase_Build_v1.2.docx | Updated phased build instructions including revised P4 |
+| etkm-pipedrive-manus skill | Automation mechanics, merge tags, API call structure, email sequence map |
+| etkm-workflow-registry skill | Active workflow status, open dependencies, build sequence |
