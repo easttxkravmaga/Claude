@@ -15,7 +15,7 @@ description: >
 
 # ETKM CRM Operating Doctrine
 
-**Version:** 1.3
+**Version:** 1.4
 **Last Updated:** 2026-03-27
 
 This is the permanent structural reference for how ETKM manages client
@@ -66,16 +66,16 @@ separate task. Do not modify the intake flow during the pipeline build.
 
 | Stage | Name | Notes |
 |-------|------|-------|
-| 1 | New Lead | First contact. No activity. |
-| 2 | Contacted | Initial outreach made. |
+| 1 | Contact Made | First contact established. |
+| 2 | Qualified | Prospect vetted and confirmed as viable. |
 | 3 | Free Trial Lesson | Calendly confirmed. WF-001 fires. |
 | 4 | Trial Attended | Nate manually moves after attendance confirmed. |
-| 5 | Decision Pending | Auto after 48hrs in Stage 4, no movement. |
-| 6 | Needs Time | Nate manually moves when prospect says so. |
-| 7 | Cold Nurture | No-show or no response after follow-up window. |
-| 8 | Signed Up | Conversion confirmed. Triggers P2 entry. |
+| 5 | No Show | Prospect did not attend scheduled trial. |
+| 6 | Signed Up | Conversion confirmed. Triggers P2 entry. |
+| 7 | Discussed Membership Options | Post-trial membership conversation happened. |
+| 8 | Decision Pending | Prospect is considering — awaiting decision. |
 
-**Handoff:** Stage 8 → auto-creates P2 deal. Applies ETKM Student + Level 1.
+**Handoff:** Stage 6 → auto-creates P2 deal. Applies ETKM Student + Level 1.
 Drops all temperature labels.
 
 ---
@@ -270,7 +270,7 @@ Warm Lead + Arc: Parent + Fight Back simultaneously.
 ## KEY TRANSITION EVENTS
 
 ### P1 → P2 (Signed Up)
-1. Nate moves deal to Stage 8 (Signed Up) in P1
+1. Nate moves deal to Stage 6 (Signed Up) in P1
 2. Auto-create deal in P2 Stage 1 (Orientation)
 3. Apply: ETKM Student, Level 1
 4. Drop: all temperature labels

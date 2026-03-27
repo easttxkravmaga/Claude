@@ -67,14 +67,14 @@ These are then used to populate email copy and to schedule Touch 2 and Touch 3 t
 
 | Stage | Name | What It Means | Emails Triggered |
 |---|---|---|---|
-| Stage 1 | New Lead | Contact created, no activity | None |
-| Stage 2 | Contacted | Initial outreach made | None |
+| Stage 1 | Contact Made | First contact established | None |
+| Stage 2 | Qualified | Prospect vetted and confirmed as viable | None |
 | Stage 3 | Free Trial Lesson | Calendly booking confirmed | Email 1 (immediate), Email 2 (24hr before), Email 3 (morning of) |
-| Stage 4 | Trial Attended | Nate manually moves after confirmed attendance | No email — await Stage 5 or 6 |
-| Stage 5 | Decision Pending | Auto after 48hrs in Stage 4 with no movement | Email 5 |
-| Stage 6 | Needs Time | Nate manually moves when prospect says they need time | Email 6 |
-| Stage 7 | Cold Nurture | No-show or no response after follow-up window | Email 4 (no-show), Email 8 (cancellation), or general nurture |
-| Stage 8 | Signed Up | Conversion confirmed. Triggers P2 entry. | Triggers WF-002 onboarding sequence |
+| Stage 4 | Trial Attended | Nate manually moves after confirmed attendance | No email — await next stage move |
+| Stage 5 | No Show | Prospect did not attend scheduled trial | Email 4 |
+| Stage 6 | Signed Up | Conversion confirmed. Triggers P2 entry + WF-002. | Triggers WF-002 onboarding sequence |
+| Stage 7 | Discussed Membership Options | Post-trial membership conversation happened | None — tracking stage |
+| Stage 8 | Decision Pending | Prospect is considering — awaiting decision | Email 5 |
 
 ### Labels Used
 
@@ -97,9 +97,9 @@ These are then used to populate email copy and to schedule Touch 2 and Touch 3 t
 | 1 | Booking Confirmation | Calendly note: Free Trial Lesson | Immediate | Under 200 |
 | 2 | 24-Hour Reminder | 24hrs before activity date | Automatic | Under 150 |
 | 3 | Morning Of | Morning of activity date | 8:00 AM | Under 75 |
-| 4 | No-Show Recovery | Nate moves no-show to Stage 7 (Cold Nurture) | End of trial day | Under 120 |
-| 5 | Post-Visit: Didn't Sign Up | 48hrs in Stage 4, no movement | 48hrs post-trial | Under 175 |
-| 6 | Post-Visit: Needs Time | Nate moves to Stage 6 | When stage moves | Under 120 |
+| 4 | No-Show Recovery | Nate moves to Stage 5 (No Show) | End of trial day | Under 120 |
+| 5 | Post-Visit: Didn't Sign Up | Nate moves to Stage 8 (Decision Pending) | When stage moves | Under 175 |
+| 6 | — | **RETIRED — no trigger stage in live system** | — | — |
 | 7 | Reschedule Acknowledgment | New Calendly note, different date | Immediate | Under 100 |
 | 8 | Cancellation Recovery | Calendly cancellation detected | Immediate | Under 100 |
 
@@ -113,12 +113,17 @@ Reschedule Touch 3 to morning of new date.
 **On cancellation (Email 8):**
 Cancel all pending Touch 2 and Touch 3 sends immediately.
 One email only — no follow-up.
-If no rebook in 30 days → move to Stage 7 (Cold Nurture).
+If no rebook in 30 days → move to Stage 5 (No Show).
 
 **On no-show (Email 4):**
 One email only.
-Nate moves no-show prospects to Stage 7 (Cold Nurture), which triggers Email 4.
-If no response or rebook in 7 days → remains in Stage 7 on general nurture.
+Nate moves no-show prospects to Stage 5 (No Show), which triggers Email 4.
+
+**Email 6 — Status: RETIRED**
+The "Needs Time" stage no longer exists in the live P1 pipeline.
+Email 6 has no trigger stage. It is retired pending a decision from
+Nate on whether to remap it to Stage 7 (Discussed Membership Options)
+or Stage 8 (Decision Pending), or remove it permanently.
 
 **Post-visit tracking (current state):**
 Pipedrive has no automatic signal for trial attendance or sign-up.
