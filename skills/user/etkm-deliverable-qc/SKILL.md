@@ -318,6 +318,42 @@ permanent check item for all future deliverables.
 
 ---
 
+## Gate: HTML Pages (etkm-webpage-build)
+
+Run this gate before delivering any ETKM HTML page.
+
+- [ ] Background is `#000` or `#111` — no other backgrounds
+- [ ] Red is `#CC0000` — not `#FF0000` or any variant
+- [ ] Fonts: Montserrat + Inter loaded from Google Fonts CDN
+- [ ] Hero filter: `brightness(0.42) grayscale(100%)` — no deviations
+- [ ] All images have `filter: grayscale(100%)`
+- [ ] No emojis in the entire HTML file
+- [ ] No prohibited words (mastery, dominate, destroy, killer, beast, crush, elite, warrior)
+- [ ] No split-layout heroes
+- [ ] `@media (max-width: 768px)` block present and covers all grid layouts
+- [ ] All href values are real URLs — no placeholder `#` left in
+
+Reference: `etkm-webpage-build` (full QC gate detail in Section 10)
+
+---
+
+## Gate: Web Forms (etkm-webform-build)
+
+Run this gate before delivering any ETKM web form.
+
+- [ ] `access_key` = `8365e17b-3dd5-481d-ba48-465042f70e3d`
+- [ ] `subject` hidden field matches the page-specific string exactly
+- [ ] `botcheck` hidden field present
+- [ ] `reply_subject` and `reply_message` (Email 0) present
+- [ ] `full_name` used — not `first_name` / `last_name`
+- [ ] Arc dropdown option values are exact Pipedrive label strings (e.g., `Arc: Safety`)
+- [ ] Every field passed the Three-Question Filter
+- [ ] Every field maps to a named Pipedrive field, label, or note
+
+Reference: `etkm-webform-build` (full QC gate detail in Section 11)
+
+---
+
 ## Quick Reference — Most Common Failures
 
 **Page template bleed** (cover content on interior pages)
