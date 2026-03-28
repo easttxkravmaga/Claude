@@ -331,3 +331,18 @@ Warm Lead + Arc: Parent + Fight Back simultaneously.
 | ETKM_Manus_Pipedrive_Phase_Build_v1.2.docx | Updated phased build instructions including revised P4 |
 | etkm-pipedrive-manus skill | Automation mechanics, merge tags, API call structure, email sequence map |
 | etkm-workflow-registry skill | Active workflow status, open dependencies, build sequence |
+
+---
+
+## Outbound References
+
+Skills that must validate against this doctrine:
+
+| Skill | Why |
+|-------|-----|
+| `etkm-webform-build` | Web forms must map all fields to Pipedrive fields per this doctrine. No field ships without a CRM home. |
+| `etkm-pipedrive-manus` | Make.com automation mechanics — implements this doctrine in Pipedrive |
+| `etkm-nurture-sequence` | Arc labels used in email sequences must match label names in this doctrine exactly |
+
+No pipeline structure, stage name, or arc label can be invented or modified
+without Nathan's explicit authorization. These references enforce that rule.
