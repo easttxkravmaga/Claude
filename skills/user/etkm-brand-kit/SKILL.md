@@ -237,3 +237,21 @@ If you are about to call `present_files` — stop and run `etkm-deliverable-qc` 
 *Added: companion skill references, mandatory workflow chain, HTML black background rule locked*
 *Typography updated: Montserrat + Inter locked across all types. Arial for DOCX only.*
 *Maintained by: Nathan Lundstrom / East Texas Krav Maga*
+
+---
+
+## 8. Outbound References
+
+Skills that build outputs governed by this brand kit:
+
+| Skill | What It Governs |
+|-------|----------------|
+| `etkm-webpage-build` | HTML page visual standard — hero spec, sections, fonts, breakpoints |
+| `etkm-webform-build` | Form CSS standard — input styles, button colors, label typography |
+| `etkm-pdf-pipeline` | PDF design system — same fonts and palette, HTML→Playwright pipeline |
+| `etkm-event-page` | Event landing page patterns — inherits all page standards |
+| `etkm-social-graphics` | Social canvas specs — brand palette applied to platform formats |
+
+Any skill that produces a visual output for ETKM should reference this skill.
+This brand kit IS the standard — it has no QC gates because all other skills
+gate against it.
