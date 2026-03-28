@@ -22,6 +22,15 @@ description: >
 
 ---
 
+## Dependencies
+
+| Skill | Why |
+|-------|-----|
+| `etkm-brand-kit` | Visual standard — colors, fonts, palette (already referenced) |
+| `etkm-webpage-build` | PDF design system uses the same HTML patterns as web pages — same fonts, same color rules, same section patterns adapted for fixed-page layout |
+
+---
+
 ## The One Rule
 
 Every ETKM branded PDF is produced from a single pipeline:
@@ -207,6 +216,24 @@ Minimum visual checks specific to PDFs built with this pipeline:
 - [ ] Header bar + red rule present on all interior pages
 - [ ] Logo appears on cover only — not on interior pages
 - [ ] Footer present on all pages including dark pages
+
+---
+
+## QC Gates
+
+### Gate 1 — Font Rendering
+- [ ] Montserrat is loading from base64 `@font-face` — not from Google CDN (CDN unreliable in Playwright)
+- [ ] Inter is loading from base64 `@font-face`
+- [ ] Headlines render in Montserrat 900 — not system fallback
+- [ ] Body text renders in Inter — not system fallback
+- [ ] Verify by screenshot: open the generated PDF and inspect font rendering
+
+### Gate 2 — Brand Compliance
+- [ ] Background is white (`#fff`) or black (`#000`) — correct for document type
+- [ ] Accent is `#CC0000` only
+- [ ] No emojis in the document
+- [ ] No prohibited words
+- [ ] Layout matches the HTML source — no float or grid collapse artifacts
 
 ---
 
