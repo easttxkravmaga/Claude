@@ -178,3 +178,38 @@ When significant work is complete:
 - When Nathan provides source content, absorb it fully and work from it immediately.
 - Nathan iterates fast. Best first version, expect 2–3 rounds of targeted corrections. Only touch what he flags.
 - He will give Claude a smiley face sticker for exceptional work. Highest honor in the ETKM system.
+
+---
+
+## ETKM Skill Ecosystem — Quick Reference
+
+The skill library is organized in four tiers. Load skills in order of dependency.
+
+### Tier 1 — Foundation (load for any ETKM work)
+- `etkm-brand-kit` — Visual standard (colors, fonts, image rules)
+- `etkm-brand-foundation` — Voice, tone, prohibited words
+- `etkm-crm-doctrine` — Pipedrive architecture
+
+### Tier 2 — Build Skills (load when making things)
+- `etkm-webpage-build` — HTML pages
+- `etkm-webform-build` — Web forms (requires webpage-build)
+- `etkm-pdf-pipeline` — PDFs
+- `etkm-event-page` — Event landing pages
+
+### Tier 3 — Strategy (load for planning and copy)
+- `etkm-funnel-master` → `etkm-leads-engine`, `etkm-nurture-sequence`
+- `etkm-messaging-playbook` → `etkm-audience-map`, `etkm-content-templates`
+- `etkm-grand-slam-offer`
+
+### Tier 4 — Orchestration (load for project governance)
+- `etkm-project-standard` — Master production standard
+- `nate-collaboration-workflow` — This document
+- `etkm-workflow-registry` — Build status tracker
+
+### Build order for new skills
+When a new skill needs to be created:
+1. Define the tier (Foundation / Build / Strategy / Orchestration)
+2. Load all skills it will reference before writing it
+3. Write the SKILL.md with QC gates matching its tier (Tier 2: 3-4 gates, Tier 3: 1 gate)
+4. Add outbound references in any Tier 1 skills it belongs under
+5. Update `etkm-project-standard` pre-build checklist if it's a Tier 2 skill
