@@ -70,6 +70,15 @@ STEP 4 — QC — ALL 6 GATES BEFORE DELIVERY
 
 ---
 
+## Dependencies
+
+| Skill | Why |
+|-------|-----|
+| `etkm-brand-kit` | **Primary** — all canvas colors, font specs, and image treatment come from here |
+| `etkm-cinematic-doctrine` | Image composition, subject positioning, sightline zones |
+
+---
+
 ## FONT STANDARD (LOCKED 2026-03-23)
 
 **Headline:** Montserrat Black 900
@@ -387,6 +396,17 @@ Challenge a belief they hold.
 | 6 — North Star | Stops the scroll. Nike level. Unmistakably ETKM. |
 
 **Any failure = fix, re-render, re-check. Never skip.**
+
+---
+
+## QC Gate — Social Graphic Delivery
+
+- [ ] Canvas size is correct for platform (Facebook: 1200×630 / Instagram: 1080×1080 / LinkedIn: 1200×627)
+- [ ] Background is `#000` or `#fff` only — no gray, no gradient
+- [ ] Red is `#CC0000` — one element maximum per graphic
+- [ ] Image is grayscale — no color photography
+- [ ] No emojis in the graphic or caption copy
+- [ ] Font is Montserrat (headline) + Inter (body) — no substitutions
 
 ---
 
