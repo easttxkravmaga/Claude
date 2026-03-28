@@ -436,6 +436,23 @@ over time.
 
 ---
 
+## Required Pre-Build Checks by Deliverable Type
+
+| Deliverable | Required Skills to Load Before Starting |
+|-------------|----------------------------------------|
+| HTML page | `etkm-brand-kit` + `etkm-webpage-build` |
+| Web form | `etkm-brand-kit` + `etkm-webpage-build` + `etkm-webform-build` |
+| PDF | `etkm-brand-kit` + `etkm-pdf-pipeline` |
+| Event page | `etkm-brand-kit` + `etkm-webpage-build` + `etkm-event-page` |
+| Email | `etkm-brand-foundation` |
+| Social graphic | `etkm-brand-kit` + `etkm-social-graphics` + `etkm-cinematic-doctrine` |
+| CRM / automation | `etkm-crm-doctrine` + `etkm-pipedrive-manus` |
+
+No deliverable leaves production without passing the relevant QC gates in
+`etkm-deliverable-qc`.
+
+---
+
 ## Session Opening Protocol for All Tools
 
 **Claude Chat:**
