@@ -42,6 +42,16 @@ description: >
 
 ---
 
+## Dependencies
+
+| Skill | Why |
+|-------|-----|
+| `etkm-brand-kit` | Visual standard (already referenced) |
+| `etkm-webpage-build` | Parent page standard — event pages inherit all hero spec, section patterns, font loading, and WordPress deployment rules |
+| `etkm-webform-build` | Any registration form on the event page must follow webform build standard — field whitelist, Web3Forms config, arc dropdown |
+
+---
+
 ## TYPE 1 — Seminar / Workshop Template
 
 **Reference page:** [etxkravmaga.com/fight-back-etx/womens-self-defense-seminar-in-tyler-tx/](http://etxkravmaga.com/fight-back-etx/womens-self-defense-seminar-in-tyler-tx/)
@@ -319,6 +329,17 @@ Present file to Nathan via `present_files`.
 - [ ] Responsive breakpoint at 860px present
 - [ ] `target="_blank"` on all external links
 - [ ] Google Fonts link included
+
+---
+
+## QC Gate — Event Page Delivery
+
+- [ ] Registration/booking link is present and correct (Ecwid, Stripe, or Calendly — confirmed live)
+- [ ] CTA button text is white — not default browser style
+- [ ] Event date, time, and location are accurate and not placeholder text
+- [ ] Price displayed correctly (no rounding, no missing $ sign)
+- [ ] All etkm-webpage-build Gate 1–4 checks pass
+- [ ] If form is on page: all etkm-webform-build Gate 1–3 checks pass
 
 ---
 
