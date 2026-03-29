@@ -120,7 +120,7 @@ around suspicious figures or environmental elements, mimicking a tactical
 AR interface or threat detection algorithm.
 
 **Overlay rules:**
-- Color: Red (#FF0000) at reduced opacity (30-50%) or as thin wireframe lines
+- Color: Red (#CC0000) at reduced opacity (30-50%) or as thin wireframe lines
 - Applied to: Behavioral anomalies in the scene — a figure who doesn't
   belong, a hand reaching for a concealed object, a spatial violation
 - Never applied to: The subject themselves, neutral bystanders, or

@@ -119,7 +119,7 @@ Four optional media slots are built into the template. They render when enabled.
 |---|---|
 | Background | #000000 (all sections) |
 | Text primary | #ffffff |
-| Red accent | #ff0000 (series bar + principle numbers only) |
+| Red accent | #CC0000 (series bar + principle numbers only) |
 | Gray | #575757 |
 | Light gray | #bbbbbb |
 | Font: headers | Barlow Condensed 700/900 |

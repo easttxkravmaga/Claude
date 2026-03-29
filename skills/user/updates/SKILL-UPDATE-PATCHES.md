@@ -17,7 +17,7 @@ Do not rewrite the skill — append or insert only.
 
 Find in Section 1 Color Palette:
 ```
-| Red | #FF0000 | Attention only — one element per view |
+| Red | #CC0000 | Attention only — one element per view |
 ```
 
 Replace with:
@@ -25,9 +25,9 @@ Replace with:
 | Red | #CC0000 | Attention only — one element per view |
 ```
 
-Also update any instance of `#FF0000` in Section 2 Proven Red Applications table.
+Also update any instance of `#CC0000` in Section 2 Proven Red Applications table.
 
-**Reason:** All March 2026 production work uses `#CC0000`. The brand kit has `#FF0000` which is pure red — too bright, never what was used in production.
+**Reason:** All March 2026 production work uses `#CC0000`. The brand kit has `#CC0000` which is pure red — too bright, never what was used in production.
 
 ### Change 2: Add Outbound References section at the bottom
 
@@ -96,7 +96,7 @@ Add two new sections after the existing gate sections (before any closing notes)
 Run this gate before delivering any ETKM HTML page.
 
 - [ ] Background is `#000` or `#111` — no other backgrounds
-- [ ] Red is `#CC0000` — not `#FF0000` or any variant
+- [ ] Red is `#CC0000` — not `#CC0000` or any variant
 - [ ] Fonts: Montserrat + Inter loaded from Google Fonts CDN
 - [ ] Hero filter: `brightness(0.42) grayscale(100%)` — no deviations
 - [ ] All images have `filter: grayscale(100%)`

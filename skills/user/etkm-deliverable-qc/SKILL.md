@@ -323,7 +323,7 @@ permanent check item for all future deliverables.
 Run this gate before delivering any ETKM HTML page.
 
 - [ ] Background is `#000` or `#111` — no other backgrounds
-- [ ] Red is `#CC0000` — not `#FF0000` or any variant
+- [ ] Red is `#CC0000` — not `#CC0000` or any variant
 - [ ] Fonts: Montserrat + Inter loaded from Google Fonts CDN
 - [ ] Hero filter: `brightness(0.42) grayscale(100%)` — no deviations
 - [ ] All images have `filter: grayscale(100%)`

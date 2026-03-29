@@ -340,7 +340,7 @@ ETKM nav is consistent across all pages. Use the approved pattern:
 
 ### Gate 1 — Brand Compliance
 - [ ] Background is `#000` or `#111` — no other colors as backgrounds
-- [ ] Red is `#CC0000` — not `#FF0000`, not any other value
+- [ ] Red is `#CC0000` — not `#CC0000`, not any other value
 - [ ] Fonts loaded: Montserrat + Inter from Google Fonts CDN
 - [ ] No emojis anywhere in the HTML
 - [ ] No prohibited words (mastery, dominate, destroy, killer, beast, crush, elite, warrior)

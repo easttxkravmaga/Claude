@@ -1,6 +1,6 @@
 """
 ETKM Visual Aide — Base SVG Utilities
-Brand: Black #000000 | White #FFFFFF | Red #FF0000 | Gray #575757 | Lite Gray #BBBBBB
+Brand: Black #000000 | White #FFFFFF | Red #CC0000 | Gray #575757 | Lite Gray #BBBBBB
 Design: Swiss International — grid, hierarchy, negative space, zero decoration
 """
 
@@ -12,7 +12,7 @@ import requests
 # ── Brand Colors ────────────────────────────────────────────────────────────
 BLACK     = '#000000'
 WHITE     = '#FFFFFF'
-RED       = '#FF0000'
+RED       = '#CC0000'
 GRAY      = '#575757'
 LITE_GRAY = '#BBBBBB'
 

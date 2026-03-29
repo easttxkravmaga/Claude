@@ -148,7 +148,7 @@ overlay annotates the person's physical form — it does not replace it.
 
 | Color | Hex | Meaning |
 |-------|-----|---------|
-| Red | #FF0000 | Threat. Registered. Intent suspected. Decision pending or made. |
+| Red | #CC0000 | Threat. Registered. Intent suspected. Decision pending or made. |
 
 ---
 
@@ -183,13 +183,13 @@ but must have physical mass and clothing detail.
 > *"Figure at 2 o'clock, mid distance — one car length, trench coat,
 > converging at angle toward subject's path. HUD: Red / On — thin clean
 > body outline, soft outer glow extending 12px beyond silhouette, 35%
-> fill #FF0000. Figure is locked and registered. Decision pending."*
+> fill #CC0000. Figure is locked and registered. Decision pending."*
 
 **Example (Red / Notice):**
 > *"Figure at 10 o'clock, close — within 8 feet, hooded, stationary
 > against tree line, no purposeful task. HUD: Red / Notice — thin clean
 > body outline, soft outer glow extending 10px beyond silhouette, 18%
-> fill #FF0000. Figure has entered awareness. Assessment ongoing."*
+> fill #CC0000. Figure has entered awareness. Assessment ongoing."*
 
 ---
 

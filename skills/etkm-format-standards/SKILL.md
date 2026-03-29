@@ -29,13 +29,13 @@ dependencies:
 |---|---|---|
 | BLACK | #000000 / 000000 | Backgrounds, headlines |
 | WHITE | #FFFFFF / FFFFFF | Content backgrounds, reversed text |
-| RED | #FF0000 / FF0000 | One accent per section maximum |
+| RED | #CC0000 / FF0000 | One accent per section maximum |
 | GRAY | #575757 / 575757 | Body text, captions |
 | LT_GRAY | #F2F2F2 / F2F2F2 | Alternating rows, callout backgrounds |
 | MID_GRAY | #BBBBBB / BBBBBB | Rules, dividers, secondary text |
 | NEAR_BLK | #111111 / 111111 | Dark content backgrounds |
 
-Note: PPTX requires hex WITHOUT # prefix (pptxgenjs corrupts on #FF0000 — use FF0000)
+Note: PPTX requires hex WITHOUT # prefix (pptxgenjs corrupts on #CC0000 — use FF0000)
 
 ---
 
@@ -136,7 +136,7 @@ Note: PPTX requires hex WITHOUT # prefix (pptxgenjs corrupts on #FF0000 — use 
 
 - Layout: LAYOUT_16x9 (10" × 5.625")
 - Fonts: Arial Black (headlines) + Arial (body)
-- CRITICAL: No # prefix on hex colors in pptxgenjs — use FF0000 not #FF0000
+- CRITICAL: No # prefix on hex colors in pptxgenjs — use FF0000 not #CC0000
 - Never reuse option objects across shape calls (pptxgenjs mutates in-place)
 - Never use accent lines under titles
 - All diagrams: Canva export PNG → insert as image. Never build diagrams in PPTX.

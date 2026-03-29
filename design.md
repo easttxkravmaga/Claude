@@ -28,7 +28,7 @@ The mood is **quiet confidence, not aggression.** The brand does not shout. It c
 :root {
   --color-black:      #000000;  /* Primary background (dark), primary text (light) */
   --color-white:      #FFFFFF;  /* Primary background (light), primary text (dark) */
-  --color-red:        #FF0000;  /* Attention only — ONE element per view */
+  --color-red:        #CC0000;  /* Attention only — ONE element per view */
   --color-gray:       #575757;  /* Secondary text, supporting elements */
   --color-gray-light: #BBBBBB;  /* Dividers, borders, subtle structure */
 
@@ -63,7 +63,7 @@ All HTML outputs (landing pages, web pages, tools, emails) use:
 - **Page background:** `#000000`
 - **Card/surface background:** `#111111`
 - **Text:** `#FFFFFF`
-- **Accent:** `#CC0000` (slightly deeper red for screen rendering — use `#FF0000` for print/PDF)
+- **Accent:** `#CC0000` (slightly deeper red for screen rendering — use `#CC0000` for print/PDF)
 - White-background HTML is only used for documents, forms, and print-style assets
 
 ---
@@ -172,7 +172,7 @@ The primary call-to-action. Red background. One per section.
 ```css
 .btn-primary {
   display: inline-block;
-  background-color: #FF0000;
+  background-color: #CC0000;
   color: #FFFFFF;
   font-family: var(--font-headline);
   font-size: var(--text-lg);
@@ -265,7 +265,7 @@ Used when a second action must exist alongside the primary CTA.
 
 /* One nav item may carry red — the primary CTA link */
 .nav-link-cta {
-  color: #FF0000;
+  color: #CC0000;
 }
 ```
 
@@ -315,7 +315,7 @@ The hero is the most important section on any page. Asymmetric. Left-aligned. Ty
 
 /* Red accent: ONE word or short phrase in the headline */
 .hero-headline .accent {
-  color: #FF0000;
+  color: #CC0000;
 }
 
 .hero-body {
@@ -386,7 +386,7 @@ The hero is the most important section on any page. Asymmetric. Left-aligned. Ty
   background-color: #111111;
   border: 1px solid #222222;
   /* One side accent border allowed — left or top only */
-  border-left: 3px solid #FF0000;  /* Only when card needs high priority signal */
+  border-left: 3px solid #CC0000;  /* Only when card needs high priority signal */
   padding: var(--space-6);
   /* No border-radius — hard edges */
 }
@@ -461,7 +461,7 @@ The hero is the most important section on any page. Asymmetric. Left-aligned. Ty
 
 /* Error state */
 .form-input.error {
-  border-color: #FF0000;
+  border-color: #CC0000;
 }
 ```
 
@@ -481,7 +481,7 @@ Used to create section boundaries and visual hierarchy. Never decorative — alw
   display: block;
   width: 48px;
   height: 3px;
-  background-color: #FF0000;
+  background-color: #CC0000;
   margin-bottom: var(--space-4);
 }
 ```
@@ -593,7 +593,7 @@ Used to create section boundaries and visual hierarchy. Never decorative — alw
 
 ### 6.3 — HTML Email
 
-- **Header bar:** Solid red (`#FF0000`), full width, 8px tall
+- **Header bar:** Solid red (`#CC0000`), full width, 8px tall
 - **Body background:** White (`#FFFFFF`)
 - **Headline:** Barlow Condensed or system bold sans, dark, uppercase
 - **CTA button:** Red background, white text, no border-radius

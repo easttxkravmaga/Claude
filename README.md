@@ -61,7 +61,7 @@ Claude · Manus · Gemini · NotebookLM · Pipedrive · Make.com · Google Works
 
 ## Brand Constants
 
-- Colors: Black / White / Red (#FF0000)
+- Colors: Black / White / Red (#CC0000)
 - Typography: Anton (headlines), Barlow Condensed (body)
 - Aesthetic: Swiss International
 - Mission: "Go home safe."

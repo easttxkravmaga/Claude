@@ -37,10 +37,10 @@ body{
   letter-spacing:1.5px;text-transform:uppercase;
   border:none;border-radius:3px;cursor:pointer;transition:all .15s;
 }
-.btn-top-primary{background:#ff0000;color:#fff}
+.btn-top-primary{background:#CC0000;color:#fff}
 .btn-top-primary:hover{background:#cc0000}
 .btn-top-secondary{background:#1a1a1a;color:#888;border:1px solid #2a2a2a}
-.btn-top-secondary:hover{border-color:#ff0000;color:#ff0000}
+.btn-top-secondary:hover{border-color:#CC0000;color:#CC0000}
 #export-status{font-size:10px;color:#575757;min-width:60px;text-align:right}
 
 /* ── Main 3-column layout ────────────────────────── */
@@ -105,7 +105,7 @@ body{
   transition:all .12s;line-height:1.3;
 }
 .dt-item input:checked + span{
-  background:#1a0000;color:#ff0000;
+  background:#1a0000;color:#CC0000;
   font-weight:700;
 }
 .dt-item:hover span{color:#aaa}
@@ -121,7 +121,7 @@ body{
   color:#444;transition:all .12s;
 }
 .pill-group input:checked + span{
-  border-color:#ff0000;color:#ff0000;background:#180000;
+  border-color:#CC0000;color:#CC0000;background:#180000;
 }
 .pill-group label:hover span{color:#888}
 
@@ -152,7 +152,7 @@ body{
   transition:all .12s;
 }
 .size-pills input:checked + span{
-  border-color:#ff0000;color:#ff0000;background:#180000;
+  border-color:#CC0000;color:#CC0000;background:#180000;
 }
 .size-pills label:hover span{color:#888}
 
@@ -163,7 +163,7 @@ body{
   font-size:10px;color:#444;cursor:pointer;background:none;
   transition:all .12s;
 }
-.acc-pill.active{border-color:#ff0000;color:#ff0000;background:#180000}
+.acc-pill.active{border-color:#CC0000;color:#CC0000;background:#180000}
 .acc-pill:hover{color:#888;border-color:#444}
 
 /* ── Text inputs (shared) ────────────────────────── */
@@ -177,7 +177,7 @@ input[type=text],textarea,select{
   padding:6px 9px;border-radius:3px;outline:none;
   transition:border-color .15s;
 }
-input[type=text]:focus,textarea:focus{border-color:#ff0000}
+input[type=text]:focus,textarea:focus{border-color:#CC0000}
 textarea{resize:vertical;min-height:48px;line-height:1.5}
 
 /* ── Element cards ────────────────────────────────── */
@@ -194,7 +194,7 @@ textarea{resize:vertical;min-height:48px;line-height:1.5}
   background:none;border:none;color:#2a2a2a;cursor:pointer;font-size:14px;
   line-height:1;transition:color .12s;
 }
-.el-rm:hover{color:#ff0000}
+.el-rm:hover{color:#CC0000}
 
 /* ── Add element button ──────────────────────────── */
 #add-element-btn{
@@ -203,7 +203,7 @@ textarea{resize:vertical;min-height:48px;line-height:1.5}
   font-size:10px;letter-spacing:1px;text-transform:uppercase;
   margin-top:4px;transition:all .15s;
 }
-#add-element-btn:hover{border-color:#ff0000;color:#ff0000}
+#add-element-btn:hover{border-color:#CC0000;color:#CC0000}
 
 /* ── Preview ─────────────────────────────────────── */
 #preview-bar{
@@ -221,7 +221,7 @@ textarea{resize:vertical;min-height:48px;line-height:1.5}
   background:#111;color:#555;border:1px solid #1e1e1e;
   border-radius:3px;cursor:pointer;transition:all .12s;
 }
-.btn-sm:hover{border-color:#ff0000;color:#ff0000}
+.btn-sm:hover{border-color:#CC0000;color:#CC0000}
 #preview-wrap{
   flex:1;display:flex;align-items:center;justify-content:center;
   padding:20px;overflow:hidden;position:relative;
@@ -247,8 +247,8 @@ textarea{resize:vertical;min-height:48px;line-height:1.5}
 #loading.active{display:block}
 #error-notice{
   position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
-  background:#1a0000;border:1px solid #ff0000;border-radius:3px;
-  padding:7px 12px;font-size:10px;color:#ff0000;
+  background:#1a0000;border:1px solid #CC0000;border-radius:3px;
+  padding:7px 12px;font-size:10px;color:#CC0000;
   max-width:80%;display:none;white-space:pre-wrap;word-break:break-all;
 }
 #error-notice.active{display:block}
@@ -309,7 +309,7 @@ textarea{resize:vertical;min-height:48px;line-height:1.5}
     <div class="panel-section">
       <div class="panel-label">Text Color</div>
       <div class="chip-row">
-        <button class="color-chip" data-c="red"    style="background:#FF0000" title="Red"></button>
+        <button class="color-chip" data-c="red"    style="background:#CC0000" title="Red"></button>
         <button class="color-chip active" data-c="black"  style="background:#000000" title="Black"></button>
         <button class="color-chip" data-c="white"  style="background:#FFFFFF" title="White"></button>
         <button class="color-chip" data-c="gray"   style="background:#575757" title="Gray"></button>
@@ -321,7 +321,7 @@ textarea{resize:vertical;min-height:48px;line-height:1.5}
     <div class="panel-section">
       <div class="panel-label">Accent Color</div>
       <div class="chip-row">
-        <button class="color-chip acc-active" data-ac="red"    style="background:#FF0000" title="Red"></button>
+        <button class="color-chip acc-active" data-ac="red"    style="background:#CC0000" title="Red"></button>
         <button class="color-chip"            data-ac="black"  style="background:#000000" title="Black"></button>
         <button class="color-chip"            data-ac="white"  style="background:#FFFFFF" title="White"></button>
         <button class="color-chip"            data-ac="gray"   style="background:#575757" title="Gray"></button>
@@ -534,7 +534,7 @@ const SCHEMAS = {
       {key:'body',  label:'Body Text',   type:'textarea'},
     ],
     extraFields: [
-      {key:'pyramid_color', label:'Pyramid Color', type:'color', default:'#FF0000'},
+      {key:'pyramid_color', label:'Pyramid Color', type:'color', default:'#CC0000'},
     ],
   },
 
@@ -644,10 +644,10 @@ const $acPills  = document.getElementById('accent-pills');
 
 /* Color maps */
 const COLOR_MAP = {
-  red:'#FF0000', black:'#000000', white:'#FFFFFF', gray:'#575757', ltgray:'#BBBBBB'
+  red:'#CC0000', black:'#000000', white:'#FFFFFF', gray:'#575757', ltgray:'#BBBBBB'
 };
 let _textColor   = '#000000';
-let _accentColor = '#FF0000';
+let _accentColor = '#CC0000';
 
 /* ═══════════════════════════════════════════════════════════════════════════
    Build params
@@ -672,7 +672,7 @@ function buildParams() {
   };
 
   if (_textColor   !== '#000000') params.settings.primary_color_override = _textColor;
-  if (_accentColor !== '#FF0000') params.settings.accent_color_override  = _accentColor;
+  if (_accentColor !== '#CC0000') params.settings.accent_color_override  = _accentColor;
 
   /* Extra fields */
   (schema.extraFields || []).forEach(ef => {
@@ -726,14 +726,14 @@ function renderExtraFields() {
       const inp = document.createElement('input');
       inp.type = 'checkbox'; inp.id = 'ef-' + ef.key;
       inp.checked = ef.default || false;
-      inp.style.accentColor = '#ff0000';
+      inp.style.accentColor = '#CC0000';
       inp.addEventListener('change', debounceRefresh);
       $extra.appendChild(inp);
     } else if (ef.type === 'color') {
       const row = document.createElement('div');
       row.style.cssText = 'display:flex;align-items:center;gap:8px;margin-top:4px';
       const inp = document.createElement('input');
-      inp.type = 'color'; inp.id = 'ef-' + ef.key; inp.value = ef.default || '#FF0000';
+      inp.type = 'color'; inp.id = 'ef-' + ef.key; inp.value = ef.default || '#CC0000';
       inp.addEventListener('input', debounceRefresh);
       row.appendChild(inp);
       $extra.appendChild(row);
@@ -1007,7 +1007,7 @@ document.querySelectorAll('.color-chip[data-ac]').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.color-chip[data-ac]').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    _accentColor = COLOR_MAP[btn.dataset.ac] || '#FF0000';
+    _accentColor = COLOR_MAP[btn.dataset.ac] || '#CC0000';
     debounceRefresh();
   });
 });
