@@ -13,13 +13,17 @@ description: >
   Fight Back ETX, youth program, or anything about how ETKM teaches or structures
   its program — even if they don't use the word "skill" or "curriculum" explicitly.
   This skill replaces the former etkm-curriculum skill which has been retired.
+  Also covers ETKM terminology and definitions — trigger for "what does X mean
+  in ETKM", definition lookups, distinction pairs (Technique vs Principle,
+  Fighting vs Self Defense, etc.), and any task requiring consistent ETKM language.
+  Absorbs the former etkm-definitions skill.
 ---
 
 # ETKM Training Program
 
-**Version:** 2.0
-**Last Updated:** 2026-03-09
-**Replaces:** etkm-curriculum (retired)
+**Version:** 2.1
+**Last Updated:** 2026-03-29
+**Replaces:** etkm-curriculum (retired), etkm-definitions (absorbed V2.1)
 
 ---
 
@@ -186,12 +190,64 @@ about ETKM, always reflect these core training principles:
 
 ---
 
+## ETKM Definitions (Absorbed from etkm-definitions V2.0)
+
+### Definitions Source Document
+
+All definitions are maintained in a Google Doc. Fetch before responding to any terminology question.
+
+Use `google_drive_fetch` with: `document_ids=["1i67-SjMLUrhpsldjCmQMlVQ5VNg2Z8AKqSUPhDqL6nE"]`
+
+### Core Progression
+
+Mindset → Tactics → Skills → Drills → Proficiency
+
+### Core Terms (Quick Reference — always fetch the live doc for full definitions)
+
+| Term | Definition |
+|------|-----------|
+| Mindset | Mental framework governing perception and response to stress and threat |
+| Tactics | Decision-making strategies guiding what you do and when in a dynamic situation |
+| Skills | Physical abilities developed through focused repetition of specific movements |
+| Drills | Structured exercises combining skills with decision-making under pressure |
+| Proficient | Capable of performing reliably and efficiently under pressure, not perfectly |
+| Violence | Deliberate use of physical force — understood as reality requiring preparation |
+| Fighting | Voluntary willingness to engage in combat, typically ego-driven |
+| Self Defense | Response to imposed violence requiring immediate protective action |
+
+### Critical ETKM Distinction Pairs
+
+| Pair | Key Difference |
+|------|---------------|
+| Technique vs Principle | Specific mechanical solution vs universal concept governing effective action |
+| Aggression vs Controlled Violence | Emotional reactive energy vs deliberate purposeful force |
+| Confidence vs Dominance | Quiet certainty from preparation vs need to assert superiority |
+| Avoidance vs Submission | Intelligent disengagement vs yielding from fear |
+| De-escalation vs Hesitation | Intentional tension reduction vs delay from uncertainty |
+| Fighting vs Self Defense | Voluntary engagement vs necessary protective response |
+| Skills vs Drills | Building capability (how to move) vs building usability (when and why to move) |
+
+### Usage Rule
+
+ETKM definitions are principles-first and performance-based. Always use the ETKM-specific definition as written. Do NOT substitute generic Krav Maga, martial arts, or fitness industry definitions. When the Google Doc is updated by Nathan, this skill automatically reflects changes on next fetch.
+
+---
+
 ## Notes
 
 - The former etkm-curriculum skill pointed to Notion URLs that could not
   be fetched due to JavaScript rendering requirements. That skill is now
   retired. All curriculum content lives in this skill via Google Docs.
+- The former etkm-definitions skill has been absorbed into this skill (V2.1).
+  Definitions source document (Google Doc) reference preserved above.
 - When Google Docs are updated by Nathan, this skill automatically
   reflects the changes on next fetch. No skill file edits needed.
 - If new programs or documents are added, update the Document Reference
   Table above with the new Google Doc ID.
+
+---
+
+## CHANGELOG
+
+- V2.1 — 2026-03-29 — Absorbed etkm-definitions (core terms, distinction pairs, Google Doc reference). Added changelog.
+- V2.0 — 2026-03-09 — Full restructure replacing retired etkm-curriculum skill.

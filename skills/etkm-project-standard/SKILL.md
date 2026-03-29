@@ -1,7 +1,7 @@
 ---
 name: etkm-project-standard
-version: 1.0
-updated: 2026-03-23
+version: 1.1
+updated: 2026-03-29
 description: >
   The master production standard for every ETKM project — regardless of type,
   tool, or deliverable. Load this skill at the start of any new project build,
@@ -436,23 +436,6 @@ over time.
 
 ---
 
-## Required Pre-Build Checks by Deliverable Type
-
-| Deliverable | Required Skills to Load Before Starting |
-|-------------|----------------------------------------|
-| HTML page | `etkm-brand-kit` + `etkm-webpage-build` |
-| Web form | `etkm-brand-kit` + `etkm-webpage-build` + `etkm-webform-build` |
-| PDF | `etkm-brand-kit` + `etkm-pdf-pipeline` |
-| Event page | `etkm-brand-kit` + `etkm-webpage-build` + `etkm-event-page` |
-| Email | `etkm-brand-foundation` |
-| Social graphic | `etkm-brand-kit` + `etkm-social-graphics` + `etkm-cinematic-doctrine` |
-| CRM / automation | `etkm-crm-doctrine` + `etkm-pipedrive-manus` |
-
-No deliverable leaves production without passing the relevant QC gates in
-`etkm-deliverable-qc`.
-
----
-
 ## Session Opening Protocol for All Tools
 
 **Claude Chat:**
@@ -500,7 +483,35 @@ This skill governs when and how all other production skills are loaded.
 
 ---
 
-*Version 1.0 — Established 2026-03-23*
+*Version 1.1 — Updated 2026-03-29*
+
+---
+
+## NEW SKILL GATE (Added V1.1)
+
+Before creating any new skill, answer these three questions:
+
+1. Does this belong inside an existing skill as a new section?
+2. Does the data belong in an existing Notion database as new records?
+3. Is this a genuinely new domain that doesn't fit anywhere?
+
+Only if the answer to #3 is yes does a new skill get created. All new skills must follow the 6-section template defined in `etkm-system-governance`.
+
+---
+
+## QUARTERLY SYSTEM REVIEW (Added V1.1)
+
+**Frequency:** Once every 3 months (first review: June 2026)
+**Duration:** 30 minutes
+
+Full protocol defined in `etkm-system-governance` Section 7. Covers skill inventory, version audit, Notion database health, laptop sync, and system metrics.
+
+---
+
+## CHANGELOG
+
+- V1.1 — 2026-03-29 — Added New Skill Gate (3-question filter). Added Quarterly System Review reference. Aligned with etkm-system-governance V1.0.
+- V1.0 — 2026-03-23 — Initial build. Master production standard for all ETKM projects.
 *Built from: P1 Book Intelligence System (benchmark)*
 *Authority: Nathan Lundstrom / East Texas Krav Maga*
 *Maintained in: easttxkravmaga/Claude → skills/etkm-project-standard/SKILL.md*

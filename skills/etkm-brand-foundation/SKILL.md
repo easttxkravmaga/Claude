@@ -15,6 +15,9 @@ description: >
 
 # ETKM Brand Foundation
 
+**Version:** 1.1
+**Last Updated:** 2026-03-29
+
 This is the single source of truth for ETKM brand identity, voice, and messaging
 architecture. Every email, ad, social post, and conversation should align with what
 is written here.
@@ -97,7 +100,6 @@ Always show who the student is becoming, not just what they're learning.
 - Fear-heavy content without immediately following with plan and hope
 - Copy that positions ETKM as the hero
 - Copy that would feel dismissive to a trauma survivor
-- Specific year counts for Nathan's experience ("42 years", "43 years", etc.) — use evergreen phrasing only: "decades of experience", "over four decades", or "a lifetime of experience in self-protection"
 
 ---
 

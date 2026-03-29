@@ -17,7 +17,7 @@ description: >
 # ETKM Workflow Registry
 
 **Version:** 2.1
-**Last Updated:** 2026-03-15
+**Last Updated:** 2026-03-29
 
 ---
 
@@ -225,13 +225,13 @@ load etkm-crm-doctrine.
 - Notes: Final version follows strict ETKM brand kit.
 
 [WF-016] Student Intake Form and Flask Backend
-- Status: BUILT, pending Google Cloud Run deployment
+- Status: BUILT, pending Railway deployment
 - Multi-step HTML form (3 steps: Starting Point, Goals, Learning Profile) on etkmstudent.com
 - ETKM brand standards: black/white/red palette, Barlow Condensed headlines, tile-style inputs
 - Backend: Flask app (app.py) creates Person, Deal, and formatted Note in Pipedrive
-- Deployment: Google Cloud Run (Railway removed — unreliable). 4 Pipedrive credentials as environment variables.
-- Open Dependencies: Nathan needs Pipedrive API token, Pipeline ID, Stage 7 ID; Manus handles Cloud Run deploy
-- Notes: Manus built the backend. no-cors flag must be removed once Cloud Run is live. ETKM MCP server also migrated to Cloud Run.
+- Deployment: Railway with 4 Pipedrive credentials as environment variables
+- Open Dependencies: Nathan needs Railway account, Pipedrive API token, Pipeline ID, Stage 7 ID
+- Notes: Manus built the backend. no-cors flag must be removed once Railway is live.
 
 [WF-017] "The Awareness Advantage" Content Ecosystem
 - Status: APPROVED
@@ -246,31 +246,6 @@ load etkm-crm-doctrine.
 - Highest priority actions: verify form renders (test incognito desktop and mobile), add real student testimonial
 - Notes: Copy delivered. Implementation on WordPress pending.
 
-[WF-019] Private Training Blueprint System
-- Status: APPROVED
-- Four-component system: student intake form (HTML), instructor consult form (HTML), AI synthesis engine, PDF generator
-- All files deploy to etxkravmaga.com/blueprint/
-- Skill package: etkm-blueprint-writer/ (includes gold standard reference, arc registers, voice examples)
-- Critical voice directive: blueprint is forward-facing only — never references cause of gaps, only functional gaps and solutions
-- Notes: Full system delivered and deployed.
-
-[WF-020] Deliverable Format Standards (etkm-format-standards)
-- Status: APPROVED — LOCKED 2026-03-15
-- Covers all 5 output formats: HTML, PDF, DOCX, Email, PPTX
-- PDF: ReportLab, Gate 4A red stripe grep audit mandatory
-- DOCX: Arial throughout, white background, keepWithNext headings, paragraph-level left borders
-- Email: two-track — plain text (Pipedrive 1:1), HTML event template (Pipedrive Campaigns)
-- PPTX: 7-slide master + 20-slide options library; hex colors must never include # prefix in pptxgenjs
-- HTML: Barlow Condensed Black + Inter, Swiss International layout, three locked image treatments; ALL HTML outputs use black background (#000000/#111111 cards), white text, #CC0000 red accent — no light/white backgrounds
-- Email header images: etxkravmaga.com/wp-content/uploads/etkm-email-headers/, 600×280px PNG under 200KB B&W; arc/ subfolder (6 audience), subject/ subfolder (10 topic); CBLTAC.png confirmed live
-- Skill: etkm-format-standards (pending Manus GitHub push)
-- Notion reference page and 5 tailored project instruction .txt files delivered
-
-[WF-021] ETKM Asset Registry
-- Status: LIVE — https://www.notion.so/327924c8167381d59eb0f1c1f2a84db5
-- Canonical master list of all 18 deliverable types across the ETKM system
-- Purpose: single source of truth for what exists, what format it lives in, and which workflow owns it
-
 ### PLATFORMS
 
 | Platform | Status | Notes |
@@ -283,7 +258,7 @@ load etkm-crm-doctrine.
 | Calendly | LIVE | Integrated directly with Pipedrive, drives arc classification |
 | Notion | LIVE | Curriculum database, definitions |
 | Make.com | LIVE | Webhook workflows, Calendly to Pipedrive scenario built by Manus |
-| Google Cloud Run | LIVE | Flask backend hosting — ETKM MCP server + Notion-to-Cowork watcher (Railway removed: unreliable) |
+| Railway | PLANNED | Flask backend for intake form |
 | Google Drive | LIVE | AI Resources folder, PDF hosting, shared documents |
 
 ---
@@ -298,7 +273,7 @@ load etkm-crm-doctrine.
 | D-04 | John Wilson event registration URL | WF-003 | VERIFY | etxkravmaga.com/cbltac-courses/ may already serve this purpose |
 | D-05 | etkmstudent.com content rewrite | Platform, WF-016 | PLANNED | Queued but not started |
 | D-06 | 4 website pages voice rewrite | WF-002 competency emails | PENDING | Class Structure, What is Mindset, Beginner Tactics, Goals |
-| D-07 | Google Cloud Run deployment for WF-016 backend | WF-016 | PENDING | Manus handles deploy; Nathan needs to provide Pipedrive API token, Pipeline ID, Stage 7 ID |
+| D-07 | Railway account and credentials | WF-016 | PENDING | Nathan needs to create Railway account and gather 4 Pipedrive values |
 | D-08 | Real student testimonial | WF-018 | PENDING | Needed for free trial landing page conversion |
 | D-09 | Form render verification | WF-018 | PENDING | Test free trial page form in incognito on desktop and mobile |
 | D-10 | Manus load confirmation for WF-003 | WF-003 CBLTAC campaign | VERIFY | Install package delivered, confirm Manus has loaded |
@@ -314,15 +289,13 @@ Items discussed but not yet started. Nathan determines sequence.
 | Item | Source Session | Notes |
 |------|---------------|-------|
 | Campaign Planner layer for Cinematic Prompt Generator | WF-013 session | 4-week content arc sequencer |
-| PEACE framework reusable skill | WF-003, WF-004 sessions | ✅ DELIVERED — etkm-peace-framework v1.0 skill built |
-| Reusable email campaign style skill | WF-003 session close | Nathan wants to document CBLTAC email style and PEACE integration as a repeatable skill |
-| ETKM Asset Registry (WF-021) | 2026-03-15 session close | ✅ DELIVERED — live Notion page: https://www.notion.so/327924c8167381d59eb0f1c1f2a84db5 |
+| PEACE framework reusable skill | WF-003, WF-004 sessions | Prepared, Empowered, Aware, Capable, Engaged with slogans per letter |
+| Reusable email campaign style skill | WF-003 session close | Nathan wants to document the CBLTAC email style and PEACE integration as a repeatable skill |
 | Shopify store build | Strategy session | Replace Ecwid, connect to Make and Pipedrive, merchandise plus digital products plus event tickets |
 | Remaining monthly messaging themes (April through December) | WF-005 session | March complete, 9 months remaining |
 | YouTube content development | Social media strategy | Platform identified but not yet active |
-| HeyGen integration | Tool stack planning | Arc-specific voiceover pipeline — Claude writes arc-tuned scripts → ElevenLabs generates audio in Nathan's voice → feeds HeyGen |
+| HeyGen integration | Tool stack planning | Coming soon per Nathan |
 | Master roadmap from brain dump session | Roadmap session | 5 buckets identified, brain dump not yet completed |
-| WF-002 D-11 phase-transition emails | WF-002 close | Days 30 and 60 transition emails — final item before WF-002 ships to Manus |
 
 ---
 
@@ -377,7 +350,7 @@ When Manus needs a change: Manus flags to Nathan, Nathan instructs Claude, Claud
 | Canva | Graphic design, social media images |
 | HeyGen | Video content (coming soon) |
 | Calendly | Trial booking, arc classification source |
-| Google Cloud Run | Flask backend hosting — ETKM MCP server, Notion-to-Cowork watcher, WF-016 intake backend |
+| Railway | Flask backend hosting (planned) |
 
 ---
 

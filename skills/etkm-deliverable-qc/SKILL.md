@@ -1,7 +1,7 @@
 ---
 name: etkm-deliverable-qc
 version: 2.1
-updated: 2026-03-25
+updated: 2026-03-14
 description: >
   Non-negotiable QC gate for ALL ETKM deliverables before they reach Nathan.
   Triggers any time a PDF, DOCX, HTML page, email sequence, slide deck, or printed
@@ -164,29 +164,16 @@ actual table of contents.
 ### GATE 4 — Brand and Visual Standards
 *Does this look like an ETKM document?*
 
-Reference `etkm-brand-kit` v4.0 for full standards. Key checks:
+Reference `etkm-brand-kit` skill for full standards. Key checks:
 
-**Color:**
-- [ ] Color palette: #000000 (black body), #111111 (surfaces), #FFFFFF (headlines),
-  #BBBBBB (body text on dark), #CC0000 (red accent), #575757 (gray) only — no other colors
+- [ ] Color palette: black (#000000/#111111), white (#FFFFFF), red (#CC0000), gray (#575757), light gray (#BBBBBB) only — no other colors
 - [ ] No gradients anywhere
-- [ ] HTML deliverables: body background is #000000, surfaces are #111111 — never white or gray backgrounds
-- [ ] PDF deliverables: cover is black background, interior pages are white background
-- [ ] DOCX deliverables: white background, black text throughout
-
-**Typography — LOCKED:**
-- [ ] HTML deliverables: Montserrat (headlines, labels) + Inter (body) via Google Fonts CDN
-- [ ] PDF deliverables: Montserrat (headlines) + Inter (body) — base64-embedded via etkm-pdf-pipeline
-- [ ] DOCX deliverables: Arial Bold (headings) + Arial (body) — system font substitute
-- [ ] NO Helvetica, NO Barlow Condensed, NO system sans-serif on HTML/PDF deliverables
-- [ ] Headline weight: Montserrat 900 Black for maximum impact — never lighter unless intentional
-
-**Layout:**
+- [ ] Typography: Helvetica/Helvetica-Bold for PDFs. Barlow Condensed + Inter for HTML
 - [ ] One red accent element per section — not multiple
 - [ ] Headers and footers consistent on every interior page
-- [ ] PDF cover: black background, Montserrat 900 headline, red accent rule
-- [ ] PDF interior: white background, black header bar, 3px red rule
-- [ ] HTML: black body, #111 surface cards, white/ltgray text, red CTA buttons only
+- [ ] Cover page uses Bold Black Foundation (black background, white type, red accent)
+- [ ] Interior pages use Clean White Canvas (white background, black type)
+- [ ] ETKM logo present on cover page
 - [ ] Swiss International layout — asymmetric, high contrast, no decorative elements
 - [ ] Visual hierarchy is clear — reader can navigate without confusion
 - [ ] No style drift between sections — consistent throughout
@@ -222,7 +209,6 @@ Reference `etkm-brand-foundation` skill for full standards. Key checks:
 - [ ] If the document contains fillable areas or reflection prompts, do they render correctly with adequate space?
 - [ ] For HTML deliverables: does the page render correctly in a browser? Is it mobile-responsive?
 - [ ] For DOCX deliverables: does the file open without errors and display correctly in Word?
-- [ ] For PDF deliverables: do all fonts render as Montserrat/Inter (thick, rounded strokes) — NOT system sans-serif (thin, sharp strokes)?
 
 ---
 
@@ -310,8 +296,6 @@ Every confirmed failure is logged here permanently. These are checked first in e
 | 2026-03-13 | Gift_of_Fear_Reading_Companion_v1.pdf | Chapter sequence skipping Ch. 12, 13, 14 | Gate 3 | Count chapters against source book's table of contents |
 | 2026-03-13 | Gift_of_Fear_Reading_Companion_v1.pdf | Blank final page | Gate 1 | Remove empty story entries at document end |
 | 2026-03-14 | Gift_of_Fear_Validation_Brief_v1.pdf | Validation table and vocab table — text clipped, not wrapping | Gate 1.5 | All table cells rebuilt with Paragraph objects and explicit styles |
-| 2026-03-25 | Multiple | Wrong font: Helvetica/Barlow Condensed used instead of Montserrat/Inter | Gate 4 | Font standard locked: Montserrat + Inter for HTML/PDF, Arial for DOCX |
-| 2026-03-25 | Multiple | White/gray background on HTML deliverables | Gate 4 | HTML black background rule locked: #000 body, #111 surfaces |
 
 When a new failure type is discovered, add it to this table immediately. It becomes a
 permanent check item for all future deliverables.
@@ -334,12 +318,6 @@ permanent check item for all future deliverables.
 
 **Wrong URL** (easttxkravmaga.com instead of etxkravmaga.com)
 → Always verify URLs against Gate 6 checklist
-
-**Wrong font** (thin system sans-serif instead of Montserrat)
-→ HTML: missing Google Fonts CDN import. PDF: fonts not base64-embedded.
-
-**White background on HTML** (should always be black)
-→ Missing `background: #000` on body. Load etkm-brand-kit before building any HTML.
 
 **Visual QC false positives** (dark pixels flagged at page edges)
 → Check if dark pixels are concentrated at top/bottom only (header/footer bars)
@@ -365,9 +343,6 @@ Never batch-deliver without independent QC on each file.
 A passing Asset 01 does not mean Asset 02 passes.
 
 ---
-
-*Version 2.1 — Updated 2026-03-25*
-*Gate 4 typography corrected: Montserrat + Inter locked. Helvetica/Barlow Condensed removed.*
-*Gate 4 HTML background rule added: #000 body, #111 surfaces — always.*
-*Two new entries added to Known Failure Pattern Registry.*
+*Version 2.0 — Updated 2026-03-14*
+*Incorporates visual render check (Gate 1.5) added after table clipping failure*
 *Maintained by: Nathan Lundstrom / East Texas Krav Maga*
