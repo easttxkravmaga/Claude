@@ -16,8 +16,8 @@ description: >
 
 # ETKM Workflow Registry
 
-**Version:** 2.1
-**Last Updated:** 2026-03-29
+**Version:** 2.2
+**Last Updated:** 2026-04-01
 
 ---
 
@@ -80,7 +80,7 @@ Claude stops and tells Nathan. No registry access means no build.
 ## CRM ARCHITECTURE REFERENCE
 
 The ETKM Pipedrive system uses 5 pipelines. Full structure and rules
-live in the etkm-crm-doctrine skill. This is the quick reference so
+live in the etkm-crm-operations skill. This is the quick reference so
 every session knows the landscape.
 
 | Pipeline | Name | Purpose |
@@ -94,11 +94,11 @@ every session knows the landscape.
 Belt level and arc classification are tracked via Pipedrive labels.
 PIF is a permanent Financial Status label visible across P2 and P3.
 The retired "Lapsed" label does not exist in the active system.
-Events are NOT a Pipedrive pipeline — managed entirely by Make.com.
+Events are NOT a Pipedrive pipeline — managed entirely by n8n automation.
 Warm event contacts are deposited into P1 with labels already applied.
 
 For full pipeline stages, label dictionary, and automation rules,
-load etkm-crm-doctrine.
+load etkm-crm-operations.
 
 ---
 
@@ -110,7 +110,7 @@ load etkm-crm-doctrine.
 - Status: LIVE, three deployment dependencies remaining
 - Arcs: Safety, Parent, Fitness, LE/Mil, Former MA, Default
 - Emails: 8 per arc (booking confirmation with PDF, 24hr reminder, morning-of, no-show recovery, post-visit nurture, soft follow, reschedule ack, cancellation recovery)
-- Trigger: Calendly Q&A answers feed Pipedrive arc classification via Manus keyword matching
+- Trigger: Calendly Q&A answers feed Pipedrive arc classification via n8n + Claude API
 - Arc classification logic: safety/fear keywords to Safety, family/kids to Parent, fitness to Fitness, LE/military keywords to LE/Mil, prior training to Former MA, empty to Default
 - Deliverables: Welcome PDF ("Before You Walk In"), complete email sequence DOCX, Claude API system prompt for Manus
 - Open Dependencies: See Dependency Tracker below
@@ -127,7 +127,7 @@ load etkm-crm-doctrine.
 - 4 website pages flagged for voice rewrite before linking: Class Structure, What is Mindset, Beginner Tactics, Goals
 - Phase-transition emails at Days 30 and 60: status DRAFT, incomplete at last session
 - Deliverable: ETKM_Competency_Email_Sequence.docx (combined sequence with Manus automation rules)
-- Trigger: Trial completion triggers Pipedrive deal stage move
+- Trigger: P1-S6 stage move triggers n8n workflow, which creates P2 deal and fires sequence
 - Notes: Copy substantially complete. Competency layer approved. Phase-transition emails and combined master sequence table may need completion.
 
 ### EVENT MARKETING
@@ -177,7 +177,7 @@ load etkm-crm-doctrine.
 
 [WF-009] Extended Skill Library
 - Status: LIVE
-- Skills: etkm-training-program, etkm-definitions, etkm-curriculum, etkm-pipedrive-manus, etkm-brand-kit, etkm-funnel-master, etkm-content-templates, etkm-nurture-sequence, etkm-lead-gen, etkm-crm-doctrine, etkm-workflow-registry, nate-collaboration-workflow
+- Skills: etkm-training-program, etkm-definitions, etkm-curriculum, etkm-brand-kit, etkm-funnel-master, etkm-content-templates, etkm-nurture-sequence, etkm-lead-gen, etkm-crm-operations, etkm-workflow-registry, nate-collaboration-workflow
 - Known issues: etkm-definitions, etkm-curriculum, and etkm-training-program rely on Notion page fetching which fails due to JavaScript rendering requirements. These skills need content embedded directly. etkm-brand-kit description needs stronger trigger phrases. etkm-event-planning is listed in prior registry but not installed in skill directory.
 
 [WF-010] Visual Aide Builder Application
@@ -257,7 +257,8 @@ load etkm-crm-doctrine.
 | Manus Automation | LIVE | Calls Claude API via claude-sonnet-4-6 |
 | Calendly | LIVE | Integrated directly with Pipedrive, drives arc classification |
 | Notion | LIVE | Curriculum database, definitions |
-| Make.com | LIVE | Webhook workflows, Calendly to Pipedrive scenario built by Manus |
+| n8n | LIVE | All webhook workflows and platform integrations — etxkravmaga.app.n8n.cloud |
+| Make.com | DEPRECATED | Fully removed from stack — replaced by n8n (April 2026) |
 | Railway | PLANNED | Flask backend for intake form |
 | Google Drive | LIVE | AI Resources folder, PDF hosting, shared documents |
 
@@ -279,6 +280,7 @@ load etkm-crm-doctrine.
 | D-10 | Manus load confirmation for WF-003 | WF-003 CBLTAC campaign | VERIFY | Install package delivered, confirm Manus has loaded |
 | D-11 | WF-002 phase-transition emails | WF-002 | DRAFT | Days 30 and 60 transition emails incomplete |
 | D-12 | Notion skill migration | WF-009 skills | PLANNED | etkm-definitions, etkm-curriculum, etkm-training-program need content embedded directly |
+| D-13 | n8n workflow builds | WF-001, WF-002, Events, At-Risk | IN PROGRESS | Manus handoff brief delivered (ETKM_Make_to_n8n_Handoff.docx). Priority: 1A Calendly→Pipedrive, 1B WF-001 arc classification, 2 WF-002 trigger, 3 Events, 4 At-Risk |
 
 ---
 
@@ -291,7 +293,7 @@ Items discussed but not yet started. Nathan determines sequence.
 | Campaign Planner layer for Cinematic Prompt Generator | WF-013 session | 4-week content arc sequencer |
 | PEACE framework reusable skill | WF-003, WF-004 sessions | Prepared, Empowered, Aware, Capable, Engaged with slogans per letter |
 | Reusable email campaign style skill | WF-003 session close | Nathan wants to document the CBLTAC email style and PEACE integration as a repeatable skill |
-| Shopify store build | Strategy session | Replace Ecwid, connect to Make and Pipedrive, merchandise plus digital products plus event tickets |
+| Shopify store build | Strategy session | Replace Ecwid, connect to n8n and Pipedrive, merchandise plus digital products plus event tickets |
 | Remaining monthly messaging themes (April through December) | WF-005 session | March complete, 9 months remaining |
 | YouTube content development | Social media strategy | Platform identified but not yet active |
 | HeyGen integration | Tool stack planning | Coming soon per Nathan |
@@ -339,11 +341,11 @@ When Manus needs a change: Manus flags to Nathan, Nathan instructs Claude, Claud
 | Tool | Role |
 |------|------|
 | Claude (chat, Cowork, Code) | All writing, copy, documentation, planning, skill development |
-| Manus | Browser automation, Make.com builds, Pipedrive implementation |
+| Manus | Browser automation, n8n builds, Pipedrive implementation |
 | ChatGPT | Secondary AI, specific use cases |
 | Pipedrive | CRM, 5-pipeline architecture, email delivery |
 | Google Workspace | Drive storage, Docs for shared references, AI Resources folder |
-| Make.com | Webhook workflows, platform integrations |
+| n8n | All webhook workflows and platform integrations — replaces Make.com |
 | Notion | Curriculum database, definitions |
 | NotebookLM | Research and reference |
 | Gemini | Secondary AI |
@@ -361,3 +363,10 @@ When Manus needs a change: Manus flags to Nathan, Nathan instructs Claude, Claud
 3. If a workflow exists in any non-PLANNED status, do not rebuild from scratch
 4. If Claude and Manus outputs conflict, Nathan resolves it
 5. If a dependency is marked VERIFY, confirm with Nathan before assuming resolved
+
+---
+
+## CHANGELOG
+
+- V2.2 — 2026-04-01 — Make.com fully removed from stack. All automation references updated to n8n (etxkravmaga.app.n8n.cloud). Platforms table updated: Make.com → DEPRECATED, n8n → LIVE. Tool Stack updated. WF-001 trigger note updated. WF-002 trigger note updated. Shopify queue item updated. D-13 added for n8n build tracking. CRM Architecture Reference updated (etkm-crm-doctrine reference corrected to etkm-crm-operations). No copy or logic changes.
+- V2.1 — 2026-03-29 — V2 skill consolidation. etkm-make-automation archived. etkm-crm-operations established as replacement for etkm-crm-doctrine + etkm-pipedrive-manus + etkm-make-automation.

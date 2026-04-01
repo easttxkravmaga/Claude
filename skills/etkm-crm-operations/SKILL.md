@@ -1,15 +1,15 @@
 ---
 name: etkm-crm-operations
-version: 1.0
-updated: 2026-03-29
+version: 1.1
+updated: 2026-04-01
 description: >
   The routing brain for all ETKM CRM and automation work. Load this skill whenever
   building, troubleshooting, or planning any part of ETKM's Pipedrive CRM — including
   pipeline structure, stage logic, label management, deal transitions, automation
-  triggers, Make.com scenarios, Calendly integration, arc classification, or the
+  triggers, n8n workflows, Calendly integration, arc classification, or the
   Claude-Manus API connection. All pipeline, stage, and label data lives in the ETKM
   CRM Architecture database in Notion — this skill tells Claude how to use it. Trigger
-  for: "Pipedrive", "pipeline", "deals", "stages", "labels", "automation", "Make.com",
+  for: "Pipedrive", "pipeline", "deals", "stages", "labels", "automation", "n8n",
   "Calendly", "arc classification", "deal stage", "promotion", "at-risk", "re-engagement",
   "onboarding", "WF-001", "WF-002", "merge tags", "email triggers", "webhook", "payment
   due", "PIF", or any task touching the ETKM client lifecycle in Pipedrive. Replaces:
@@ -18,8 +18,9 @@ description: >
 
 # ETKM CRM Operations
 
-**Version:** 1.0
+**Version:** 1.1
 **Established:** 2026-03-29
+**Updated:** 2026-04-01
 **Replaces:** etkm-crm-doctrine, etkm-pipedrive-manus, etkm-make-automation
 **Databases:** ETKM CRM Architecture, Arc/Segment/CRM Crosswalk (Notion → AI Resources → Skill Reference Data)
 
@@ -45,12 +46,12 @@ This skill tells Claude:
 
 **Load for:**
 - Any task involving Pipedrive pipeline structure, stages, or labels
-- Building or reviewing automation workflows (Make.com scenarios)
+- Building or reviewing automation workflows (n8n workflows)
 - Writing email sequences that trigger from deal stage moves
 - Arc classification logic or intake flow questions
 - Deal transition planning (P1→P2, P2→P3, P3 promotion loop, P4 escalation)
 - Label management or custom field questions
-- Manus handoff briefs involving Pipedrive or Make.com
+- Manus handoff briefs involving Pipedrive or n8n
 
 **Do NOT load for:**
 - Writing marketing copy (load etkm-marketing-engine)
@@ -80,7 +81,7 @@ For full stage details, query the ETKM CRM Architecture database filtered by Typ
 
 **P1 → P2 (Signed Up):**
 1. Deal moves to P1-S6 (Signed Up)
-2. Auto-create P2 deal at Stage 1 (Orientation)
+2. n8n webhook fires — auto-create P2 deal at Stage 1 (Orientation)
 3. Apply: ETKM Student + Level 1
 4. Drop: all temperature labels
 5. Fire: WF-002 onboarding sequence
@@ -127,7 +128,7 @@ These rules override everything. Claude and Manus never deviate without Nathan's
 - Multiple Program Affiliation labels can coexist (Fight Back + LE + ACT simultaneously).
 
 **Pipelines:**
-- Events are NOT a pipeline. Events managed by Make.com. Warm contacts deposited into P1 with labels applied.
+- Events are NOT a pipeline. Events managed by n8n. Warm contacts deposited into P1 with labels applied.
 - Students can be in P2/P3 and P4 simultaneously (development pipeline + retention intervention).
 - P5 can run alongside P2 or P3 (private lessons + group membership).
 - "Lapsed" does not exist. Retired in v1.2. Students move to Alumni, not Lapsed.
@@ -136,11 +137,12 @@ These rules override everything. Claude and Manus never deviate without Nathan's
 - Web form leads create a Person record only — no Deal until Calendly booking.
 - Group Inquiry field (Yes/No, deal-level) must be checked by all automated email sequences. Exclude deals where Group Inquiry = Yes.
 - Do not modify the Calendly intake flow during active build phases without Nathan's authorization.
+- All automation runs through n8n. Make.com is fully deprecated — do not reference or rebuild in Make.
 
 ### Arc Classification
 
 Arc labels are applied at prospect entry based on the interest dropdown (web form) or
-Calendly Q&A keyword match (Manus reads response, calls Claude API for classification).
+Calendly Q&A keyword match (n8n receives Calendly webhook, calls Claude API for classification).
 
 For the full arc-to-segment-to-label mapping, reference the Arc/Segment/CRM Crosswalk
 in Notion. Key facts:
@@ -154,11 +156,11 @@ in Notion. Key facts:
 
 | Claude | Manus |
 |---|---|
-| Write all email copy for sequences | Implement sequences in Pipedrive/Make.com |
+| Write all email copy for sequences | Implement sequences in Pipedrive/n8n |
 | Design pipeline/stage/label architecture | Create pipelines/stages/labels in Pipedrive |
-| Write arc classification prompts | Deploy classification via API/webhook |
+| Write arc classification prompts | Deploy classification via n8n + Claude API |
 | Produce handoff briefs for any CRM change | Execute handoff briefs exactly as written |
-| Define automation logic and trigger rules | Build Make.com scenarios implementing the logic |
+| Define automation logic and trigger rules | Build n8n workflows implementing the logic |
 | All API prompt design | All browser automation and deployment |
 | Never implements automation directly | Never rewrites Claude's copy or classification logic |
 
@@ -211,9 +213,11 @@ Before delivering any CRM-related work:
 - [ ] Group Inquiry field check included in any automated sequence
 - [ ] Manus handoff follows governance skill format (if applicable)
 - [ ] No pipeline structure, stage name, or arc label invented without Nathan's authorization
+- [ ] No Make.com references in any new automation spec — n8n only
 
 ---
 
 ## SECTION 6: CHANGELOG
 
+- V1.1 — 2026-04-01 — Make.com fully removed from stack. All automation references updated to n8n. Description trigger phrases updated. Section 2 load triggers updated. Section 3 Pipelines rule updated. Section 3 Arc Classification updated. Section 3 Claude vs Manus table updated. P1→P2 transition note updated. Automation non-negotiable rule added (n8n only, Make deprecated). Quality gate added (no Make references). No logic or copy changes.
 - V1.0 — 2026-03-29 — Initial build. Replaces etkm-crm-doctrine (v1.4), etkm-pipedrive-manus, etkm-make-automation. Pipeline and stage data migrated to ETKM CRM Architecture database in Notion (40 records). Label mapping in Arc/Segment/CRM Crosswalk reference page. Skill contains lifecycle rules, transition logic, non-negotiable CRM rules, classification routing, and Claude/Manus division only.
