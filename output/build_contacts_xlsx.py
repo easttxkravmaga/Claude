@@ -59,10 +59,46 @@ contacts = [
     # Tyler Roofing Company
     ("Tommy", "Sukiennik", "(903) 597-4152", "", "Tyler Roofing Company Inc.", "President", "Tyler"),
     ("Mark", "Sukiennik", "(903) 597-4152", "", "Tyler Roofing Company Inc.", "Vice President", "Tyler"),
+    ("Cris", "Sukiennik", "(903) 597-4152", "", "Tyler Roofing Company Inc.", "General Manager", "Tyler"),
+    ("Tracy", "Sukiennik", "(903) 597-4152", "", "Tyler Roofing Company Inc.", "Office Manager", "Tyler"),
     # Weaver Action Roofing
     ("Robert", "Weaver", "(903) 592-5892", "", "Weaver Action Roofing Company", "Owner / President", "Tyler"),
     ("Janet", "Weaver", "(903) 592-5892", "", "Weaver Action Roofing Company", "Co-Owner", "Tyler"),
+    # East Texas Roof Works & Sheet Metal
+    ("Dewayne", "Gordon", "(903) 526-7419", "", "East Texas Roof Works & Sheet Metal", "Owner / Founder", "Tyler"),
+    ("Steve", "DeRaad", "(903) 526-7419", "", "East Texas Roof Works & Sheet Metal", "Owner", "Tyler"),
+    ("Jimmy", "Gordon", "(903) 526-7419", "", "East Texas Roof Works & Sheet Metal", "Owner", "Tyler"),
+    ("Barbara", "Gordon", "(903) 526-7419", "", "East Texas Roof Works & Sheet Metal", "Corporate Secretary", "Tyler"),
+    # Evolution Roofing
+    ("Michael", "Rhodes", "(903) 258-1210", "", "Evolution Roofing LLC", "Owner", "Tyler"),
+    ("Zachary", "Reilly", "(903) 258-1210", "", "Evolution Roofing LLC", "Co-Owner", "Tyler"),
+    # BXC Roofing
+    ("Blake", "Wilabay", "(903) 320-3030", "bxcroofing@yahoo.com", "BXC Roofing LLC", "Partner", "Tyler"),
+    # Texas Roof Masters Tyler
+    ("Amelia", "Pratka", "(903) 787-9043", "Info@roofmasterstyler.com", "Texas Roof Masters Tyler LLC", "Owner / Founder", "Tyler"),
+    # Accurate Roof Systems (Flint)
+    ("Gabriel", "Spencer", "(903) 894-6418", "", "Accurate Roof Systems", "Co-Owner / Founder", "Flint"),
+    ("Melissa", "Spencer", "(903) 894-6418", "", "Accurate Roof Systems", "Co-Owner", "Flint"),
+    ("David", "Jimenez", "(903) 894-6418", "", "Accurate Roof Systems", "Director of Marketing", "Flint"),
+    # CXR Roofing
+    ("Zach", "Reilly", "(903) 258-1210", "office.cxrroofing@gmail.com", "CXR Roofing", "Founder", "Tyler"),
+    # Roof Care Inc.
+    ("Ricardo", "Gamboa", "(903) 399-5403", "contact@roof.care", "Roof Care Inc.", "Owner", "Tyler"),
+    ("Michelle", "Gamboa", "(903) 399-5403", "contact@roof.care", "Roof Care Inc.", "Operations Director", "Tyler"),
+    # Smith Roofing and Construction
+    ("Chris", "Smith", "(903) 279-7000", "", "Smith Roofing and Construction", "Owner", "Tyler"),
+    # Hail King Professional Roofing
+    ("Landon", "Stokes", "(682) 235-2880", "", "Hail King Professional Roofing LLC", "Co-Owner", "Tyler"),
+    ("Lori", "Anderson-Stokes", "(682) 235-2880", "", "Hail King Professional Roofing LLC", "Co-Owner", "Tyler"),
+    # Sky High Roofing
+    ("Roman", "Skylar", "", "", "Sky High Roofing", "Owner", "Tyler"),
+    ("Hugo", "Escobar", "", "", "Sky High Roofing", "COO", "Tyler"),
     # --- Small town companies ---
+    # Calvary Roofing (Lindale)
+    ("Nick", "", "(903) 714-3729", "", "Calvary Roofing and Construction", "Owner", "Lindale"),
+    ("April", "", "(903) 714-3729", "", "Calvary Roofing and Construction", "Co-Owner", "Lindale"),
+    # Myers Roofing Solutions (Lindale)
+    ("Ronnie", "Myers", "(903) 573-3431", "RonMyersRoofing@gmail.com", "Myers Roofing Solutions", "Owner", "Lindale"),
     # Steve's Quality Roofing (Whitehouse)
     ("Steve", "Rohus", "(903) 839-2060", "steverohus@gmail.com", "Steve's Quality Roofing", "Owner", "Whitehouse"),
     # Project One Roofing (Whitehouse)
