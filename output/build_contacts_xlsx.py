@@ -64,6 +64,18 @@ contacts = [
     # Weaver Action Roofing
     ("Robert", "Weaver", "(903) 592-5892", "", "Weaver Action Roofing Company", "Owner / President", "Tyler"),
     ("Janet", "Weaver", "(903) 592-5892", "", "Weaver Action Roofing Company", "Co-Owner", "Tyler"),
+    # Cook and Son Roofing
+    ("A.J.", "Cook III", "(903) 595-4567", "", "Cook and Son Roofing LLC", "Owner", "Tyler"),
+    ("Moriah", "McClinton", "(903) 595-4567", "", "Cook and Son Roofing LLC", "Secretary", "Tyler"),
+    # AVCO Roofing - additional
+    ("Stephanie", "Osborn", "(903) 534-8700", "office@avcoroofing.com", "AVCO Roofing", "Chief Operations Officer", "Tyler"),
+    # Advantage Roofing - name found
+    ("Ryan", "Merrell", "(903) 939-3168", "", "Advantage Roofing Company", "Owner", "Tyler"),
+    # Texas Direct Roofing & Construction
+    ("Matthew Hunter", "Andrews", "(903) 710-4022", "", "Texas Direct Roofing & Construction", "Owner", "Tyler"),
+    ("Ryan", "Stephens", "(903) 710-4022", "", "Texas Direct Roofing & Construction", "Director of Marketing", "Tyler"),
+    # Roof Maxx of Tyler
+    ("Greg", "Tryon", "(903) 752-7177", "gtryon@roofmaxx.com", "Roof Maxx of Tyler", "Owner", "Tyler"),
     # East Texas Roof Works & Sheet Metal
     ("Dewayne", "Gordon", "(903) 526-7419", "", "East Texas Roof Works & Sheet Metal", "Owner / Founder", "Tyler"),
     ("Steve", "DeRaad", "(903) 526-7419", "", "East Texas Roof Works & Sheet Metal", "Owner", "Tyler"),
@@ -115,8 +127,7 @@ contacts = [
     ("Roy", "Drewett", "(903) 724-1511", "", "Premier Roofing ETX", "Owner", "Tyler"),
     # ETX Roofing & Construction (Troup)
     ("", "", "(903) 969-0503", "", "ETX Roofing & Construction", "", "Troup"),
-    # Advantage Roofing
-    ("", "", "(903) 939-3168", "", "Advantage Roofing", "", "Tyler"),
+    # Advantage Roofing (name-only row above via Ryan Merrell)
     # ValueGuard Roofing (Flint)
     ("", "", "(903) 343-5700", "", "ValueGuard Roofing", "", "Flint"),
 ]
