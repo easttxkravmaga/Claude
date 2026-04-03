@@ -1,7 +1,7 @@
 ---
 name: etkm-marketing-engine
-version: 1.0
-updated: 2026-03-29
+version: 1.1
+updated: 2026-04-03
 description: >
   The routing brain for all ETKM marketing, funnel, lead generation, content creation,
   offer positioning, and nurture sequence work. Load this skill whenever building,
@@ -20,8 +20,9 @@ description: >
 
 # ETKM Marketing Engine
 
-**Version:** 1.0
+**Version:** 1.1
 **Established:** 2026-03-29
+**Updated:** 2026-04-03
 **Replaces:** etkm-funnel-master, etkm-leads-engine, etkm-lead-gen, etkm-content-templates, etkm-grand-slam-offer, etkm-nurture-sequence
 **Databases:** ETKM Marketing Frameworks, ETKM Offer Stack, ETKM Nurture Sequences (Notion → AI Resources → Skill Reference Data)
 
@@ -59,7 +60,14 @@ This skill tells Claude:
 - Visual design or brand standards (load etkm-brand-kit)
 - Event-specific planning (check project instructions for etkm-event-planning)
 
-**Load ALONGSIDE** `etkm-audience-intelligence` when producing any segment-specific marketing content. This skill provides the framework; audience-intelligence provides the segment data.
+**Load ALONGSIDE** `etkm-audience-intelligence` when producing any segment-specific
+marketing content. This skill provides the framework; audience-intelligence provides
+the segment data.
+
+**Load ALONGSIDE** `etkm-content-ecosystem` for any multi-asset content production
+run — blog series, email series, PDFs, topic clusters, or packages. Content ecosystem
+governs production scope and depth; this skill routes the content to the correct
+funnel framework.
 
 ---
 
@@ -108,7 +116,9 @@ Value = ────────────────────────
             Time Delay × Effort and Sacrifice
 ```
 
-**To increase value:** Increase the top (bigger outcome, higher confidence) or decrease the bottom (faster results, less effort). The Offer Stack database has this pre-calculated for each tier.
+**To increase value:** Increase the top (bigger outcome, higher confidence) or decrease
+the bottom (faster results, less effort). The Offer Stack database has this
+pre-calculated for each tier.
 
 ### Lead Generation — Core Four Channels
 
@@ -225,4 +235,11 @@ Before delivering any marketing content:
 
 ## SECTION 6: CHANGELOG
 
-- V1.0 — 2026-03-29 — Initial build. Replaces etkm-funnel-master, etkm-leads-engine, etkm-lead-gen, etkm-content-templates, etkm-grand-slam-offer, etkm-nurture-sequence. All framework templates migrated to ETKM Marketing Frameworks (12 records), offer data to ETKM Offer Stack (5 records), sequence specs to ETKM Nurture Sequences (4 records). Skill contains funnel logic, Hormozi frameworks, routing rules, and quality gates only.
+- V1.1 — 2026-04-03 — Added `etkm-content-ecosystem` load-alongside instruction to
+  Section 2. No existing content removed or modified.
+- V1.0 — 2026-03-29 — Initial build. Replaces etkm-funnel-master, etkm-leads-engine,
+  etkm-lead-gen, etkm-content-templates, etkm-grand-slam-offer, etkm-nurture-sequence.
+  All framework templates migrated to ETKM Marketing Frameworks (12 records), offer
+  data to ETKM Offer Stack (5 records), sequence specs to ETKM Nurture Sequences
+  (4 records). Skill contains funnel logic, Hormozi frameworks, routing rules, and
+  quality gates only.
