@@ -1,0 +1,61 @@
+/* ============================================================
+   ETKM LAYOUT FIX — PATCH 2.0
+   Target: Homepage left-side content cutoff
+   Root cause: Camille theme 2-column layout (body-col-2cl)
+               forces col-md-9 on main + col-md-3 sidebar
+   Apply: WP Customizer > Additional CSS
+   ============================================================ */
+
+/* --- 1. Force homepage to full-width single column --- */
+body.home #main.site-main > .container {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+body.home #main.site-main > .container > .row {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* Override col-md-9 to full width on homepage */
+body.home main#site-content.col-md-9 {
+  width: 100% !important;
+  max-width: 100% !important;
+  flex: 0 0 100% !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* --- 2. Hide sidebar on homepage --- */
+body.home aside#sidebar_primary.col-md-3 {
+  display: none !important;
+}
+
+/* --- 3. Kill site-main top padding so hero hits the header --- */
+body.home .site-main {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* --- 4. Ensure VCE full-width rows actually go full-width --- */
+body.home .site-content-inner,
+body.home .page-content {
+  max-width: 100% !important;
+  width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* --- 5. Announcement bar stays above everything --- */
+#etkm-announce {
+  position: relative;
+  z-index: 100000;
+}
+
+/* --- 6. Ensure hero isn't clipped by parent overflow --- */
+body.home .vce-row-container,
+body.home .vce-row[data-vce-full-width="true"] {
+  overflow: visible !important;
+}
