@@ -1,0 +1,1011 @@
+/* ============================================================
+   ETKM GLOBAL CSS v2.0
+   East Texas Krav Maga — etxkravmaga.com
+   Target: WordPress Appearance > Customize > Additional CSS
+   Overrides: GeneratePress (generate-style), GoDaddy mu-plugin
+   Date: April 2026
+   ============================================================ */
+
+/* ============================================================
+   0. GOOGLE FONTS
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;900&display=swap');
+
+/* ============================================================
+   1. RESET / BASE OVERRIDES
+   ============================================================ */
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #000000 !important;
+  color: #BBBBBB;
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* ============================================================
+   2. FULL WIDTH — KILL GP + GODADDY CONTAINERS
+   ============================================================ */
+.site,
+.site-content,
+#page,
+#main,
+#primary,
+#content,
+.inside-article,
+.entry-content,
+.site-main,
+.container,
+.grid-container,
+.inside-page-header,
+.generate-columns-container {
+  max-width: 100% !important;
+  width: 100% !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+.site-content {
+  display: block !important;
+}
+
+body .grid-container {
+  max-width: 100% !important;
+}
+
+/* ============================================================
+   3. SUPPRESS GP HEADER + FOOTER + NAV
+   HFCM #etkm-hdr replaces these
+   ============================================================ */
+.site-header,
+#masthead,
+header.site-header,
+.main-navigation,
+.site-navigation,
+.nav-below-header,
+.nav-above-header,
+.navigation-search,
+.gen-sidebar-nav {
+  display: none !important;
+}
+
+.site-footer,
+footer.site-info,
+.footer-bar,
+.footer-widgets-container,
+.inside-site-info {
+  display: none !important;
+}
+
+/* ============================================================
+   4. TYPOGRAPHY
+   ============================================================ */
+
+/* --- Headlines --- */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Montserrat', sans-serif;
+  color: #FFFFFF;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  margin-top: 0;
+  margin-bottom: 24px;
+}
+
+h1, h2 { font-weight: 900; }
+h3, h4 { font-weight: 700; }
+h5, h6 { font-weight: 700; font-size: 14px; letter-spacing: 0.08em; }
+
+h1 { font-size: clamp(36px, 5vw, 72px); }
+h2 { font-size: clamp(28px, 4vw, 48px); }
+h3 { font-size: clamp(22px, 3vw, 32px); }
+h4 { font-size: clamp(18px, 2vw, 24px); }
+
+/* --- Body --- */
+p, li, td, th, dd, dt, label, blockquote {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  color: #BBBBBB;
+  line-height: 1.7;
+}
+
+p { margin-bottom: 1em; }
+
+strong, b {
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+em { font-style: italic; }
+
+/* --- Links --- */
+a {
+  color: #FFFFFF;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover, a:focus {
+  color: #CC0000;
+  text-decoration: none;
+}
+
+/* ============================================================
+   5. IMAGES — SITEWIDE GRAYSCALE
+   ============================================================ */
+img {
+  filter: grayscale(100%);
+  max-width: 100%;
+  height: auto;
+}
+
+/* Exceptions: header logo + opt-out class */
+#etkm-hdr img,
+.etkm-no-filter img,
+img.etkm-no-filter {
+  filter: none;
+}
+
+/* ============================================================
+   6. BUTTONS
+   ============================================================ */
+.etkm-btn,
+.etkm-btn-primary,
+button,
+input[type="submit"],
+input[type="button"],
+.wp-block-button__link,
+.button,
+.woocommerce a.button,
+.woocommerce button.button,
+.woocommerce input.button,
+.woocommerce #respond input#submit,
+.ec-cart__button,
+.ec-btn {
+  display: inline-block;
+  background: #CC0000 !important;
+  color: #FFFFFF !important;
+  border: 2px solid #CC0000 !important;
+  border-radius: 0 !important;
+  font-family: 'Montserrat', sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 12px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.12em !important;
+  padding: 16px 40px !important;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+  text-decoration: none;
+  line-height: 1.2;
+}
+
+.etkm-btn:hover,
+.etkm-btn-primary:hover,
+button:hover,
+input[type="submit"]:hover,
+.wp-block-button__link:hover,
+.woocommerce a.button:hover,
+.woocommerce button.button:hover,
+.ec-btn:hover {
+  background: #FFFFFF !important;
+  color: #000000 !important;
+  border-color: #FFFFFF !important;
+}
+
+/* --- Secondary (white outline) --- */
+.etkm-btn-secondary {
+  background: transparent !important;
+  color: #FFFFFF !important;
+  border: 2px solid #FFFFFF !important;
+}
+
+.etkm-btn-secondary:hover {
+  background: #FFFFFF !important;
+  color: #000000 !important;
+}
+
+/* --- Ghost (gray outline) --- */
+.etkm-btn-ghost {
+  background: transparent !important;
+  color: #575757 !important;
+  border: 2px solid #575757 !important;
+}
+
+.etkm-btn-ghost:hover {
+  color: #FFFFFF !important;
+  border-color: #FFFFFF !important;
+  background: transparent !important;
+}
+
+/* ============================================================
+   7. SECTIONS
+   ============================================================ */
+.etkm-section {
+  background: #000000;
+  padding: 80px 60px;
+}
+
+.etkm-section-white {
+  background: #FFFFFF;
+  padding: 80px 60px;
+}
+
+.etkm-section-white h1,
+.etkm-section-white h2,
+.etkm-section-white h3,
+.etkm-section-white h4,
+.etkm-section-white h5,
+.etkm-section-white h6 {
+  color: #000000;
+}
+
+.etkm-section-white p,
+.etkm-section-white li,
+.etkm-section-white td {
+  color: #575757;
+}
+
+.etkm-section-dark {
+  background: #0d0d0d;
+  padding: 80px 60px;
+}
+
+/* ============================================================
+   8. INNER WRAPPERS
+   ============================================================ */
+.etkm-inner {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+
+.etkm-inner-wide {
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+
+.etkm-inner-narrow {
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+
+/* ============================================================
+   9. GRIDS
+   ============================================================ */
+.etkm-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 40px;
+}
+
+.etkm-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+
+.etkm-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.etkm-grid-split {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.etkm-grid-split-rev {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 60px;
+  align-items: center;
+}
+
+/* ============================================================
+   10. CARDS
+   ============================================================ */
+.etkm-card {
+  background: #0d0d0d;
+  border: 0.5px solid #1a1a1a;
+  padding: 32px 28px;
+}
+
+.etkm-card-white {
+  background: #FFFFFF;
+  border: 0.5px solid #e5e5e5;
+  padding: 32px 28px;
+}
+
+.etkm-card-white h1,
+.etkm-card-white h2,
+.etkm-card-white h3,
+.etkm-card-white h4 {
+  color: #000000;
+}
+
+.etkm-card-white p,
+.etkm-card-white li {
+  color: #575757;
+}
+
+.etkm-card-accent {
+  background: #0d0d0d;
+  border: 0.5px solid #1a1a1a;
+  border-left: 3px solid #CC0000;
+  padding: 32px 28px;
+}
+
+/* ============================================================
+   11. TYPOGRAPHY HELPERS
+   ============================================================ */
+.etkm-label {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #575757;
+}
+
+.etkm-red   { color: #CC0000; }
+.etkm-white { color: #FFFFFF; }
+.etkm-muted { color: #575757; }
+
+/* ============================================================
+   12. DIVIDERS
+   ============================================================ */
+.etkm-divider {
+  width: 100%;
+  height: 0.5px;
+  background: #1a1a1a;
+  border: none;
+  margin: 40px 0;
+}
+
+.etkm-divider-red {
+  width: 48px;
+  height: 3px;
+  background: #CC0000;
+  border: none;
+  margin: 24px 0;
+}
+
+.etkm-divider-white {
+  width: 100%;
+  height: 0.5px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  margin: 40px 0;
+}
+
+/* ============================================================
+   13. TABLES
+   ============================================================ */
+.etkm-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.etkm-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #0d0d0d;
+}
+
+.etkm-table th {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #575757;
+  text-align: left;
+  padding: 16px 20px;
+  border-bottom: 0.5px solid #1a1a1a;
+}
+
+.etkm-table td {
+  padding: 16px 20px;
+  border-bottom: 0.5px solid #1a1a1a;
+  color: #BBBBBB;
+}
+
+.etkm-table tr:last-child td {
+  border-bottom: none;
+}
+
+.etkm-table-white {
+  width: 100%;
+  border-collapse: collapse;
+  background: #FFFFFF;
+}
+
+.etkm-table-white th {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #575757;
+  text-align: left;
+  padding: 16px 20px;
+  border-bottom: 0.5px solid #e5e5e5;
+}
+
+.etkm-table-white td {
+  padding: 16px 20px;
+  border-bottom: 0.5px solid #e5e5e5;
+  color: #575757;
+}
+
+.etkm-table-white tr:last-child td {
+  border-bottom: none;
+}
+
+.etkm-table-featured td {
+  border-left: 3px solid #CC0000;
+}
+
+/* ============================================================
+   14. TESTIMONIALS
+   ============================================================ */
+.etkm-testimonial {
+  background: #0d0d0d;
+  border: 0.5px solid #1a1a1a;
+  border-left: 3px solid #CC0000;
+  padding: 32px 28px;
+}
+
+.etkm-testimonial-quote {
+  font-style: italic;
+  font-size: 18px;
+  color: #FFFFFF;
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+
+.etkm-testimonial-author {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #575757;
+}
+
+.etkm-pullquote {
+  text-align: center;
+  padding: 48px 40px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.etkm-pullquote .etkm-testimonial-quote {
+  font-size: 22px;
+}
+
+/* ============================================================
+   15. VIDEO WRAPPERS
+   ============================================================ */
+.etkm-video {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 */
+  overflow: hidden;
+  background: #000;
+}
+
+.etkm-video-4x3 {
+  position: relative;
+  width: 100%;
+  padding-bottom: 75%; /* 4:3 */
+  overflow: hidden;
+  background: #000;
+}
+
+.etkm-video-square {
+  position: relative;
+  width: 100%;
+  padding-bottom: 100%; /* 1:1 */
+  overflow: hidden;
+  background: #000;
+}
+
+.etkm-video iframe,
+.etkm-video video,
+.etkm-video-4x3 iframe,
+.etkm-video-4x3 video,
+.etkm-video-square iframe,
+.etkm-video-square video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* ============================================================
+   16. HERO
+   ============================================================ */
+.etkm-hero {
+  width: 100%;
+  min-height: 90vh;
+  background: #000;
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  padding: 100px 60px;
+}
+
+.etkm-hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 720px;
+}
+
+.etkm-hero-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: grayscale(100%);
+  opacity: 0.25;
+  z-index: 1;
+}
+
+/* ============================================================
+   17. ANNOUNCEMENT BAR
+   ============================================================ */
+#etkm-announce {
+  width: 100%;
+  background: #CC0000;
+  padding: 10px 40px;
+  text-align: center;
+  position: relative;
+  z-index: 100000;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #FFFFFF;
+}
+
+#etkm-announce a {
+  color: #FFFFFF;
+  text-decoration: underline;
+}
+
+#etkm-announce a:hover {
+  opacity: 0.8;
+}
+
+.etkm-announce-close {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  transform: translateY(-50%);
+  background: none;
+  border: none !important;
+  color: #FFFFFF !important;
+  font-size: 18px !important;
+  padding: 4px 8px !important;
+  cursor: pointer;
+  line-height: 1;
+}
+
+/* ============================================================
+   18. SCROLL ANIMATIONS
+   ============================================================ */
+.etkm-fade {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.etkm-fade-left {
+  opacity: 0;
+  transform: translateX(-32px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.etkm-fade-right {
+  opacity: 0;
+  transform: translateX(32px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.etkm-fade-scale {
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.etkm-visible {
+  opacity: 1 !important;
+  transform: translate(0, 0) scale(1) !important;
+}
+
+.etkm-fade-d1 { transition-delay: 0.1s; }
+.etkm-fade-d2 { transition-delay: 0.2s; }
+.etkm-fade-d3 { transition-delay: 0.3s; }
+.etkm-fade-d4 { transition-delay: 0.4s; }
+.etkm-fade-d5 { transition-delay: 0.5s; }
+
+/* ============================================================
+   19. UTILITY CLASSES
+   ============================================================ */
+
+/* --- Spacing --- */
+.etkm-mt-sm { margin-top: 16px; }
+.etkm-mt-md { margin-top: 32px; }
+.etkm-mt-lg { margin-top: 64px; }
+.etkm-mb-sm { margin-bottom: 16px; }
+.etkm-mb-md { margin-bottom: 32px; }
+.etkm-mb-lg { margin-bottom: 64px; }
+
+/* --- Text alignment --- */
+.etkm-text-left   { text-align: left; }
+.etkm-text-center { text-align: center; }
+.etkm-text-right  { text-align: right; }
+
+/* --- Flexbox --- */
+.etkm-flex         { display: flex; }
+.etkm-flex-center  { display: flex; align-items: center; justify-content: center; }
+.etkm-flex-between { display: flex; align-items: center; justify-content: space-between; }
+.etkm-flex-gap-sm  { gap: 12px; }
+.etkm-flex-gap-md  { gap: 24px; }
+.etkm-flex-gap-lg  { gap: 48px; }
+
+/* --- Backgrounds --- */
+.etkm-bg-black { background: #000000; }
+.etkm-bg-white { background: #FFFFFF; }
+.etkm-bg-dark  { background: #0d0d0d; }
+
+/* --- Borders --- */
+.etkm-border-top    { border-top: 0.5px solid #1a1a1a; }
+.etkm-border-bottom { border-bottom: 0.5px solid #1a1a1a; }
+.etkm-border-red    { border-left: 3px solid #CC0000; }
+
+/* ============================================================
+   20. ADMIN BAR OFFSET (HFCM STICKY HEADER)
+   ============================================================ */
+.admin-bar #etkm-hdr {
+  top: 32px;
+}
+
+@media (max-width: 782px) {
+  .admin-bar #etkm-hdr {
+    top: 46px;
+  }
+}
+
+/* ============================================================
+   21. WOOCOMMERCE OVERRIDES
+   ============================================================ */
+.woocommerce .price,
+.woocommerce-page .price {
+  color: #FFFFFF !important;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+}
+
+.woocommerce .price del {
+  color: #575757 !important;
+}
+
+.woocommerce .price ins {
+  color: #CC0000 !important;
+  text-decoration: none;
+}
+
+.woocommerce ul.products li.product .woocommerce-loop-product__title,
+.woocommerce-page ul.products li.product .woocommerce-loop-product__title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  color: #FFFFFF;
+  text-transform: uppercase;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+}
+
+.woocommerce .star-rating span::before {
+  color: #CC0000;
+}
+
+.woocommerce nav.woocommerce-pagination ul li a,
+.woocommerce nav.woocommerce-pagination ul li span {
+  background: #0d0d0d !important;
+  color: #FFFFFF !important;
+  border-color: #1a1a1a !important;
+}
+
+.woocommerce nav.woocommerce-pagination ul li span.current {
+  background: #CC0000 !important;
+  border-color: #CC0000 !important;
+}
+
+.woocommerce-message,
+.woocommerce-info {
+  background: #0d0d0d !important;
+  border-top-color: #CC0000 !important;
+  color: #BBBBBB !important;
+}
+
+.woocommerce-error {
+  background: #0d0d0d !important;
+  border-top-color: #CC0000 !important;
+  color: #CC0000 !important;
+}
+
+.woocommerce table.shop_table {
+  background: #0d0d0d !important;
+  border-color: #1a1a1a !important;
+}
+
+.woocommerce table.shop_table th {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #575757 !important;
+}
+
+.woocommerce table.shop_table td {
+  color: #BBBBBB !important;
+  border-color: #1a1a1a !important;
+}
+
+.woocommerce form .form-row input.input-text,
+.woocommerce form .form-row textarea,
+.woocommerce form .form-row select {
+  background: #0d0d0d !important;
+  border: 0.5px solid #1a1a1a !important;
+  color: #FFFFFF !important;
+  padding: 12px 16px;
+  font-family: 'Inter', sans-serif;
+}
+
+.woocommerce form .form-row input.input-text:focus,
+.woocommerce form .form-row textarea:focus {
+  border-color: #CC0000 !important;
+  outline: none;
+}
+
+/* ============================================================
+   22. ECWID OVERRIDES
+   ============================================================ */
+.ec-store .ec-store__content-wrapper {
+  background: #000000 !important;
+}
+
+.ec-store .grid-product__title {
+  font-family: 'Montserrat', sans-serif !important;
+  font-weight: 700 !important;
+  color: #FFFFFF !important;
+  text-transform: uppercase !important;
+}
+
+.ec-store .grid-product__price {
+  color: #FFFFFF !important;
+  font-family: 'Montserrat', sans-serif !important;
+}
+
+/* ============================================================
+   23. FORM INPUTS (GLOBAL)
+   ============================================================ */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="url"],
+input[type="password"],
+input[type="search"],
+input[type="number"],
+textarea,
+select {
+  background: #0d0d0d !important;
+  border: 0.5px solid #1a1a1a !important;
+  color: #FFFFFF !important;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  padding: 12px 16px;
+  border-radius: 0;
+  width: 100%;
+  transition: border-color 0.2s ease;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: #CC0000 !important;
+  outline: none;
+}
+
+::placeholder {
+  color: #575757;
+  opacity: 1;
+}
+
+/* ============================================================
+   24. RESPONSIVE — TABLET LANDSCAPE (1024px)
+   ============================================================ */
+@media (max-width: 1024px) {
+  .etkm-section,
+  .etkm-section-white,
+  .etkm-section-dark {
+    padding: 60px 40px;
+  }
+
+  .etkm-hero {
+    padding: 80px 40px;
+    min-height: 70vh;
+  }
+
+  .etkm-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .etkm-grid-split,
+  .etkm-grid-split-rev {
+    gap: 40px;
+  }
+}
+
+/* ============================================================
+   25. RESPONSIVE — TABLET PORTRAIT (768px)
+   ============================================================ */
+@media (max-width: 768px) {
+  .etkm-section,
+  .etkm-section-white,
+  .etkm-section-dark {
+    padding: 48px 24px;
+  }
+
+  .etkm-hero {
+    padding: 60px 24px;
+    min-height: auto;
+  }
+
+  .etkm-grid-2,
+  .etkm-grid-3,
+  .etkm-grid-4,
+  .etkm-grid-split,
+  .etkm-grid-split-rev {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  h1 { font-size: clamp(28px, 8vw, 44px); }
+  h2 { font-size: clamp(24px, 6vw, 36px); }
+}
+
+/* ============================================================
+   26. RESPONSIVE — MOBILE LANDSCAPE (568px)
+   ============================================================ */
+@media (max-width: 568px) {
+  .etkm-section,
+  .etkm-section-white,
+  .etkm-section-dark {
+    padding: 40px 20px;
+  }
+
+  .etkm-btn,
+  .etkm-btn-primary,
+  .etkm-btn-secondary,
+  .etkm-btn-ghost {
+    width: 100%;
+    text-align: center;
+  }
+
+  #etkm-announce {
+    padding: 10px 20px;
+    font-size: 10px;
+  }
+}
+
+/* ============================================================
+   27. RESPONSIVE — MOBILE PORTRAIT (400px)
+   ============================================================ */
+@media (max-width: 400px) {
+  .etkm-section,
+  .etkm-section-white,
+  .etkm-section-dark {
+    padding: 32px 16px;
+  }
+
+  h1 { font-size: 28px; }
+  h2 { font-size: 24px; }
+  h3 { font-size: 20px; }
+
+  .etkm-testimonial-quote {
+    font-size: 16px;
+  }
+
+  .etkm-pullquote {
+    padding: 32px 16px;
+  }
+
+  .etkm-pullquote .etkm-testimonial-quote {
+    font-size: 18px;
+  }
+}
+
+/* ============================================================
+   28. PRINT STYLES
+   ============================================================ */
+@media print {
+  body, html {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+  }
+
+  #etkm-hdr,
+  #etkm-ftr,
+  #etkm-announce,
+  .etkm-btn,
+  .etkm-btn-primary,
+  .etkm-btn-secondary,
+  .etkm-btn-ghost,
+  button,
+  nav,
+  .site-header,
+  .site-footer {
+    display: none !important;
+  }
+
+  img {
+    filter: none !important;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: #000000 !important;
+  }
+
+  p, li, td {
+    color: #333333 !important;
+  }
+
+  a { color: #000000 !important; }
+
+  .etkm-card,
+  .etkm-card-accent,
+  .etkm-testimonial {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    background: #FFFFFF !important;
+    border-color: #cccccc !important;
+  }
+
+  .etkm-section,
+  .etkm-section-dark {
+    background: #FFFFFF !important;
+  }
+}
+
+/* ============================================================
+   END — ETKM GLOBAL CSS v2.0
+   ============================================================ */
