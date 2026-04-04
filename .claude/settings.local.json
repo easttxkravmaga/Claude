@@ -1,4 +1,15 @@
 {
+  "permissions": {
+    "allow": [
+      "mcp__fb31f15a-bf0b-4334-876f-46b4aa7ad7cc__get_sdk_reference",
+      "mcp__fb31f15a-bf0b-4334-876f-46b4aa7ad7cc__search_nodes",
+      "mcp__fb31f15a-bf0b-4334-876f-46b4aa7ad7cc__get_node_types",
+      "mcp__fb31f15a-bf0b-4334-876f-46b4aa7ad7cc__validate_workflow",
+      "mcp__fb31f15a-bf0b-4334-876f-46b4aa7ad7cc__create_workflow_from_code",
+      "mcp__fb31f15a-bf0b-4334-876f-46b4aa7ad7cc__execute_workflow",
+      "mcp__fb31f15a-bf0b-4334-876f-46b4aa7ad7cc__get_execution"
+    ]
+  },
   "experimental": {
     "agentTeams": true
   }
