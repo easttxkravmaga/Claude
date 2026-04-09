@@ -113,7 +113,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"claude-haiku-4-5-20251001\",\n  \"max_tokens\": 1024,\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": [\n        {\n          \"type\": \"image\",\n          \"source\": {\n            \"type\": \"base64\",\n            \"media_type\": \"image/jpeg\",\n            \"data\": \"={{Buffer.from($binary.bwImage.data, 'binary').toString('base64')}}\"\n          }\n        },\n        {\n          \"type\": \"text\",\n          \"text\": \"You are processing an image for East Texas Krav Maga's media library.\\nThe image has already been converted to black and white.\\n\\nReturn ONLY valid JSON. No preamble, no markdown, no explanation.\\n\\n{\\n  \\\"description\\\": \\\"1-2 sentence factual description of what is in the image\\\",\\n  \\\"tags\\\": [\\\"tag1\\\", \\\"tag2\\\", \\\"tag3\\\"],\\n  \\\"content_use_cases\\\": [\\\"use case 1\\\", \\\"use case 2\\\"],\\n  \\\"asset_type\\\": \\\"Image | Video | Graphic | Screenshot\\\",\\n  \\\"tone\\\": \\\"high-energy | calm-focus | community | instructional | real-world | confidence\\\"\\n}\\n\\nTag rules:\\n- Assign 3-6 tags from this approved taxonomy only:\\n  Asset types: training, demonstration, class, seminar, event, headshot, facility, equipment, group, individual, youth, adult, women, cbltac\\n  Content context: social-ready, print-ready, web-ready, email-ready, testimonial-context, action-shot, portrait, environment, candid, posed\\n  Campaign/project: fight-back-etx, cbltac, armed-citizen, youth-program, college-safety, private-lessons, open-enrollment, community-event\\n  Tone: high-energy, calm-focus, community, instructional, real-world, confidence\\n- Tags must be lowercase, hyphenated\\n- Do not invent tags outside the taxonomy\\n- If the image clearly shows youth, always include youth\\n- If the image is from a CBLTAC event, always include cbltac\"\n        }\n      ]\n    }\n  ]\n}",
+        "jsonBody": "={\n  \"model\": \"claude-haiku-4-5-20251001\",\n  \"max_tokens\": 1024,\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": [\n        {\n          \"type\": \"image\",\n          \"source\": {\n            \"type\": \"base64\",\n            \"media_type\": \"image/jpeg\",\n            \"data\": \"={{Buffer.from($binary.bwImage.data, 'binary').toString('base64')}}\"\n          }\n        },\n        {\n          \"type\": \"text\",\n          \"text\": \"You are processing an image for East Texas Krav Maga's media library.\\nThe image has already been converted to black and white.\\n\\nReturn ONLY valid JSON. No preamble, no markdown, no explanation.\\n\\n{\\n  \\\"description\\\": \\\"1-2 sentence factual description of what is in the image\\\",\\n  \\\"tags\\\": [\\\"tag1\\\", \\\"tag2\\\"],\\n  \\\"content_use_cases\\\": [\\\"use case 1\\\", \\\"use case 2\\\"],\\n  \\\"asset_type\\\": \\\"Image | Video | Graphic | Screenshot\\\"\\n}\\n\\nTag rules:\\n- Assign 2-4 tags total: 1-2 audience arc tags AND 1-2 scene intent tags\\n- Do not invent tags outside the taxonomy below\\n\\nAudience arc tags (assign based on who appears in or would use this image):\\n  parents, women, men, teens, older-adults, fitness, former-ma, leo-mil, private-security, ipv-survivors, occupational, homeschool-faith, corporate, college\\n\\nScene intent tags (assign based on what the image communicates):\\n  awareness — subject reading environment, scanning, noticing\\n  recognition — subject has identified something, posture shifts, gaze locks\\n  decision — subject positioned to act, weight shifted, path chosen\\n  presence — trained confidence at rest, protector identity visible\\n  contrast — two states in one frame: aware vs unaware, before vs after\\n  witness — identity reveal, face visible, protector moment\\n\\nContent use cases (select 1-3 that apply):\\n  Social media post, Email header, Landing page hero, Print ad, PDF/lead magnet, Seminar promotion, Curriculum visual aide, Testimonial support, Event promotion, Website background\"\n        }\n      ]\n    }\n  ]\n}",
         "options": {
           "timeout": 60000
         }
@@ -126,7 +126,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Parse Claude's JSON response and prepare Notion fields\nconst claudeResponse = JSON.parse($input.item.json.body || JSON.stringify($input.item.json));\nconst content = claudeResponse.content[0].text;\n\nlet parsed;\ntry {\n  parsed = JSON.parse(content);\n} catch (e) {\n  // Strip any accidental markdown fences before parsing\n  const cleaned = content.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n  parsed = JSON.parse(cleaned);\n}\n\nconst originalFile = $('Google Drive — New File').item.json;\nconst filename = originalFile.name || 'unknown';\nconst driveFileId = originalFile.id;\nconst today = new Date().toISOString().split('T')[0];\n\nreturn {\n  json: {\n    filename,\n    driveFileId,\n    description: parsed.description || '',\n    tags: parsed.tags || [],\n    content_use_cases: parsed.content_use_cases || [],\n    asset_type: parsed.asset_type || 'Image',\n    tone: parsed.tone || '',\n    date_added: today,\n    bwImage: $input.item.binary?.bwImage\n  },\n  binary: $input.item.binary\n};\n"
+        "jsCode": "// Parse Claude's JSON response and prepare Notion fields\nconst claudeResponse = JSON.parse($input.item.json.body || JSON.stringify($input.item.json));\nconst content = claudeResponse.content[0].text;\n\nlet parsed;\ntry {\n  parsed = JSON.parse(content);\n} catch (e) {\n  // Strip any accidental markdown fences before parsing\n  const cleaned = content.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n  parsed = JSON.parse(cleaned);\n}\n\nconst originalFile = $('Google Drive — New File').item.json;\nconst filename = originalFile.name || 'unknown';\nconst driveFileId = originalFile.id;\nconst today = new Date().toISOString().split('T')[0];\n\nreturn {\n  json: {\n    filename,\n    driveFileId,\n    description: parsed.description || '',\n    tags: parsed.tags || [],\n    content_use_cases: parsed.content_use_cases || [],\n    asset_type: parsed.asset_type || 'Image',\n    date_added: today,\n    bwImage: $input.item.binary?.bwImage\n  },\n  binary: $input.item.binary\n};\n"
       },
       "id": "parse-response",
       "name": "Code — Parse Claude Response",
@@ -235,21 +235,6 @@
       "typeVersion": 3,
       "position": [2000, 200],
       "operation": "delete"
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "={{$env.N8N_ERROR_WEBHOOK_URL}}",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={\n  \"pipeline\": \"ETKM P6 Media Ingest\",\n  \"file\": \"={{$('Google Drive — New File').item.json.name}}\",\n  \"fileId\": \"={{$('Google Drive — New File').item.json.id}}\",\n  \"error\": \"={{$json.error.message}}\",\n  \"timestamp\": \"={{new Date().toISOString()}}\"\n}",
-        "options": {}
-      },
-      "id": "error-log",
-      "name": "Error Logger",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [1120, 460]
     }
   ],
   "connections": {
@@ -353,5 +338,5 @@
   "tags": ["ETKM", "P6", "media-library"],
   "triggerCount": 0,
   "updatedAt": "2026-04-09T00:00:00.000Z",
-  "versionId": "1"
+  "versionId": "2"
 }

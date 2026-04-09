@@ -1,7 +1,7 @@
 # Handoff Notes — P6 Media Intelligence Library
 
-**Built:** 2026-04-09  
-**Session:** Claude Code build session  
+**Built:** 2026-04-09
+**Updated:** 2026-04-09 — Taxonomy finalized, Notion database created
 **Status:** All deliverables complete. Ready for Nathan to deploy.
 
 ---
@@ -10,69 +10,89 @@
 
 | File | Purpose |
 |---|---|
-| `output/p6-media-library/cloud-run/app.py` | Flask microservice — accepts image, returns grayscale JPEG |
-| `output/p6-media-library/cloud-run/requirements.txt` | Flask, Pillow, gunicorn |
-| `output/p6-media-library/cloud-run/Dockerfile` | Cloud Run container, correct `sh -c` CMD form |
-| `output/p6-media-library/n8n/workflow.json` | Complete n8n pipeline — import and activate |
-| `output/p6-media-library/n8n/env-vars.md` | All environment variables needed, with sourcing instructions |
-| `output/p6-media-library/notion/database-setup.md` | Step-by-step Notion database build with full schema |
-| `output/p6-media-library/claude-prompt/prompt.md` | Finalized Claude API prompt with design rationale |
-| `output/p6-media-library/deployment-guide.md` | Full deployment sequence from Drive setup through backlog run |
+| `cloud-run/app.py` | Flask microservice — accepts image, returns grayscale JPEG |
+| `cloud-run/requirements.txt` | Flask, Pillow, gunicorn |
+| `cloud-run/Dockerfile` | Cloud Run container, correct `sh -c` CMD form |
+| `n8n/workflow.json` | Complete n8n pipeline — import and activate |
+| `n8n/env-vars.md` | All environment variables needed (Notion DB ID pre-filled) |
+| `notion/database-setup.md` | Reference schema documentation |
+| `claude-prompt/prompt.md` | Finalized Claude API prompt with taxonomy reference |
+| `deployment-guide.md` | Full deployment sequence |
+| `handoff-notes.md` | This file |
+| `qa-report.md` | QA gate results |
 
 ---
 
 ## Key Decisions Made
 
-**1. Haiku 4.5 for tagging (not Sonnet)**
-Spec confirmed: `claude-haiku-4-5-20251001` is used for image tagging. This is a classification task (structured JSON from image), not complex reasoning. Haiku handles it reliably at lower cost. At 100+ images, savings are material.
+**1. Haiku 4.5 for tagging**
+`claude-haiku-4-5-20251001` — classification task, not reasoning. Correct model for structured JSON extraction from image at cost.
 
-**2. "Move" is implemented as Upload + Delete**
-n8n's Google Drive node does not have a native "move file" operation. The workflow uploads the B&W image to `/ETKM Media Library/` then deletes the original from `/ETKM Media Ingest/`. Net effect is identical to a move.
+**2. Taxonomy: 14 audience arcs + 6 scene intents (20 tags total)**
+Original generic taxonomy replaced with ETKM-native system:
+- 14 audience arc tags (blue in Notion) — from `etkm-audience-intelligence` skill
+- 6 scene intent tags (red in Notion) — from `etkm-cinematic-doctrine` skill
+Every image gets 1-2 arc tags + 1-2 scene intent tags.
 
-**3. B&W filename prefixed with `bw_`**
-Uploaded file to the library is named `bw_[original_filename].jpg`. This makes it visually distinct in Drive and preserves traceability to the original filename.
+**3. Notion database already created**
+Database is live: `ETKM Media Library` under Ai Resources → ETKM Operational Dashboards
+URL: https://www.notion.so/6d54ec60e8334edc86ca2d8b18e3aeb2
+ID: `6d54ec60-e833-4edc-86ca-2d8b18e3aeb2`
+Nathan only needs to connect the n8n integration credential to it.
 
-**4. 1Gi memory on Cloud Run (not 512Mi)**
-The existing `etkm-backend` uses 512Mi. Pillow image processing (especially EXIF handling + JPEG encode) can spike memory with larger files. Set to 1Gi to avoid OOM kills during bulk backlog processing.
+**4. Error Logger node removed**
+No webhook destination exists. Removed cleanly — no open references in workflow.
 
-**5. Error Logger node is wired but optional**
-The n8n workflow has an Error Logger HTTP node. If `N8N_ERROR_WEBHOOK_URL` is not set, remove that node before activating. It does not affect the happy path.
+**5. "Move" = Upload B&W + Delete original**
+n8n has no native move. Upload to library → delete from ingest. Identical net result.
 
-**6. Claude JSON parse is fault-tolerant**
-The Code node strips markdown fences before parsing Claude's response. Claude occasionally wraps JSON in ```json blocks despite the prompt. The Code node handles this without failing the execution.
+**6. B&W filename prefixed with `bw_`**
+Uploaded file to library is named `bw_[original_filename].jpg`. Distinguishable in Drive, original filename preserved.
+
+**7. 1Gi Cloud Run memory**
+Pillow processing spikes higher than the existing `etkm-backend` (512Mi). Prevents OOM during bulk backlog runs.
+
+**8. `tone` field removed**
+The original spec had a `tone` field in the JSON response. Dropped — scene intent tags carry that signal more precisely and connect directly to the cinematic doctrine.
 
 ---
 
 ## Deviations from Spec
 
-None. All pipeline steps, Notion fields, tags, and content use cases match the spec exactly.
+| Item | Spec | Actual | Reason |
+|---|---|---|---|
+| Taxonomy | Original 4-category tag system | 14 arcs + 6 scene intents | Nathan directed — connects media library directly to audience system |
+| Error Logger | Present | Removed | Nathan directed — no webhook destination |
+| Notion parent | "Under Notion Infrastructure" | Ai Resources → ETKM Operational Dashboards | Most logical location found in workspace |
+| `tone` field | JSON field in Claude response | Removed | Scene intent tags make it redundant |
 
 ---
 
 ## How to Deploy (Exact Steps)
 
-1. **Nathan creates Drive folders** (5 min) — see `deployment-guide.md` Phase 1
-2. **Nathan builds Notion database** (15 min) — see `notion/database-setup.md`
-3. **Deploy Cloud Run service** (10 min) — see `deployment-guide.md` Phase 3
-4. **Import and configure n8n workflow** (10 min) — see `deployment-guide.md` Phase 4
-5. **Smoke test with 1 image** — verify full pipeline end-to-end
-6. **Drop backlog** — 100 images into ingest folder, let pipeline run (~2 hours)
+**Notion database** — already created. Skip to step 2.
 
-Total setup time: ~40 minutes of active work.
+1. **Create Google Drive folders** (5 min) — deployment-guide.md Phase 1
+2. **Connect Notion integration** (5 min) — notion.so/my-integrations → new integration → grant it access to `ETKM Media Library`
+3. **Deploy Cloud Run service** (10 min) — deployment-guide.md Phase 3
+4. **Import and configure n8n workflow** (10 min) — deployment-guide.md Phase 4
+   - Set 4 env vars (Drive folder IDs, Cloud Run URL, Anthropic key)
+   - Notion DB ID is pre-filled in env-vars.md
+5. **Smoke test** — 1 image through the pipeline
+6. **Drop backlog** — 100 images, pipeline runs unattended
+
+Total active setup time: ~30 minutes.
 
 ---
 
-## Open Decisions (from spec — still pending Nathan)
+## Open Items
 
-- [ ] Confirm Notion parent page for Media Library database
-- [ ] Approve tagging taxonomy as-is or adjust before running backlog
-- [ ] Confirm Phase 1 approach: full pipeline (recommended) vs. manual session processing
-- [ ] Decide if error webhook destination exists (Slack, email, or skip)
+None. All decisions resolved.
 
 ---
 
 ## Feeds Into
 
-- **P4 Marketing** — n8n can query Notion library by tag when building campaign assets
-- **P5 Content Production** — queryable by content_use_cases field
-- **Future Social Media Engine** — tag `social-ready` is already in taxonomy; contrast/transparency rules go in the social engine, not here (per spec)
+- **P4 Marketing** — query by arc tag when building campaign assets
+- **P5 Content Production** — query by content_use_cases field
+- **Future Social Media Engine** — `Social media post` use case tag already in place; contrast/transparency rules go in the social engine, not here
