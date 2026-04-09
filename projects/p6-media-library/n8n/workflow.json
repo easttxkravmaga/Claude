@@ -1,0 +1,357 @@
+{
+  "name": "ETKM P6 — Media Library Ingest Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "={{$env.GOOGLE_DRIVE_INGEST_FOLDER_ID}}",
+          "mode": "id"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "id": "drive-trigger",
+      "name": "Google Drive — New File",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.mimeType}}",
+              "operation": "contains",
+              "value2": "image"
+            }
+          ]
+        }
+      },
+      "id": "filter-images",
+      "name": "Filter — Images Only",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "fileId": {
+          "__rl": true,
+          "value": "={{$json.id}}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "download-file",
+      "name": "Google Drive — Download Original",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [680, 200],
+      "operation": "download"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.CLOUD_RUN_BW_SERVICE_URL}}/convert",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "image",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "bwImage"
+            }
+          },
+          "timeout": 120000
+        }
+      },
+      "id": "convert-bw",
+      "name": "Cloud Run — Convert to B&W",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{$env.ANTHROPIC_API_KEY}}"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"claude-haiku-4-5-20251001\",\n  \"max_tokens\": 1024,\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": [\n        {\n          \"type\": \"image\",\n          \"source\": {\n            \"type\": \"base64\",\n            \"media_type\": \"image/jpeg\",\n            \"data\": \"={{Buffer.from($binary.bwImage.data, 'binary').toString('base64')}}\"\n          }\n        },\n        {\n          \"type\": \"text\",\n          \"text\": \"You are processing an image for East Texas Krav Maga's media library.\\nThe image has already been converted to black and white.\\n\\nReturn ONLY valid JSON. No preamble, no markdown, no explanation.\\n\\n{\\n  \\\"description\\\": \\\"1-2 sentence factual description of what is in the image\\\",\\n  \\\"tags\\\": [\\\"tag1\\\", \\\"tag2\\\", \\\"tag3\\\"],\\n  \\\"content_use_cases\\\": [\\\"use case 1\\\", \\\"use case 2\\\"],\\n  \\\"asset_type\\\": \\\"Image | Video | Graphic | Screenshot\\\",\\n  \\\"tone\\\": \\\"high-energy | calm-focus | community | instructional | real-world | confidence\\\"\\n}\\n\\nTag rules:\\n- Assign 3-6 tags from this approved taxonomy only:\\n  Asset types: training, demonstration, class, seminar, event, headshot, facility, equipment, group, individual, youth, adult, women, cbltac\\n  Content context: social-ready, print-ready, web-ready, email-ready, testimonial-context, action-shot, portrait, environment, candid, posed\\n  Campaign/project: fight-back-etx, cbltac, armed-citizen, youth-program, college-safety, private-lessons, open-enrollment, community-event\\n  Tone: high-energy, calm-focus, community, instructional, real-world, confidence\\n- Tags must be lowercase, hyphenated\\n- Do not invent tags outside the taxonomy\\n- If the image clearly shows youth, always include youth\\n- If the image is from a CBLTAC event, always include cbltac\"\n        }\n      ]\n    }\n  ]\n}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "claude-tag",
+      "name": "Claude API — Describe & Tag",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1120, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse Claude's JSON response and prepare Notion fields\nconst claudeResponse = JSON.parse($input.item.json.body || JSON.stringify($input.item.json));\nconst content = claudeResponse.content[0].text;\n\nlet parsed;\ntry {\n  parsed = JSON.parse(content);\n} catch (e) {\n  // Strip any accidental markdown fences before parsing\n  const cleaned = content.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n  parsed = JSON.parse(cleaned);\n}\n\nconst originalFile = $('Google Drive — New File').item.json;\nconst filename = originalFile.name || 'unknown';\nconst driveFileId = originalFile.id;\nconst today = new Date().toISOString().split('T')[0];\n\nreturn {\n  json: {\n    filename,\n    driveFileId,\n    description: parsed.description || '',\n    tags: parsed.tags || [],\n    content_use_cases: parsed.content_use_cases || [],\n    asset_type: parsed.asset_type || 'Image',\n    tone: parsed.tone || '',\n    date_added: today,\n    bwImage: $input.item.binary?.bwImage\n  },\n  binary: $input.item.binary\n};\n"
+      },
+      "id": "parse-response",
+      "name": "Code — Parse Claude Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1340, 200]
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "create",
+        "databaseId": {
+          "__rl": true,
+          "value": "={{$env.NOTION_MEDIA_LIBRARY_DB_ID}}",
+          "mode": "id"
+        },
+        "title": "={{$json.filename}}",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Asset Type",
+              "type": "select",
+              "selectValue": "={{$json.asset_type}}"
+            },
+            {
+              "key": "Description",
+              "type": "richText",
+              "textContent": "={{$json.description}}"
+            },
+            {
+              "key": "Tags",
+              "type": "multiSelect",
+              "multiSelectValue": "={{$json.tags.join(',')}}"
+            },
+            {
+              "key": "Content Use Cases",
+              "type": "multiSelect",
+              "multiSelectValue": "={{$json.content_use_cases.join(',')}}"
+            },
+            {
+              "key": "Date Added",
+              "type": "date",
+              "dateValue": "={{$json.date_added}}"
+            },
+            {
+              "key": "Source",
+              "type": "select",
+              "selectValue": "Drive"
+            },
+            {
+              "key": "Status",
+              "type": "select",
+              "selectValue": "Active"
+            },
+            {
+              "key": "Drive URL",
+              "type": "url",
+              "urlValue": "=https://drive.google.com/file/d/{{$json.driveFileId}}/view"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "notion-create",
+      "name": "Notion — Create Media Record",
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [1560, 200]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "upload",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{$env.GOOGLE_DRIVE_LIBRARY_FOLDER_ID}}",
+          "mode": "id"
+        },
+        "name": "=bw_{{$('Code — Parse Claude Response').item.json.filename}}",
+        "inputDataFieldName": "bwImage",
+        "options": {}
+      },
+      "id": "upload-bw",
+      "name": "Google Drive — Upload B&W to Library",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [1780, 200]
+    },
+    {
+      "parameters": {
+        "fileId": {
+          "__rl": true,
+          "value": "={{$('Google Drive — New File').item.json.id}}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "delete-ingest",
+      "name": "Google Drive — Delete from Ingest",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [2000, 200],
+      "operation": "delete"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.N8N_ERROR_WEBHOOK_URL}}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"pipeline\": \"ETKM P6 Media Ingest\",\n  \"file\": \"={{$('Google Drive — New File').item.json.name}}\",\n  \"fileId\": \"={{$('Google Drive — New File').item.json.id}}\",\n  \"error\": \"={{$json.error.message}}\",\n  \"timestamp\": \"={{new Date().toISOString()}}\"\n}",
+        "options": {}
+      },
+      "id": "error-log",
+      "name": "Error Logger",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1120, 460]
+    }
+  ],
+  "connections": {
+    "Google Drive — New File": {
+      "main": [
+        [
+          {
+            "node": "Filter — Images Only",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter — Images Only": {
+      "main": [
+        [
+          {
+            "node": "Google Drive — Download Original",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Google Drive — Download Original": {
+      "main": [
+        [
+          {
+            "node": "Cloud Run — Convert to B&W",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cloud Run — Convert to B&W": {
+      "main": [
+        [
+          {
+            "node": "Claude API — Describe & Tag",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude API — Describe & Tag": {
+      "main": [
+        [
+          {
+            "node": "Code — Parse Claude Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code — Parse Claude Response": {
+      "main": [
+        [
+          {
+            "node": "Notion — Create Media Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notion — Create Media Record": {
+      "main": [
+        [
+          {
+            "node": "Google Drive — Upload B&W to Library",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive — Upload B&W to Library": {
+      "main": [
+        [
+          {
+            "node": "Google Drive — Delete from Ingest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": ""
+  },
+  "staticData": null,
+  "tags": ["ETKM", "P6", "media-library"],
+  "triggerCount": 0,
+  "updatedAt": "2026-04-09T00:00:00.000Z",
+  "versionId": "1"
+}
