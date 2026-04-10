@@ -1,64 +1,44 @@
 # P6 Media Library — Deploy Checklist
-4 steps. ~30 minutes total.
+3 steps. ~20 minutes total. No Cloud Run required.
 
 ---
 
-## Step 1 — Deploy Cloud Run (10 min)
-Open [Google Cloud Shell](https://shell.cloud.google.com) and run this one command:
-
-```bash
-cd ~ && git clone https://github.com/easttxkravmaga/Claude.git && \
-cd Claude && git checkout claude/setup-etkm-library-043os && \
-cd projects/p6-media-library/cloud-run && \
-gcloud run deploy etkm-bw-convert \
-  --source . \
-  --region us-central1 \
-  --allow-unauthenticated \
-  --memory 1Gi \
-  --project project-9c425f11-39e5-4743-b9d
-```
-
-When it finishes, copy the **Service URL** it prints. You'll need it in Step 3.
-
----
-
-## Step 2 — Import Workflow into n8n (5 min)
+## Step 1 — Import Workflow into n8n (2 min)
 
 1. Go to [etxkravmaga.app.n8n.cloud](https://etxkravmaga.app.n8n.cloud)
 2. Click **+** → **Import from file**
-3. Upload this file from the repo:
+3. Download and upload this file:
    `projects/p6-media-library/n8n/workflow.json`
-   (download it from GitHub: repo → branch `claude/setup-etkm-library-043os`)
-4. n8n will prompt you to assign credentials — skip for now (you'll add them in Step 3)
+   Direct link: github.com/easttxkravmaga/Claude/blob/claude/setup-etkm-library-043os/projects/p6-media-library/n8n/workflow.json
+4. Skip credential assignment for now
 
 ---
 
-## Step 3 — Set n8n Variables + Credentials (10 min)
+## Step 2 — Set n8n Variable + Credentials (10 min)
 
-**Variables** (Settings → Variables):
+**Variable** (Settings → Variables → Add):
 
 | Variable | Value |
 |---|---|
-| `CLOUD_RUN_BW_SERVICE_URL` | Service URL from Step 1 (no trailing slash) |
-| `ANTHROPIC_API_KEY` | Your Anthropic API key |
+| `ANTHROPIC_API_KEY` | Your Anthropic API key from console.anthropic.com |
 
 **Credentials** (Settings → Credentials → New):
 
 1. **Google Drive OAuth2** — authorize your Google account
-   - Go back to the workflow, open each Drive node, reassign to this credential
+   - Open each Drive node in the workflow, reassign to this credential
 2. **Notion (Internal Integration)** — paste your Notion integration token
    - Create token at: notion.so/my-integrations → New integration → copy secret
    - In Notion: open `ETKM Media Library` database → `···` → Connections → add your integration
-   - Open the Notion node in workflow, reassign to this credential
+   - Open the Notion node in the workflow, reassign to this credential
 
 ---
 
-## Step 4 — Test and Activate (5 min)
+## Step 3 — Test and Activate (5 min)
 
-1. Drop one image into your Google Drive root folder
+1. Drop one image into your Google Drive root folder (`1ebim51jYgnvAwhypLKwG6f1muQzNK4Is`)
 2. In n8n, open the workflow → click **Execute Workflow** to run manually
-3. Confirm the image appears in Notion with tags
-4. If it passes: click the toggle to **Activate** the workflow (runs automatically from now on)
+3. Confirm the image appears in Notion with description and tags
+4. If it passes: toggle the workflow **Active**
 
 ---
 
@@ -68,4 +48,4 @@ No setup needed.
 
 ---
 
-**If anything breaks:** The most likely failure point is the Cloud Run URL not being set in n8n Variables. Check Step 3 first.
+**Note:** Images are tagged from the original color file. B&W conversion can be added later once Cloud Run access is resolved.
