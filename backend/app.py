@@ -71,7 +71,6 @@ def load_system_prompt() -> str:
                 "Accept": "application/vnd.github.v3.raw"
             }, timeout=5)
             if resp.status_code == 200:
-                # Extract just the system prompt block
                 content = resp.text
                 start = content.find("```\n") + 4
                 end = content.find("\n```", start)
@@ -79,7 +78,6 @@ def load_system_prompt() -> str:
                     return content[start:end]
         except Exception:
             pass
-    # Embedded fallback
     return EMBEDDED_SYSTEM_PROMPT
 
 EMBEDDED_SYSTEM_PROMPT = """You are the email copywriter for East Texas Krav Maga (ETKM), a reality-based self-defense training facility in Tyler, TX. Your job is to write personalized, conversion-focused email copy for prospects who have booked a free trial lesson.
@@ -91,21 +89,6 @@ Sign off: Nate Lundstrom / East Texas Krav Maga / (903) 590-0085 / etxkravmaga.c
 
 @app.route("/classify-arc", methods=["POST"])
 def classify_arc_endpoint():
-    """
-    Receive prospect data from Make.com, classify arc, generate personalized email.
-    
-    Expected body:
-    {
-        "first_name": "Sarah",
-        "email_number": 1,
-        "email_name": "Booking Confirmation",
-        "arc_type": "Arc: Safety",       // optional — Manus can pre-classify
-        "qa_response": "I was attacked...",
-        "trial_date": "Thursday, April 17",
-        "trial_time": "6:30 PM",
-        "word_limit": 200
-    }
-    """
     data = request.get_json(silent=True) or {}
 
     first_name   = data.get("first_name", "")
@@ -116,7 +99,6 @@ def classify_arc_endpoint():
     trial_time   = data.get("trial_time", "")
     word_limit   = data.get("word_limit", 200)
 
-    # Arc classification — use provided or auto-classify
     arc_type = data.get("arc_type") or classify_arc(qa_response)
 
     if not ANTHROPIC_API_KEY:
@@ -179,17 +161,12 @@ Return only the email — subject line first, blank line, then body. No preamble
 # ─────────────────────────────────────────────
 @app.route("/webhook/square", methods=["POST"])
 def square_webhook():
-    """
-    Receive Square payment failure event.
-    Trigger: Make.com moves contact to P4 (At Risk/Retention) with 'Payment Due' label.
-    """
     payload = request.get_json(silent=True) or {}
     event_type = payload.get("type", "")
 
     if "payment.failed" not in event_type and "subscription" not in event_type.lower():
         return jsonify({"status": "ignored", "event_type": event_type}), 200
 
-    # Extract customer info — Square sends merchant_id + customer_id
     data = payload.get("data", {}).get("object", {})
     customer_id = (
         data.get("payment", {}).get("customer_id") or
@@ -197,7 +174,6 @@ def square_webhook():
         "unknown"
     )
 
-    # Return structured data — Make.com handles the Pipedrive update
     return jsonify({
         "status": "processed",
         "event_type": event_type,
@@ -213,12 +189,10 @@ def square_webhook():
 PIPEDRIVE_DOMAIN = "easttexaskravmaga.pipedrive.com"
 PIPEDRIVE_BASE   = f"https://{PIPEDRIVE_DOMAIN}/api/v1"
 
-# Owner & pipeline config
-OWNER_ID    = 21519696   # Nathan
-PIPELINE_ID = 1          # P1 — Prospects
-STAGE_ID    = 1          # Stage 1 — New Lead
+OWNER_ID    = 21519696
+PIPELINE_ID = 1
+STAGE_ID    = 1
 
-# Custom field hashes (Pipedrive person fields 50–65)
 QUIZ_FIELD_MAP = {
     "entry_reason":       "fd235088591c58d957cffaa27e7e85a804f73cea",
     "score":              "39051ebf8f2001d53d23c38ef85cb0552aa61180",
@@ -238,7 +212,6 @@ QUIZ_FIELD_MAP = {
     "completed_date":     "db849879591eca16552aad77711175973f431a06",
 }
 
-# Label mapping — flag name → Pipedrive label ID
 FLAG_LABEL_MAP = {
     "HIGH_URGENCY":                        99,
     "AWARENESS_GAP":                       100,
@@ -265,7 +238,6 @@ FLAG_LABEL_MAP = {
     "FEAR_BARRIER_CONFIRMED":              121,
 }
 
-# Tier → auto-PDF title
 TIER_PDF_MAP = {
     "Unaware":           "The Wake-Up Call Guide",
     "Aware of the Gap":  "The Gap Assessment Guide",
@@ -274,7 +246,6 @@ TIER_PDF_MAP = {
 }
 
 def pipedrive_request(method, path, **kwargs):
-    """Make an authenticated Pipedrive API request."""
     url = f"{PIPEDRIVE_BASE}/{path}"
     params = kwargs.pop("params", {})
     params["api_token"] = PIPEDRIVE_API_KEY
@@ -283,13 +254,8 @@ def pipedrive_request(method, path, **kwargs):
 
 @app.route("/quiz-webhook", methods=["POST"])
 def quiz_webhook():
-    """
-    Receive quiz submission, create/update Pipedrive person + deal,
-    map 16 custom fields, apply flag labels, add pinned note.
-    """
     payload = request.get_json(silent=True) or {}
 
-    # ── Extract payload fields ──
     first_name = payload.get("firstName", "")
     email      = payload.get("email", "")
     score      = payload.get("score", 0)
@@ -305,7 +271,6 @@ def quiz_webhook():
     if not PIPEDRIVE_API_KEY:
         return jsonify({"error": "PIPEDRIVE_API_KEY not configured"}), 500
 
-    # ── Build custom fields ──
     confidence_type = f"{answers.get('confidence', '')} / {answers.get('confidenceValidated', '')}"
     firearm_status  = f"{answers.get('firearmOwnership', '')} / {answers.get('carryStatus', '')}"
     must_protect    = "Yes" if answers.get("motivation") == "public" else "No"
@@ -333,7 +298,6 @@ def quiz_webhook():
         QUIZ_FIELD_MAP["completed_date"]:     timestamp,
     }
 
-    # ── Step 1: Search or create person ──
     try:
         search_resp = pipedrive_request("GET", "persons/search", params={"term": email, "fields": "email"})
         search_resp.raise_for_status()
@@ -342,11 +306,9 @@ def quiz_webhook():
 
         if items:
             person_id = items[0]["item"]["id"]
-            # Update existing person with quiz fields
             update_body = {**person_fields}
             pipedrive_request("PUT", f"persons/{person_id}", json=update_body).raise_for_status()
         else:
-            # Create new person
             create_body = {
                 "name": first_name or email.split("@")[0],
                 "email": [{"value": email, "primary": True}],
@@ -359,7 +321,6 @@ def quiz_webhook():
     except requests.RequestException as e:
         return jsonify({"error": f"Pipedrive person error: {str(e)}"}), 502
 
-    # ── Step 2: Create deal ──
     try:
         label_ids = [FLAG_LABEL_MAP[f] for f in flags if f in FLAG_LABEL_MAP]
 
@@ -379,7 +340,6 @@ def quiz_webhook():
     except requests.RequestException as e:
         return jsonify({"error": f"Pipedrive deal error: {str(e)}", "person_id": person_id}), 502
 
-    # ── Step 3: Add pinned note ──
     try:
         date_str = timestamp[:10] if len(timestamp) >= 10 else timestamp
         flags_str = ", ".join(flags) if flags else "None"
@@ -411,7 +371,7 @@ PRIOR INCIDENT: {answers.get('experience', '')}"""
         }
         pipedrive_request("POST", "notes", json=note_body).raise_for_status()
     except requests.RequestException:
-        pass  # Note failure is non-critical
+        pass
 
     return jsonify({
         "status": "ok",
@@ -506,6 +466,28 @@ MCP_TOOLS = [
             },
             "required": ["urls"]
         }
+    },
+    {
+        "name": "push_skill",
+        "description": "Create or update a skill file in the ETKM GitHub repository. Use this to save new skills or update existing ones. The file will be written to skills/user/{skill_name}/SKILL.md.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "skill_name": {
+                    "type": "string",
+                    "description": "The skill directory name, e.g. 'etkm-behavior-intelligence'"
+                },
+                "content": {
+                    "type": "string",
+                    "description": "The full SKILL.md content to write"
+                },
+                "commit_message": {
+                    "type": "string",
+                    "description": "Git commit message describing the change"
+                }
+            },
+            "required": ["skill_name", "content"]
+        }
     }
 ]
 
@@ -529,12 +511,52 @@ def github_list_dir(path: str) -> list:
     resp.raise_for_status()
     return resp.json()
 
+def github_push_file(path: str, content: str, commit_message: str) -> dict:
+    """Create or update a file in the GitHub repo."""
+    url = f"{GITHUB_API_BASE}/{path}"
+    headers = {
+        "Authorization": f"token {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github.v3+json"
+    }
+    encoded = base64.b64encode(content.encode("utf-8")).decode("utf-8")
+
+    # Check if file exists to get SHA for update
+    sha = None
+    try:
+        check = requests.get(url, headers={
+            "Authorization": f"token {GITHUB_TOKEN}",
+            "Accept": "application/vnd.github.v3+json"
+        }, timeout=10)
+        if check.status_code == 200:
+            sha = check.json().get("sha")
+    except Exception:
+        pass
+
+    payload = {
+        "message": commit_message,
+        "content": encoded,
+        "branch": GITHUB_BRANCH
+    }
+    if sha:
+        payload["sha"] = sha
+
+    resp = requests.put(url, headers=headers, json=payload, timeout=15)
+    resp.raise_for_status()
+    return resp.json()
+
 def handle_mcp_tool(tool_name: str, tool_input: dict) -> dict:
     """Execute an MCP tool call and return result."""
     try:
         if tool_name == "list_skills":
             items = github_list_dir("skills")
             skill_names = [item["name"] for item in items if item["type"] == "dir"]
+            # Also list user skills
+            try:
+                user_items = github_list_dir("skills/user")
+                user_skill_names = [f"user/{item['name']}" for item in user_items if item["type"] == "dir"]
+                skill_names = skill_names + user_skill_names
+            except Exception:
+                pass
             return {
                 "type": "text",
                 "text": json.dumps({"skills": skill_names, "count": len(skill_names)})
@@ -542,7 +564,11 @@ def handle_mcp_tool(tool_name: str, tool_input: dict) -> dict:
 
         elif tool_name == "get_skill":
             skill_name = tool_input.get("skill_name", "")
-            content = github_get_file(f"skills/{skill_name}/SKILL.md")
+            # Try user skills first, then public
+            try:
+                content = github_get_file(f"skills/user/{skill_name}/SKILL.md")
+            except Exception:
+                content = github_get_file(f"skills/{skill_name}/SKILL.md")
             return {"type": "text", "text": content}
 
         elif tool_name == "get_prompt":
@@ -579,6 +605,29 @@ def handle_mcp_tool(tool_name: str, tool_input: dict) -> dict:
             ))
             return {"type": "text", "text": json.dumps(result)}
 
+        elif tool_name == "push_skill":
+            if not GITHUB_TOKEN:
+                return {"type": "text", "text": "Error: GITHUB_TOKEN not configured in environment"}
+            skill_name     = tool_input.get("skill_name", "")
+            content        = tool_input.get("content", "")
+            commit_message = tool_input.get("commit_message", f"Update skill: {skill_name}")
+            if not skill_name or not content:
+                return {"type": "text", "text": "Error: skill_name and content are required"}
+            path = f"skills/user/{skill_name}/SKILL.md"
+            result = github_push_file(path, content, commit_message)
+            html_url = result.get("content", {}).get("html_url", "")
+            commit_sha = result.get("commit", {}).get("sha", "")[:7]
+            return {
+                "type": "text",
+                "text": json.dumps({
+                    "status": "success",
+                    "skill_name": skill_name,
+                    "path": path,
+                    "commit": commit_sha,
+                    "url": html_url
+                })
+            }
+
         else:
             return {"type": "text", "text": f"Unknown tool: {tool_name}"}
 
@@ -590,16 +639,11 @@ def handle_mcp_tool(tool_name: str, tool_input: dict) -> dict:
 
 @app.route("/mcp", methods=["POST"])
 def mcp_endpoint():
-    """
-    MCP protocol endpoint — handles initialize, tools/list, and tools/call.
-    Compatible with Claude.ai connector format and standard MCP clients.
-    """
     body = request.get_json(silent=True) or {}
     method  = body.get("method", "")
     params  = body.get("params", {})
     req_id  = body.get("id", 1)
 
-    # ── Initialize ──
     if method == "initialize":
         return jsonify({
             "jsonrpc": "2.0",
@@ -609,13 +653,12 @@ def mcp_endpoint():
                 "capabilities": {"tools": {}},
                 "serverInfo": {
                     "name": "etkm-mcp",
-                    "version": "1.0.0",
-                    "description": "ETKM AI Operations Hub — skills, prompts, workflows, arc classification"
+                    "version": "1.1.0",
+                    "description": "ETKM AI Operations Hub — skills, prompts, workflows, arc classification, skill publishing"
                 }
             }
         })
 
-    # ── List Tools ──
     elif method == "tools/list":
         return jsonify({
             "jsonrpc": "2.0",
@@ -623,7 +666,6 @@ def mcp_endpoint():
             "result": {"tools": MCP_TOOLS}
         })
 
-    # ── Call Tool ──
     elif method == "tools/call":
         tool_name  = params.get("name", "")
         tool_input = params.get("arguments", {})
@@ -634,7 +676,6 @@ def mcp_endpoint():
             "result": {"content": [result]}
         })
 
-    # ── SSE Discovery (some MCP clients probe this) ──
     elif method == "notifications/initialized":
         return jsonify({"jsonrpc": "2.0", "id": req_id, "result": {}})
 
@@ -648,19 +689,14 @@ def mcp_endpoint():
 
 @app.route("/mcp", methods=["GET"])
 def mcp_sse():
-    """
-    SSE endpoint for MCP clients that use server-sent events transport.
-    Returns a minimal SSE stream with server info.
-    """
     def event_stream():
-        # Send server info as first event
         data = json.dumps({
             "jsonrpc": "2.0",
             "method": "notifications/initialized",
             "params": {
                 "serverInfo": {
                     "name": "etkm-mcp",
-                    "version": "1.0.0"
+                    "version": "1.1.0"
                 }
             }
         })
