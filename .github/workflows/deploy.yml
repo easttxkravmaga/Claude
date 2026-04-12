@@ -1,34 +1,17 @@
-name: Deploy to Cloud Run
+name: Deploy to Render
 
 on:
   push:
     branches: [main]
+    paths:
+      - 'backend/**'
   workflow_dispatch:
-
-env:
-  PROJECT_ID: project-9c425f11-39e5-4743-b9d
-  REGION: us-central1
-  SERVICE: etkm-mcp-server
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: google-github-actions/auth@v2
-        with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
-
-      - uses: google-github-actions/setup-gcloud@v2
-
-      - name: Deploy to Cloud Run
+      - name: Trigger Render Deploy
         run: |
-          gcloud run deploy $SERVICE \
-            --source . \
-            --project $PROJECT_ID \
-            --region $REGION \
-            --allow-unauthenticated \
-            --port 8080 \
-            --quiet
+          curl -s -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
+          echo "Deploy triggered successfully"
