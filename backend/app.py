@@ -1,6 +1,6 @@
 """
 ETKM Backend — Flask App + MCP Server
-Deployed on Google Cloud Run. Serves as middleware between Pipedrive, Claude API,
+Deployed on Render. Serves as middleware between Pipedrive, Claude API,
 and any AI agent (Claude, Gemini, Manus) via MCP protocol.
 """
 
@@ -11,7 +11,7 @@ import hashlib
 import hmac
 import asyncio
 import requests
-from flask import Flask, request, jsonify, Response
+from flask import Flask, request, jsonify, Response, redirect
 from datetime import datetime
 
 app = Flask(__name__)
@@ -25,6 +25,34 @@ GITHUB_TOKEN      = os.environ.get("GITHUB_TOKEN", "")
 GITHUB_REPO       = "easttxkravmaga/Claude"
 GITHUB_BRANCH     = "main"
 GITHUB_API_BASE   = f"https://api.github.com/repos/{GITHUB_REPO}/contents"
+RENDER_API_KEY    = os.environ.get("RENDER_API_KEY", "")
+RENDER_SERVICE_ID = os.environ.get("RENDER_SERVICE_ID", "")
+
+# Google OAuth
+GOOGLE_CLIENT_ID     = os.environ.get("GOOGLE_CLIENT_ID", "")
+GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET", "")
+GOOGLE_REDIRECT_URI  = os.environ.get("GOOGLE_REDIRECT_URI", "https://claude-r82h.onrender.com/oauth/callback")
+
+# Google tokens — loaded from env on startup, refreshed in memory
+_google_tokens = {
+    "access_token":  os.environ.get("GOOGLE_ACCESS_TOKEN", ""),
+    "refresh_token": os.environ.get("GOOGLE_REFRESH_TOKEN", ""),
+    "expires_at":    0
+}
+
+# P6 Drive folder IDs
+P6_FOLDERS = {
+    "Class Pics":           "1ebfk6lp21V6mD3ryfW3JoKocoiKROokI",
+    "Scenario Pics":        "1mY9dBj1DiGwPM6lvu6LGp4cEcFniH1ww",
+    "Email Pics":           "1QO1rHOWYaNpvd8XriHTyM85xbE_CE3pd",
+    "Videos":               "1SCSF9b5qSYo8zFaUo5yiSfF00Urwa5aD",
+    "Ready for Production": "1muXfteK840-b7GASYS3iwBhEsqS9aZhS",
+}
+
+# Notion Media Library
+NOTION_MEDIA_DB_ID   = "711e3a52-1604-4182-ae94-9d23a2960963"
+NOTION_TOKEN         = os.environ.get("NOTION_TOKEN", "")
+
 
 # ─────────────────────────────────────────────
 # Health
@@ -34,8 +62,327 @@ def health():
     return jsonify({
         "status": "ok",
         "service": "etkm-backend",
-        "timestamp": datetime.utcnow().isoformat() + "Z"
+        "timestamp": datetime.utcnow().isoformat() + "Z",
+        "google_auth": "configured" if _google_tokens.get("refresh_token") else "not_configured"
     })
+
+
+# ─────────────────────────────────────────────
+# Google OAuth Flow
+# ─────────────────────────────────────────────
+@app.route("/authorize", methods=["GET"])
+def authorize():
+    """Step 1 — redirect Nathan to Google consent screen."""
+    if not GOOGLE_CLIENT_ID:
+        return jsonify({"error": "GOOGLE_CLIENT_ID not set in environment"}), 500
+
+    scope = "https://www.googleapis.com/auth/drive.readonly"
+    params = (
+        f"client_id={GOOGLE_CLIENT_ID}"
+        f"&redirect_uri={GOOGLE_REDIRECT_URI}"
+        f"&response_type=code"
+        f"&scope={scope}"
+        f"&access_type=offline"
+        f"&prompt=consent"
+    )
+    return redirect(f"https://accounts.google.com/o/oauth2/v2/auth?{params}")
+
+
+@app.route("/oauth/callback", methods=["GET"])
+def oauth_callback():
+    """Step 2 — exchange code for tokens and persist to Render env."""
+    code = request.args.get("code")
+    if not code:
+        return jsonify({"error": "No code in callback"}), 400
+
+    # Exchange code for tokens
+    token_resp = requests.post("https://oauth2.googleapis.com/token", data={
+        "code":          code,
+        "client_id":     GOOGLE_CLIENT_ID,
+        "client_secret": GOOGLE_CLIENT_SECRET,
+        "redirect_uri":  GOOGLE_REDIRECT_URI,
+        "grant_type":    "authorization_code",
+    }, timeout=15)
+
+    if token_resp.status_code != 200:
+        return jsonify({"error": "Token exchange failed", "detail": token_resp.text}), 500
+
+    tokens = token_resp.json()
+    _google_tokens["access_token"]  = tokens.get("access_token", "")
+    _google_tokens["refresh_token"] = tokens.get("refresh_token", "")
+    _google_tokens["expires_at"]    = datetime.utcnow().timestamp() + tokens.get("expires_in", 3600)
+
+    # Persist refresh token to Render environment variable so it survives redeploys
+    _persist_to_render("GOOGLE_REFRESH_TOKEN", _google_tokens["refresh_token"])
+    _persist_to_render("GOOGLE_ACCESS_TOKEN",  _google_tokens["access_token"])
+
+    return jsonify({
+        "status": "authorized",
+        "message": "Google Drive access granted. P6 pipeline is ready.",
+        "refresh_token_stored": bool(_google_tokens["refresh_token"])
+    })
+
+
+def _persist_to_render(key: str, value: str):
+    """Write an env var to the Render service so tokens survive redeploys."""
+    if not RENDER_API_KEY or not RENDER_SERVICE_ID:
+        return
+    try:
+        requests.put(
+            f"https://api.render.com/v1/services/{RENDER_SERVICE_ID}/env-vars",
+            headers={
+                "Authorization": f"Bearer {RENDER_API_KEY}",
+                "Content-Type": "application/json"
+            },
+            json=[{"key": key, "value": value}],
+            timeout=10
+        )
+    except Exception:
+        pass  # Non-fatal — token still works in memory for this process
+
+
+def _get_valid_access_token() -> str:
+    """Return a valid Google access token, refreshing if needed."""
+    now = datetime.utcnow().timestamp()
+
+    # If token is still valid (with 5-min buffer), return it
+    if _google_tokens["access_token"] and _google_tokens["expires_at"] > now + 300:
+        return _google_tokens["access_token"]
+
+    # Refresh using refresh token
+    refresh_token = _google_tokens.get("refresh_token") or os.environ.get("GOOGLE_REFRESH_TOKEN", "")
+    if not refresh_token:
+        raise Exception("No Google refresh token available. Visit /authorize to authenticate.")
+
+    resp = requests.post("https://oauth2.googleapis.com/token", data={
+        "refresh_token": refresh_token,
+        "client_id":     GOOGLE_CLIENT_ID,
+        "client_secret": GOOGLE_CLIENT_SECRET,
+        "grant_type":    "refresh_token",
+    }, timeout=15)
+
+    if resp.status_code != 200:
+        raise Exception(f"Token refresh failed: {resp.text}")
+
+    tokens = resp.json()
+    _google_tokens["access_token"] = tokens["access_token"]
+    _google_tokens["expires_at"]   = now + tokens.get("expires_in", 3600)
+    _persist_to_render("GOOGLE_ACCESS_TOKEN", _google_tokens["access_token"])
+
+    return _google_tokens["access_token"]
+
+
+# ─────────────────────────────────────────────
+# Google Drive Helpers
+# ─────────────────────────────────────────────
+def drive_list_folder(folder_id: str, folder_name: str) -> list:
+    """List all files in a Drive folder. Returns list of file dicts."""
+    token = _get_valid_access_token()
+    files = []
+    page_token = None
+
+    while True:
+        params = {
+            "q":        f"'{folder_id}' in parents and mimeType != 'application/vnd.google-apps.folder' and trashed = false",
+            "fields":   "nextPageToken, files(id, name, mimeType, webViewLink, createdTime)",
+            "pageSize": 100,
+        }
+        if page_token:
+            params["pageToken"] = page_token
+
+        resp = requests.get(
+            "https://www.googleapis.com/drive/v3/files",
+            headers={"Authorization": f"Bearer {token}"},
+            params=params,
+            timeout=15
+        )
+        resp.raise_for_status()
+        data = resp.json()
+
+        for f in data.get("files", []):
+            files.append({
+                "file_id":     f["id"],
+                "file_name":   f["name"],
+                "mime_type":   f.get("mimeType", ""),
+                "drive_url":   f.get("webViewLink", f"https://drive.google.com/file/d/{f['id']}/view"),
+                "folder_name": folder_name,
+                "created":     f.get("createdTime", ""),
+            })
+
+        page_token = data.get("nextPageToken")
+        if not page_token:
+            break
+
+    return files
+
+
+def notion_get_existing_drive_urls() -> set:
+    """Pull all Drive URLs already in the Notion Media Library."""
+    existing = set()
+    has_more = True
+    cursor = None
+
+    while has_more:
+        body = {"page_size": 100}
+        if cursor:
+            body["start_cursor"] = cursor
+
+        resp = requests.post(
+            f"https://api.notion.com/v1/databases/{NOTION_MEDIA_DB_ID}/query",
+            headers={
+                "Authorization": f"Bearer {NOTION_TOKEN}",
+                "Notion-Version": "2022-06-28",
+                "Content-Type": "application/json"
+            },
+            json=body,
+            timeout=15
+        )
+        resp.raise_for_status()
+        data = resp.json()
+
+        for page in data.get("results", []):
+            prop = page.get("properties", {}).get("Drive URL", {})
+            url = prop.get("url")
+            if url:
+                existing.add(url)
+
+        has_more = data.get("has_more", False)
+        cursor = data.get("next_cursor")
+
+    return existing
+
+
+def infer_asset_type(file_name: str, mime_type: str) -> str:
+    name = file_name.lower()
+    if "video" in mime_type:
+        return "Video"
+    if any(k in name for k in ["graphic", "logo", "banner", "flyer"]):
+        return "Graphic"
+    if any(k in name for k in ["screenshot", "screen"]):
+        return "Screenshot"
+    return "Image"
+
+
+def infer_tags(file_name: str, folder_name: str) -> list:
+    name = file_name.lower()
+    tags = []
+
+    folder_tags = {
+        "Class Pics":           ["class", "training"],
+        "Scenario Pics":        ["training", "demonstration", "real-world"],
+        "Email Pics":           ["training", "demonstration", "email-ready"],
+        "Videos":               ["training"],
+        "Ready for Production": [],
+    }
+    tags.extend(folder_tags.get(folder_name, []))
+
+    rules = [
+        (["women", "woman"],                         ["women"]),
+        (["youth", "kid", "teen"],                   ["youth"]),
+        (["efc", "armed", "firearm", "gun"],         ["efc", "armed-citizen"]),
+        (["fight-back", "fightback", "ipv"],         ["fight-back-etx"]),
+        (["headshot"],                                ["headshot", "portrait"]),
+        (["group"],                                   ["group"]),
+        (["facility", "gym", "mat"],                 ["facility", "environment"]),
+        (["seminar", "event"],                       ["event", "seminar"]),
+        (["kick", "strike", "choke", "grab",
+          "defense", "escape"],                      ["action-shot"]),
+        (["parking", "street", "outdoor",
+          "scenario"],                               ["real-world"]),
+        (["portrait", "pose"],                       ["portrait", "posed"]),
+        (["candid"],                                  ["candid"]),
+        (["college"],                                 ["college-safety"]),
+        (["private"],                                 ["private-lessons"]),
+        (["community"],                              ["community", "community-event"]),
+        (["instructor", "teach"],                    ["instructional"]),
+        (["high-energy"],                            ["high-energy"]),
+        (["calm", "focus"],                          ["calm-focus"]),
+    ]
+
+    for keywords, assigned_tags in rules:
+        if any(k in name for k in keywords):
+            tags.extend(assigned_tags)
+
+    return list(dict.fromkeys(tags))  # deduplicate, preserve order
+
+
+def infer_content_uses(file_name: str, folder_name: str) -> list:
+    name = file_name.lower()
+    uses = []
+
+    if folder_name == "Email Pics":
+        uses.append("Email header")
+    if "social" in name:
+        uses.append("Social media post")
+    if "hero" in name:
+        uses.append("Landing page hero")
+    if any(k in name for k in ["seminar", "event"]):
+        uses.extend(["Seminar promotion", "Event promotion"])
+    if any(k in name for k in ["curriculum", "class"]):
+        uses.append("Curriculum visual aide")
+    if "testimonial" in name:
+        uses.append("Testimonial support")
+    if "print" in name:
+        uses.append("Print ad")
+
+    # Defaults
+    if not uses:
+        if any(k in name for k in ["kick", "strike", "choke", "grab", "defense", "escape"]):
+            uses.append("Social media post")
+        elif any(k in name for k in ["facility", "gym", "mat", "outdoor"]):
+            uses.extend(["Website background", "Landing page hero"])
+        else:
+            uses.append("Social media post")
+
+    return list(dict.fromkeys(uses))
+
+
+def infer_description(file_name: str, folder_name: str, asset_type: str) -> str:
+    name = file_name.lower().replace("-", " ").replace("_", " ")
+    # Strip extension
+    name = name.rsplit(".", 1)[0] if "." in name else name
+    return f"ETKM {asset_type.lower()} — {name} ({folder_name})."
+
+
+def notion_create_record(file: dict) -> dict:
+    """Create a single Notion Media Library record."""
+    asset_type   = infer_asset_type(file["file_name"], file["mime_type"])
+    tags         = infer_tags(file["file_name"], file["folder_name"])
+    content_uses = infer_content_uses(file["file_name"], file["folder_name"])
+    description  = infer_description(file["file_name"], file["folder_name"], asset_type)
+
+    body = {
+        "parent": {"database_id": NOTION_MEDIA_DB_ID},
+        "properties": {
+            "Name":             {"title": [{"text": {"content": file["file_name"]}}]},
+            "Asset Type":       {"select": {"name": asset_type}},
+            "Source":           {"select": {"name": "Drive"}},
+            "Status":           {"select": {"name": "Active"}},
+            "Drive URL":        {"url": file["drive_url"]},
+            "Description":      {"rich_text": [{"text": {"content": description}}]},
+            "Tags":             {"multi_select": [{"name": t} for t in tags]},
+            "Content Use Cases":{"multi_select": [{"name": u} for u in content_uses]},
+        }
+    }
+
+    resp = requests.post(
+        "https://api.notion.com/v1/pages",
+        headers={
+            "Authorization": f"Bearer {NOTION_TOKEN}",
+            "Notion-Version": "2022-06-28",
+            "Content-Type": "application/json"
+        },
+        json=body,
+        timeout=15
+    )
+    resp.raise_for_status()
+    return {
+        "file_name":    file["file_name"],
+        "asset_type":   asset_type,
+        "tags":         tags,
+        "content_uses": content_uses,
+        "notion_url":   resp.json().get("url", "")
+    }
 
 
 # ─────────────────────────────────────────────
@@ -62,7 +409,6 @@ def classify_arc(qa_text: str) -> str:
     return "Arc: Default"
 
 def load_system_prompt() -> str:
-    """Load system prompt from GitHub or fall back to embedded version."""
     if GITHUB_TOKEN:
         try:
             url = f"{GITHUB_API_BASE}/prompts/arc-classification-system-prompt.md"
@@ -446,7 +792,7 @@ MCP_TOOLS = [
     },
     {
         "name": "scrape_contacts",
-        "description": "Scrape emails, phones, and social links from a list of URLs. Deduplicates results. Optionally crawls /contact and /about pages.",
+        "description": "Scrape emails, phones, and social links from a list of URLs.",
         "inputSchema": {
             "type": "object",
             "properties": {
@@ -469,7 +815,7 @@ MCP_TOOLS = [
     },
     {
         "name": "push_skill",
-        "description": "Create or update a skill file in the ETKM GitHub repository. Use this to save new skills or update existing ones. The file will be written to skills/user/{skill_name}/SKILL.md.",
+        "description": "Create or update a skill file in the ETKM GitHub repository.",
         "inputSchema": {
             "type": "object",
             "properties": {
@@ -488,11 +834,32 @@ MCP_TOOLS = [
             },
             "required": ["skill_name", "content"]
         }
+    },
+    {
+        "name": "p6_run_intake",
+        "description": "Run the P6 Media Library intake pipeline. Scans all 5 Drive intake folders, deduplicates against existing Notion records, creates Notion records for new files with full tagging. Returns a summary of what was processed.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "dry_run": {
+                    "type": "boolean",
+                    "description": "If true, scan and report new files but do not create Notion records. Default: false."
+                }
+            }
+        }
+    },
+    {
+        "name": "p6_check_auth",
+        "description": "Check whether Google Drive OAuth is configured and working. Returns auth status and authorize URL if not configured.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {}
+        }
     }
 ]
 
+
 def github_get_file(path: str) -> str:
-    """Fetch raw file content from GitHub repo."""
     url = f"{GITHUB_API_BASE}/{path}"
     headers = {"Accept": "application/vnd.github.v3.raw"}
     if GITHUB_TOKEN:
@@ -502,7 +869,6 @@ def github_get_file(path: str) -> str:
     return resp.text
 
 def github_list_dir(path: str) -> list:
-    """List directory contents from GitHub repo."""
     url = f"{GITHUB_API_BASE}/{path}"
     headers = {"Accept": "application/vnd.github.v3+json"}
     if GITHUB_TOKEN:
@@ -512,7 +878,6 @@ def github_list_dir(path: str) -> list:
     return resp.json()
 
 def github_push_file(path: str, content: str, commit_message: str) -> dict:
-    """Create or update a file in the GitHub repo."""
     url = f"{GITHUB_API_BASE}/{path}"
     headers = {
         "Authorization": f"token {GITHUB_TOKEN}",
@@ -520,7 +885,6 @@ def github_push_file(path: str, content: str, commit_message: str) -> dict:
     }
     encoded = base64.b64encode(content.encode("utf-8")).decode("utf-8")
 
-    # Check if file exists to get SHA for update
     sha = None
     try:
         check = requests.get(url, headers={
@@ -544,13 +908,12 @@ def github_push_file(path: str, content: str, commit_message: str) -> dict:
     resp.raise_for_status()
     return resp.json()
 
+
 def handle_mcp_tool(tool_name: str, tool_input: dict) -> dict:
-    """Execute an MCP tool call and return result."""
     try:
         if tool_name == "list_skills":
             items = github_list_dir("skills")
             skill_names = [item["name"] for item in items if item["type"] == "dir"]
-            # Also list user skills
             try:
                 user_items = github_list_dir("skills/user")
                 user_skill_names = [f"user/{item['name']}" for item in user_items if item["type"] == "dir"]
@@ -564,7 +927,6 @@ def handle_mcp_tool(tool_name: str, tool_input: dict) -> dict:
 
         elif tool_name == "get_skill":
             skill_name = tool_input.get("skill_name", "")
-            # Try user skills first, then public
             try:
                 content = github_get_file(f"skills/user/{skill_name}/SKILL.md")
             except Exception:
@@ -615,7 +977,7 @@ def handle_mcp_tool(tool_name: str, tool_input: dict) -> dict:
                 return {"type": "text", "text": "Error: skill_name and content are required"}
             path = f"skills/user/{skill_name}/SKILL.md"
             result = github_push_file(path, content, commit_message)
-            html_url = result.get("content", {}).get("html_url", "")
+            html_url   = result.get("content", {}).get("html_url", "")
             commit_sha = result.get("commit", {}).get("sha", "")[:7]
             return {
                 "type": "text",
@@ -628,11 +990,105 @@ def handle_mcp_tool(tool_name: str, tool_input: dict) -> dict:
                 })
             }
 
+        elif tool_name == "p6_check_auth":
+            has_refresh = bool(_google_tokens.get("refresh_token") or os.environ.get("GOOGLE_REFRESH_TOKEN"))
+            has_client  = bool(GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET)
+            return {
+                "type": "text",
+                "text": json.dumps({
+                    "oauth_configured": has_refresh,
+                    "client_credentials_set": has_client,
+                    "authorize_url": "https://claude-r82h.onrender.com/authorize" if has_client else None,
+                    "status": "ready" if has_refresh else "needs_authorization"
+                })
+            }
+
+        elif tool_name == "p6_run_intake":
+            dry_run = tool_input.get("dry_run", False)
+
+            # Verify auth
+            try:
+                _get_valid_access_token()
+            except Exception as e:
+                return {
+                    "type": "text",
+                    "text": json.dumps({
+                        "status": "error",
+                        "error": "Google Drive not authorized",
+                        "detail": str(e),
+                        "action": "Visit https://claude-r82h.onrender.com/authorize to authorize"
+                    })
+                }
+
+            # Scan all folders
+            all_files = []
+            for folder_name, folder_id in P6_FOLDERS.items():
+                try:
+                    folder_files = drive_list_folder(folder_id, folder_name)
+                    all_files.extend(folder_files)
+                except Exception as e:
+                    pass  # Log but continue with other folders
+
+            # Get existing Notion Drive URLs for deduplication
+            existing_urls = notion_get_existing_drive_urls()
+
+            # Filter to new files only
+            new_files = [f for f in all_files if f["drive_url"] not in existing_urls]
+
+            if not new_files:
+                return {
+                    "type": "text",
+                    "text": json.dumps({
+                        "status": "current",
+                        "message": "P6 pipeline complete — no new files. Library is current.",
+                        "total_scanned": len(all_files),
+                        "already_catalogued": len(existing_urls),
+                        "new_files": 0,
+                        "timestamp": datetime.utcnow().isoformat() + "Z"
+                    })
+                }
+
+            if dry_run:
+                return {
+                    "type": "text",
+                    "text": json.dumps({
+                        "status": "dry_run",
+                        "total_scanned": len(all_files),
+                        "new_files": len(new_files),
+                        "files": [{"name": f["file_name"], "folder": f["folder_name"]} for f in new_files],
+                        "timestamp": datetime.utcnow().isoformat() + "Z"
+                    })
+                }
+
+            # Create Notion records
+            created = []
+            errors  = []
+            for f in new_files:
+                try:
+                    record = notion_create_record(f)
+                    created.append(record)
+                except Exception as e:
+                    errors.append({"file": f["file_name"], "error": str(e)})
+
+            return {
+                "type": "text",
+                "text": json.dumps({
+                    "status": "complete",
+                    "total_scanned": len(all_files),
+                    "new_files_found": len(new_files),
+                    "records_created": len(created),
+                    "errors": len(errors),
+                    "created": created,
+                    "error_details": errors,
+                    "timestamp": datetime.utcnow().isoformat() + "Z"
+                })
+            }
+
         else:
             return {"type": "text", "text": f"Unknown tool: {tool_name}"}
 
     except requests.HTTPError as e:
-        return {"type": "text", "text": f"GitHub fetch error: {e.response.status_code} — {str(e)}"}
+        return {"type": "text", "text": f"HTTP error: {e.response.status_code} — {str(e)}"}
     except Exception as e:
         return {"type": "text", "text": f"Tool error: {str(e)}"}
 
@@ -653,8 +1109,8 @@ def mcp_endpoint():
                 "capabilities": {"tools": {}},
                 "serverInfo": {
                     "name": "etkm-mcp",
-                    "version": "1.1.0",
-                    "description": "ETKM AI Operations Hub — skills, prompts, workflows, arc classification, skill publishing"
+                    "version": "1.2.0",
+                    "description": "ETKM AI Operations Hub — skills, prompts, workflows, arc classification, P6 media intake"
                 }
             }
         })
@@ -696,7 +1152,7 @@ def mcp_sse():
             "params": {
                 "serverInfo": {
                     "name": "etkm-mcp",
-                    "version": "1.1.0"
+                    "version": "1.2.0"
                 }
             }
         })
