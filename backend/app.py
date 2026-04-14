@@ -40,7 +40,7 @@ _dropbox_tokens = {
 }
 
 # Notion Media Library
-NOTION_MEDIA_DB_ID = "711e3a52-1604-4182-ae94-9d23a2960963"
+NOTION_MEDIA_DB_ID = "9d79095fe24a44908fd542922196c58f"
 NOTION_TOKEN       = os.environ.get("NOTION_TOKEN", "")
 
 # P6 Dropbox folder paths — Nathan creates these in Dropbox
