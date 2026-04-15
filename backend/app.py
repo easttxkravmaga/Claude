@@ -63,7 +63,7 @@ def health():
         "service": "etkm-backend",
         "version": "1.3.0",
         "timestamp": datetime.utcnow().isoformat() + "Z",
-        "dropbox_auth": "configured" if _dropbox_tokens.get("refresh_token") else "not_configured"
+        "dropbox_auth": "configured" if (_dropbox_tokens.get("refresh_token") or _dropbox_tokens.get("access_token") or os.environ.get("DROPBOX_ACCESS_TOKEN")) else "not_configured"
     })
 
 
@@ -154,6 +154,12 @@ def _get_dropbox_token() -> str:
 
     refresh_token = _dropbox_tokens.get("refresh_token") or os.environ.get("DROPBOX_REFRESH_TOKEN", "")
     if not refresh_token:
+        # Fall back to access token directly if available
+        fallback = _dropbox_tokens.get("access_token") or os.environ.get("DROPBOX_ACCESS_TOKEN", "")
+        if fallback:
+            _dropbox_tokens["access_token"] = fallback
+            _dropbox_tokens["expires_at"] = datetime.utcnow().timestamp() + 14400
+            return fallback
         raise Exception("Dropbox not authorized. Visit https://claude-r82h.onrender.com/authorize")
 
     resp = requests.post(
