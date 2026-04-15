@@ -128,17 +128,26 @@ def oauth_callback():
 
 
 def _persist_to_render(key: str, value: str):
-    """Write env var to Render so tokens survive redeploys."""
+    """Write env var to Render so tokens survive redeploys. Merges with existing vars."""
     if not RENDER_API_KEY or not RENDER_SERVICE_ID:
         return
     try:
+        # Read existing vars first
+        existing_resp = requests.get(
+            f"https://api.render.com/v1/services/{RENDER_SERVICE_ID}/env-vars",
+            headers={"Authorization": f"Bearer {RENDER_API_KEY}", "Accept": "application/json"},
+            timeout=10
+        )
+        existing = {}
+        if existing_resp.status_code == 200:
+            existing = {e["envVar"]["key"]: e["envVar"]["value"] for e in existing_resp.json()}
+        # Merge
+        existing[key] = value
+        # Write back full set
         requests.put(
             f"https://api.render.com/v1/services/{RENDER_SERVICE_ID}/env-vars",
-            headers={
-                "Authorization": f"Bearer {RENDER_API_KEY}",
-                "Content-Type": "application/json"
-            },
-            json=[{"key": key, "value": value}],
+            headers={"Authorization": f"Bearer {RENDER_API_KEY}", "Content-Type": "application/json"},
+            json=[{"key": k, "value": v} for k, v in existing.items()],
             timeout=10
         )
     except Exception:
