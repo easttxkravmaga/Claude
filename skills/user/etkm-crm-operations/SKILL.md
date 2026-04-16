@@ -1,6 +1,6 @@
 ---
 name: etkm-crm-operations
-version: 1.2
+version: 1.3
 updated: 2026-04-15
 description: >
   The routing brain for all ETKM CRM and automation work. Load this skill whenever
@@ -18,7 +18,7 @@ description: >
 
 # ETKM CRM Operations
 
-**Version:** 1.2
+**Version:** 1.3
 **Established:** 2026-03-29
 **Updated:** 2026-04-15
 **Replaces:** etkm-crm-doctrine, etkm-pipedrive-manus, etkm-make-automation
@@ -87,88 +87,104 @@ when the email sends.
 - Activity trigger → gives access to Activity fields (due date, due time, subject, type)
 - Stage change trigger → gives access to Deal + Person + Activity fields
 
-**Key field to verify in Pipedrive:**
-The Activity due date/time from Calendly — when building Emails 1, 2, 3, and 7 for WF-001,
-confirm the exact label Pipedrive shows for the Calendly-created activity's date and time
-fields. It may appear as "Activity due date" and "Activity due time" or similar. Use whatever
-label Pipedrive shows — do not guess.
+**Note on WF-001:** The transactional emails in WF-001 (booking confirmation, reminders,
+reschedule, cancellation) are now owned by Calendly, which has direct access to booking
+date/time data. Pipedrive merge fields are used only for the Pipedrive Sequence and
+post-trial automations — which do not require date/time fields.
 
 ---
 
 ## SECTION 4: WF-001 AUTOMATION ARCHITECTURE
 
 **Established:** 2026-04-15
-**Status:** Skeleton ready for Pipedrive build. Phase 1 active. Phase 2 planned.
+**Architecture revision:** 2026-04-15 — Calendly/Pipedrive split locked
 
-### Phase 1 — Skeleton (Current Architecture)
+### System Architecture — Division of Responsibility
 
-WF-001 runs entirely on **Pipedrive native automation**. No n8n required for Phase 1.
-No Manus involvement. Manus is deprecated from WF-001 entirely.
+**The rule:** If an email would be wrong or broken without a specific date or time in it,
+Calendly sends it. If the email works regardless of the exact date, Pipedrive sends it.
 
-**Trigger source:** Calendly → Pipedrive native integration
-- Calendly booking creates a Deal + Person record in Pipedrive
-- Booking date/time is passed as a Pipedrive Activity on the deal
-- Deal enters Stage 3 — Free Trial Booked automatically
-
-**All 8 automations and their trigger types:**
-
-| Email | Trigger Type | Timing |
+| Owner | Handles | Why |
 |---|---|---|
-| Email 1 — Booking Confirmation | Deal stage changed → Stage 3 | Immediate |
-| Email 2 — 24-Hour Reminder | Activity due date trigger | 24 hours before Activity due date/time |
-| Email 3 — Morning Of | Activity due date trigger | 8:00 AM on Activity due date |
-| Email 4 — No-Show Recovery | Deal stage changed → No Show | Immediate |
-| Email 5 — Post-Visit Follow | Deal in Stage 4 + 48hr delay + condition check | 48 hours after Stage 4, no movement |
-| Email 6 — Soft Follow | Deal stage changed → Stage 6 | Immediate |
-| Email 7 — Reschedule Ack | Activity updated (due date changed) | Immediate |
-| Email 8 — Cancellation Recovery | Activity deleted/cancelled | Immediate |
+| Calendly | Transactional emails requiring live booking data | Has the date/time, confirmation #, and reschedule/cancel events |
+| Pipedrive Sequence | Relationship emails — value-first, no dates needed | Stage-aware, voice-heavy, fires on deal creation |
+| Pipedrive Automations | Post-trial follow-up — stage-triggered, no dates | Driven by what happened at the visit, not when it was |
 
-**Date trigger rule — Emails 2 and 3:**
-These fire against the Pipedrive Activity due date directly. They are NOT delay steps
-from Email 1. They are independent date-triggered automations. Both include a condition
-check: deal must still be in Stage 3 when they fire. If the deal has moved (no-show,
-attended, etc.), the automation exits without sending.
+---
 
-**Reschedule handling — Email 7:**
-When Calendly reschedules a booking, it updates the Activity due date on the Pipedrive
-deal. Emails 2 and 3 re-evaluate against the updated Activity date automatically — no
-manual reset needed. Test this behavior with a live reschedule before marking live.
+### Calendly Owns — Transactional Emails (5)
 
-**Cancellation handling — Email 8:**
-Depends on Calendly passing a cancellation event to Pipedrive as an Activity deletion
-or status change. Test with a live cancellation before marking live.
+These fire from Calendly's own workflow automation. They are on-brand voice but
+fundamentally transactional. Calendly sends them because it holds the live booking data.
 
-**Automations 7 and 8 are test-dependent.** If Calendly does not pass reschedule/
-cancellation events natively to Pipedrive, a lightweight n8n webhook may be needed
-for those two only.
+| Email | Trigger | Purpose |
+|---|---|---|
+| Booking Confirmation | Booking created | Logistics + date/time/location + what to expect |
+| 24-Hour Reminder | 24 hours before event | Confirm attendance, logistics reinforcement |
+| Morning-Of Reminder | Day of event (morning) | Final prep, confidence builder |
+| Reschedule Confirmation | Booking rescheduled | Acknowledge new date/time, maintain relationship |
+| Cancellation Acknowledgment | Booking cancelled | Acknowledge, soft recovery, leave door open |
 
-**Arc classification — Phase 1:**
-All leads receive the Default arc. No classification logic runs. Every prospect gets
-the same email sequence regardless of Q&A responses. Arc variants in Emails 2–6
-are inactive.
+**Build sequence:** Write copy → Nathan approves → load into Calendly workflow automation.
+No Pipedrive involvement for these five emails.
+
+---
+
+### Pipedrive Sequence Owns — Relationship Emails (2)
+
+These fire from the Pipedrive native Sequence feature, triggered on deal creation.
+No specific date/time required — they work regardless of when the trial is scheduled.
+
+| Email | Day | Trigger | Purpose |
+|---|---|---|---|
+| PDF + Welcome | Day 0 | Deal creation (P1-S3) | Deliver lead magnet, set expectations, build identity |
+| Pre-Class Nurture | Day 1–2 | Sequence delay | Address objections ("What if I can't keep up?") |
+
+**Arc classification applies here in Phase 2.** In Phase 1, all leads receive the same
+sequence. Arc-specific variants are written and ready but inactive until Phase 2.
+
+**Trigger source:** Calendly → Pipedrive native integration creates Deal + Person record.
+Deal enters P1-S3 (Free Trial Booked). Sequence fires on deal creation.
+
+---
+
+### Pipedrive Automations Own — Post-Trial (3)
+
+These are stage-triggered automations. No dates needed. They respond to what happened
+at the trial visit, not when it was.
+
+| Automation | Trigger | Purpose |
+|---|---|---|
+| Trial Attended Follow-Up | Deal moves to P1-S4 (Attended) | Strike while warm — next step, enrollment offer |
+| No-Show Recovery | Deal moves to P1-S5 (No Show) | Re-engage, lower barrier, second chance |
+| Needs More Time Nurture | Deal stage or label condition | Long-burn nurture for the undecided |
+
+These automations run from Pipedrive native. Voice-driven. No merge field date/time
+references required.
+
+---
 
 ### Phase 2 — Arc Classification (Future)
 
 When ready:
 1. Build n8n workflow: reads Calendly Q&A note → calls Claude API → writes ETKM Arc
    Type field to Pipedrive Person record
-2. Activate arc variant logic in Pipedrive for Emails 2–6
-3. Activate Q&A conditional block in Email 1
-4. All arc variant copy already exists in WF-001 docs — no rewrite needed
+2. Activate arc variant logic in Pipedrive Sequence for Day 0 and Day 1–2 emails
+3. All arc variant copy already exists in WF-001 docs — no rewrite needed
 
 **Arc signal map, variant copy, and classification prompt live in:**
 WF-001 Implementation Guide (Google Drive / AI Resources)
+
+---
 
 ### Open Items — WF-001
 
 | ID | Item | Blocks |
 |---|---|---|
-| D-02 | Google Drive PDF link for "Before You Walk In" | Email 1 body — insert when Nathan provides |
-| T-01 | Test Email 2 date trigger fires 24hr before activity | Automation 2 |
-| T-02 | Test Email 3 fires at 8am on activity date | Automation 3 |
-| T-03 | Test reschedule: does Calendly update existing Activity or create new one? | Automation 7 |
-| T-04 | Test cancellation: does Pipedrive detect Calendly cancellation natively? | Automation 8 |
-| TBD | Define long-term nurture destination (label, stage, or list) | Automations 4, 6, 8 delay steps — logged in ETKM Tasks (Notion) |
+| D-02 | Google Drive PDF link for "Before You Walk In" | Pipedrive Sequence Day 0 email — insert when Nathan provides |
+| T-01 | Confirm Calendly→Pipedrive integration fires on booking | Deal creation trigger for Pipedrive Sequence |
+| T-02 | Test Calendly reschedule/cancellation events | Confirm Calendly fires those workflow emails correctly |
+| T-03 | Test post-trial automations fire on stage move | P1-S4 (Attended) and P1-S5 (No Show) triggers |
 
 ---
 
@@ -248,8 +264,8 @@ These rules override everything. Claude and automation never deviate without Nat
 - Web form leads create a Person record only — no Deal until Calendly booking.
 - Group Inquiry field (Yes/No, deal-level) must be checked by all automated email sequences. Exclude deals where Group Inquiry = Yes.
 - Do not modify the Calendly intake flow during active build phases without Nathan's authorization.
-- All automation runs through Pipedrive native or n8n. Make.com is fully deprecated — do not reference or rebuild in Make.
-- Manus is no longer the execution owner for WF-001. Pipedrive native automation handles WF-001 Phase 1 entirely.
+- All automation runs through Calendly (transactional), Pipedrive native (sequences + post-trial), or n8n (webhooks + arc classification). Make.com is fully deprecated.
+- Manus is no longer involved in WF-001. Pipedrive native and Calendly handle WF-001 entirely.
 
 ### Arc Classification
 
@@ -267,9 +283,9 @@ in Notion. Key facts:
 
 ### Claude vs Automation — Division of CRM Work
 
-| Claude | Pipedrive / n8n |
+| Claude | Calendly / Pipedrive / n8n |
 |---|---|
-| Write all email copy for sequences | Execute sends via Pipedrive native automation |
+| Write all email copy for sequences | Execute sends via Calendly workflow or Pipedrive native |
 | Design pipeline/stage/label architecture | Create pipelines/stages/labels in Pipedrive |
 | Write arc classification prompts | Deploy classification via n8n + Claude API |
 | Produce automation specs and trigger logic | Build automations implementing the spec |
@@ -326,12 +342,14 @@ Before delivering any CRM-related work:
 - [ ] No pipeline structure, stage name, or arc label invented without Nathan's authorization
 - [ ] No Make.com references in any new automation spec — n8n only
 - [ ] Pipedrive automation email specs use reference notation for merge fields (not typed syntax)
-- [ ] WF-001 Phase 1 specs do not include Manus as execution owner
+- [ ] WF-001 transactional emails (booking confirm, reminders, reschedule, cancellation) are specified for Calendly — not Pipedrive
+- [ ] WF-001 Pipedrive Sequence scope is Day 0 (PDF+welcome) + Day 1-2 (pre-class nurture) only
 
 ---
 
 ## SECTION 8: CHANGELOG
 
-- V1.2 — 2026-04-15 — Added Section 3: Pipedrive Merge Fields (UI picker, not typed syntax; reference notation explained; Activity date/time field verification note). Added Section 4: WF-001 Automation Architecture (Phase 1 skeleton — Pipedrive native only, no n8n for Phase 1; all 8 automation trigger types documented; date trigger rules for Emails 2 and 3; reschedule and cancellation handling; Phase 2 arc classification plan; open items tracker). Manus deprecated from WF-001 — updated throughout. Automation non-negotiable rule updated. Claude vs Automation table updated (Manus column replaced). Quality gates updated (2 new gates added). Section numbering updated.
-- V1.1 — 2026-04-01 — Make.com fully removed from stack. All automation references updated to n8n. Description trigger phrases updated. Section 2 load triggers updated. Section 3 Pipelines rule updated. Section 3 Arc Classification updated. Section 3 Claude vs Manus table updated. P1→P2 transition note updated. Automation non-negotiable rule added (n8n only, Make deprecated). Quality gate added (no Make references). No logic or copy changes.
-- V1.0 — 2026-03-29 — Initial build. Replaces etkm-crm-doctrine (v1.4), etkm-pipedrive-manus, etkm-make-automation. Pipeline and stage data migrated to ETKM CRM Architecture database in Notion (40 records). Label mapping in Arc/Segment/CRM Crosswalk reference page. Skill contains lifecycle rules, transition logic, non-negotiable CRM rules, classification routing, and Claude/Manus division only.
+- V1.3 — 2026-04-15 — WF-001 architecture updated to Calendly/Pipedrive split. Section 4 rewritten: Calendly owns 5 transactional emails (booking confirm, 24hr/morning reminders, reschedule, cancellation); Pipedrive Sequence owns Day 0 PDF+welcome + Day 1-2 pre-class nurture; Pipedrive Automations own post-trial (Attended, No-Show, Needs More Time). Section 3 WF-001 merge field note updated to reflect Calendly ownership of date/time emails. Automation non-negotiable rule updated (Calendly added). Claude vs Automation table updated. Two new quality gates added. Open items tracker updated.
+- V1.2 — 2026-04-15 — Added Section 3: Pipedrive Merge Fields. Added Section 4: WF-001 Automation Architecture (Phase 1 skeleton — Pipedrive native). Manus deprecated from WF-001.
+- V1.1 — 2026-04-01 — Make.com fully removed. All automation references updated to n8n.
+- V1.0 — 2026-03-29 — Initial build. Replaces etkm-crm-doctrine, etkm-pipedrive-manus, etkm-make-automation.
