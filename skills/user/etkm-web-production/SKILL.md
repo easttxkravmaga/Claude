@@ -3,525 +3,365 @@ name: etkm-web-production
 version: 1.0
 updated: 2026-04-24
 description: >
-  Load this skill for ANY HTML/CSS production task for ETKM.
-  Triggers: building WordPress page sections, landing pages, email
-  templates, lead magnet PDFs, HFCM injections, site header/footer,
-  form builds, or any HTML/CSS code that will be installed on the
-  ETKM site or sent to students. This is the governing standard.
-  Do NOT write ETKM HTML/CSS without this skill loaded.
-  Companion files: CSS-SYSTEM.md (tokens), COMPONENT-LIBRARY.md
-  (components), OUTPUT-STANDARDS.md (per-type rules).
+  Load this skill for ANY task that produces HTML or CSS for ETKM.
+  Triggers: building WordPress page sections, landing pages, lead
+  magnets, email templates, HFCM injection code, or any web deliverable.
+  This skill governs the build protocol. Load CSS-SYSTEM.md for token
+  reference. Load COMPONENT-LIBRARY.md for component HTML/CSS patterns.
+  All four files work together — never load one without the others.
 ---
 
 # ETKM Web Production — Governing Build Protocol
 
 **Version:** 1.0
-**Last Updated:** 2026-04-24
+**Built:** 2026-04-24
+**Research basis:** Gemini Deep Research — HTML/CSS Production Standards 2026
+**Depends on:**
+  - etkm-web-production/CSS-SYSTEM (all token values)
+  - etkm-web-production/COMPONENT-LIBRARY (all component patterns)
+  - etkm-web-production/OUTPUT-STANDARDS (output-type specific rules)
 
 ---
 
-## SECTION 1 — BEFORE WRITING A SINGLE LINE OF CODE
+## PROTOCOL LAW — NON-NEGOTIABLE RULES
 
-### Step 1 — Classify the output type
+### Brand Rules (from etkm-brand-kit v3.1)
+- Red is #CC0000 only — accessed via var(--color-brand-red)
+- #FF0000 is permanently retired — never write it
+- Red buttons and red backgrounds: color: #fff !important always
+- No gradients anywhere in the system
+- No colors outside: #000000, #FFFFFF, #CC0000, #575757, #BBBBBB
+- Images: filter: grayscale(100%) sitewide — applied in CSS-SYSTEM
+- Headlines: Montserrat 900 — var(--font-family-headline)
+- Body: Inter 400 — var(--font-family-body)
+- Swiss layout: asymmetric, high contrast, left-aligned default
+- Centered text: hero headlines and step numbers only
 
-```
-What am I building?
-│
-├── Code injected into WordPress via HFCM or Additional CSS
-│   → OUTPUT TYPE: WordPress Page Section
-│
-├── A full standalone conversion page
-│   → OUTPUT TYPE: Landing Page
-│
-├── HTML email for Pipedrive sequences or broadcast
-│   → OUTPUT TYPE: Email Template
-│   CRITICAL: Email CSS rules CONTRADICT web CSS rules.
-│   Never mix the two.
-│
-└── PDF rendered via HTML → Playwright
-    → OUTPUT TYPE: Lead Magnet PDF
-    CRITICAL: PDF CSS differs from web CSS.
-```
+### CSS Rules
+- Never write a raw hex value — always use a token
+- Never write an arbitrary px value — always use a spacing token
+- Never write a raw font-size — use type scale token or clamp()
+- All CSS is mobile-first: base = mobile, min-width adds desktop
+- Single to multi-column transitions: minimum 768px breakpoint
+- Never use positive tabindex integers
+- Only animate transform and opacity (GPU-composited)
+- Never animate width, height, margin, padding, top, left
 
-### Step 2 — Map components before writing code
-
-Name every component from COMPONENT-LIBRARY.md the page needs.
-Build the component list first. Never start with code.
-
-### Step 3 — Load the token system
-
-Every CSS value comes from CSS-SYSTEM.md.
-Never write raw hex, arbitrary px, or hardcoded color.
-
-### Step 4 — Write structure before style
-
-HTML skeleton first. Semantic elements. Correct headings. ARIA.
-Verify structure before writing any CSS.
-
-### Step 5 — Write CSS mobile-first
-
-Base styles = mobile. min-width queries add desktop behavior.
-Single → multi-column at 768px minimum.
-
-### Step 6 — Run QC before handoff
-
-Every output runs Section 5 QC checklist before delivery.
+### HTML Rules
+- WordPress owns H1 — injected HTML starts at H2
+- Never inject main, global header, global footer (GP owns these)
+- section requires aria-labelledby pointing to heading ID
+- Every img requires: width, height, alt attributes
+- Interactive elements must be native: button, a, input
+- Never use div onclick or span onclick
+- LCP image: fetchpriority="high" — never loading="lazy"
+- All below-fold images: loading="lazy"
 
 ---
 
-## SECTION 2 — HTML PRODUCTION STANDARDS
+## STEP 1 — CLASSIFY THE OUTPUT TYPE
 
-### 2.1 WordPress Injection Rules
+Before writing a single line of code, identify which output type.
 
-NEVER duplicate — WordPress/GeneratePress owns these:
-- `<html>`, `<head>`, `<body>`
-- `<main>`
-- Global `<header role="banner">`
-- Global `<footer role="contentinfo">`
-- `<h1>` — WordPress page title owns H1
+WordPress Page Section:
+- Code installed into WordPress via HFCM or Additional CSS
+- Must integrate with GeneratePress DOM
+- Rules: OUTPUT-STANDARDS § WordPress/HFCM
 
-**Every injected HTML partial starts at `<h2>`.**
+Landing Page:
+- Standalone conversion page (trial signup, program, event, lead magnet)
+- StoryBrand sequence, CTA in hero + plan + final section
+- Rules: OUTPUT-STANDARDS § Landing Pages
 
-### 2.2 Semantic Element Decision Tree
+Email Template:
+- HTML email for Pipedrive sequences or campaigns
+- NO Grid, NO Flexbox, table layout, MSO conditionals, inline CSS
+- Rules: OUTPUT-STANDARDS § Email Templates
 
-```
-Is content independently distributable/syndicatable?
-  YES → <article>
-
-Is content tangentially related, removable without
-breaking primary narrative?
-  YES → <aside>
-
-Does content group thematically related information
-requiring a heading?
-  YES → <section aria-labelledby="heading-id">
-
-Purely for layout/styling/CSS wrapper?
-  YES → <div>
-
-NEVER use <section> as a div.
-NEVER use <div> for thematically grouped content.
-```
-
-### 2.3 Heading Hierarchy
-
-```
-H1 — WordPress owns this. Never write it.
-H2 — First heading in every injected section
-H3 — Within an H2 section
-H4 — Rare. Only when genuinely needed.
-
-Never skip levels. H2 → H4 is wrong.
-Every <section> must have an <h2>.
-Use CSS for visual size — never choose heading level for size.
-```
-
-### 2.4 Accessibility (WCAG 2.1 AA)
-
-Required on every build:
-
-```html
-<!-- Skip nav — first focusable element in DOM -->
-<a href="#main-content" class="skip-nav">Skip to main content</a>
-
-<!-- Section with landmark -->
-<section aria-labelledby="section-id">
-  <h2 id="section-id">Section Title</h2>
-</section>
-
-<!-- Images -->
-<img src="..." alt="Description" width="800" height="600">
-<img src="..." alt="" width="400" height="300"> <!-- decorative -->
-
-<!-- Icon buttons -->
-<button type="button" aria-label="Close menu">
-  <svg aria-hidden="true">...</svg>
-</button>
-
-<!-- Current page -->
-<a href="/programs" aria-current="page">Programs</a>
-```
-
-Rules:
-- `:focus-visible` for focus rings — never `:focus` alone
-- All interactive elements minimum 44×44px
-- tabindex: only 0 or -1. Never positive integers.
-- aria-hidden: never on elements with focusable children
-- aria-live="polite" on form error containers
-- aria-expanded on toggle buttons
-- aria-controls pointing to controlled element
-
-### 2.5 Form Standards
-
-Every field requires:
-```html
-<label for="input-id">Label Text</label>
-<input type="text" id="input-id" name="field"
-  autocomplete="given-name" required>
-```
-
-Required autocomplete values:
-- given-name, family-name, name
-- email, tel
-- street-address, postal-code
-
-Native HTML5 validation before JavaScript:
-- required, type="email", minlength, maxlength, pattern
-
-Submit: `<button type="submit">` — never `<input type="submit">`
-method="POST" for all lead capture. method="GET" for search only.
-
-### 2.6 Image Standards
-
-```html
-<!-- Standard image -->
-<img src="image.jpg" alt="Description"
-  width="800" height="600"
-  loading="lazy" decoding="async">
-
-<!-- LCP hero image — different rules -->
-<img src="hero.jpg" alt=""
-  width="1920" height="1080"
-  fetchpriority="high" decoding="async">
-```
-
-Critical rules:
-- loading="lazy" NEVER on above-fold/hero images (kills LCP)
-- fetchpriority="high" on the single LCP image only
-- width and height ALWAYS — prevents CLS
-- Hero images: <img> tag — NEVER CSS background-image
-- grayscale(100%) applied globally via CSS-SYSTEM.md
-- class="no-grayscale" for logos and icons only
+Lead Magnet PDF:
+- PDF rendered via HTML to Playwright
+- printBackground:true, Base64 fonts, print-color-adjust:exact
+- Rules: OUTPUT-STANDARDS § Lead Magnet PDF
 
 ---
 
-## SECTION 3 — CSS PRODUCTION STANDARDS
+## STEP 2 — MAP COMPONENTS BEFORE CODING
 
-### 3.1 The Token Law (No Exceptions)
+Never start writing HTML cold. Map structure first.
 
-```
-NEVER in component CSS:
-  ✗ Any hex color (#CC0000, #000, #fff)
-  ✗ Any raw px font-size (42px, 16px)
-  ✗ Any arbitrary spacing (80px, 24px, 1.5rem)
-  ✗ Any hardcoded font-family string
-  ✗ #FF0000 — permanently retired
+1. List every section the output needs
+2. Match each to COMPONENT-LIBRARY
+3. Sections without match: define using token system + BEM first
+4. Note StoryBrand sequence for landing pages
+5. Only after map is complete: begin writing HTML
 
-ALWAYS instead:
-  ✓ var(--color-brand-red)       not #CC0000
-  ✓ var(--text-4xl)              not 4.209rem
-  ✓ var(--space-4)               not 2rem
-  ✓ var(--font-family-headline)  not 'Montserrat'
+Landing page StoryBrand sequence:
+1. Site Navigation (Component 12)
+2. Hero Section (Component 3 or 4)
+3. Stakes/Problem Band (dark section)
+4. Guide Introduction (Component 6)
+5. Three-Step Plan (Component 5 — REQUIRED)
+6. CTA Band (Component 8 — after plan)
+7. Testimonials (Component 9)
+8. Final CTA Band (Component 8 — repeat)
+9. Lead Capture Form (Component 11 — optional)
+10. Page Footer (Component 13)
 
-ONLY legitimate raw color:
-  color: #fff !important  on red buttons/backgrounds
-  This is a brand rule, not a token bypass.
-```
+---
 
-### 3.2 BEM Naming
+## STEP 3 — BUILD SEQUENCE
 
-```
-Block:    .hero
-Element:  .hero__title      (double underscore)
-Modifier: .hero--dark       (double dash)
+1. HTML SKELETON FIRST
+   Semantic HTML structure completely
+   BEM class names applied
+   H2 starts heading hierarchy (not H1)
+   NO CSS yet
 
-✓ Elements FLAT to block: .hero__title
-✗ Double nesting: .hero__content__title  (WRONG)
+2. VERIFY STRUCTURE
+   Heading hierarchy correct?
+   Every section has aria-labelledby?
+   Every interactive element native HTML?
+   Every image has width, height, alt?
+   NO to any: fix before proceeding
 
-✓ Modifier WITH base: class="hero hero--dark"
-✗ Modifier alone:     class="hero--dark"  (WRONG)
-```
+3. TOKEN-BASED CSS
+   Reference CSS-SYSTEM for every value
+   Mobile styles first — no media query
+   min-width queries scale up
+   No raw values — tokens only
 
-### 3.3 WordPress Cascade
+4. RESPONSIVE BEHAVIOR
+   Single column at 375px — nothing overflows
+   768px breakpoint for multi-column
+   All interactive elements 44x44px minimum
 
-Loading order:
-```
-GeneratePress base
-  → Child theme
-    → Additional CSS (Customizer)
-      → HFCM wp_head   ← Your CSS
-        → HFCM wp_footer
-```
+5. INTERACTIVE STATES
+   hover: transform + color transitions only
+   focus-visible: 2px outline, 3px offset
+   active: transform back to baseline
+   disabled: muted colors, cursor not-allowed
 
-Override GP without !important — match specificity:
-```css
-#content .my-component h2 { ... }
+6. RUN QC CHECKLIST
+   Every item passes before handoff
 
-/* Or use @layer */
-@layer components { .hero { ... } }
-```
+---
 
-Full-width breakout (CSS Grid method — always use this):
-```css
-.entry-content {
+## STEP 4 — WORDPRESS/HFCM INJECTION RULES
+
+HFCM hook locations:
+
+wp_head — CSS style blocks, font preloads
+generate_before_header — site-wide announcement bars
+generate_after_header — secondary nav, breadcrumbs
+wp_body_open — tag managers, chat widgets
+generate_before_content — page-specific hero sections
+generate_after_content — CTAs, related content
+generate_before_footer — pre-footer CTA bands
+wp_footer — scripts with defer, analytics
+
+CSS injection rules:
+- Component CSS: style block in wp_head, scoped to wrapper class
+- Global CSS: WordPress Additional CSS (Customizer)
+- Never link rel="stylesheet" via HFCM — use style blocks
+- Always scope to component wrapper:
+  .etkm-hero { } and .etkm-hero .hero__title { }
+  NEVER bare h2 { } — bleeds into theme
+
+Script rules:
+- DOM-dependent scripts: wp_footer with defer
+- Analytics: wp_head or wp_body_open with async
+- Never block rendering with synchronous scripts in wp_head
+
+GeneratePress integration:
+- Container: .container — override via #page .container
+- Content wrapper: .entry-content — reset margins for components
+- Full-width breakout CSS Grid method:
+
+.entry-content--breakout {
   display: grid;
   grid-template-columns:
     minmax(var(--space-4), 1fr)
     minmax(auto, var(--container-xl))
     minmax(var(--space-4), 1fr);
 }
-.entry-content > * { grid-column: 2; }
-.entry-content > .full-bleed { grid-column: 1 / -1; }
-```
+.entry-content--breakout > * { grid-column: 2; }
+.entry-content--breakout > .full-bleed { grid-column: 1 / -1; }
 
-### 3.4 Mobile-First Breakpoints
-
-```css
-/* Base: mobile 320px — no query */
-@media (min-width: 480px)  { /* large phone */ }
-@media (min-width: 768px)  { /* tablet — column changes here */ }
-@media (min-width: 1024px) { /* laptop */ }
-@media (min-width: 1280px) { /* desktop */ }
-@media (min-width: 1536px) { /* wide */ }
-```
-
-Always min-width. Never max-width.
-
-### 3.5 Critical CSS Gotchas
-
-```css
-/* Flex overflow fix — always pair these */
-.flex-child {
-  flex: 1;       /* = flex: 1 1 0, not flex: 1 1 auto */
-  min-width: 0;  /* REQUIRED — prevents text overflow */
-}
-
-/* Card grid — auto-fit not auto-fill */
-grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-
-/* Viewport height — svh not vh */
-.hero {
-  min-height: 100vh;    /* fallback */
-  min-height: 100svh;   /* correct — excludes browser chrome */
-}
-```
-
-### 3.6 Animation Rules
-
-```
-Only animate (GPU-composited):
-  ✓ transform  ✓ opacity
-
-Never animate (triggers layout):
-  ✗ width  ✗ height  ✗ margin  ✗ padding  ✗ top/left
-
-Durations:
-  100ms — micro-interactions
-  200ms — state changes (hover, focus)
-  300ms — UI transitions
-```
+Specificity override without !important:
+#content .etkm-component { }
 
 ---
 
-## SECTION 4 — WORDPRESS/HFCM DEPLOYMENT
+## STEP 5 — PRE-SHIP QC CHECKLIST
 
-### 4.1 Injection Locations
+All items binary: PASS or FAIL. One FAIL = blocked delivery.
 
-| Location | Hook | Use For |
-|---|---|---|
-| `<head>` | wp_head | CSS, font preloads |
-| Before header | generate_before_header | Announcement bars |
-| After header | generate_after_header | Hero sections |
-| Before content | generate_before_content | Page banners |
-| After content | generate_after_content | CTA sections |
-| Before footer | generate_before_footer | Newsletter signups |
-| `</body>` | wp_footer | JavaScript, analytics |
+UNIVERSAL (all output types):
+[ ] No H1 in injected HTML — starts at H2
+[ ] No raw hex in CSS — grep # returns zero (except comments)
+[ ] No #FF0000 anywhere — grep confirms
+[ ] No gradients — grep gradient returns zero
+[ ] .btn--primary has color: #fff
+[ ] Every img has width, height, alt
+[ ] No div onclick — native elements only
+[ ] All interactive elements show focus-visible outline
+[ ] All clickable elements 44x44px minimum
+[ ] Layout correct at 375px — no horizontal overflow
+[ ] No Tier 1 primitive tokens in component CSS
 
-### 4.2 Script Loading
+WORDPRESS PAGE SECTION:
+[ ] No main, global header, global footer injected
+[ ] Every section has aria-labelledby
+[ ] All CSS scoped to component wrapper class
+[ ] Scripts in wp_footer with defer
+[ ] No unscoped bare element selectors
+[ ] Hero image: img with fetchpriority="high" not CSS background
 
-```html
-<!-- defer: after HTML parsed, in order — use for component JS -->
-<script defer src="component.js"></script>
+LANDING PAGE:
+[ ] StoryBrand sequence: Hero, Stakes, Guide, Plan, CTA Band, Testimonials, Final CTA
+[ ] Plan section has exactly 3 steps
+[ ] Primary CTA in Hero + after Plan + Final CTA (minimum 3 placements)
+[ ] Headline + CTA visible at 375px without scrolling
+[ ] All multi-column layouts single column below 768px
+[ ] Form inputs and body text 16px minimum (prevents iOS zoom)
+[ ] Hero image: img with fetchpriority="high"
 
-<!-- async: immediately on download — ONLY for analytics -->
-<script async src="analytics.js"></script>
-```
+EMAIL TEMPLATE:
+[ ] DOCTYPE is XHTML 1.0 Transitional
+[ ] Zero display: grid declarations
+[ ] Zero display: flex declarations
+[ ] Structure uses table elements
+[ ] MSO conditional tables present
+[ ] All layout/spacing/typography inlined
+[ ] All img use absolute https:// URLs
+[ ] All img have display: block
+[ ] Bulletproof VML button for Outlook
+[ ] Email container max-width 600px
+[ ] Hidden preheader text present
+[ ] Dark mode @media (prefers-color-scheme: dark) present
+[ ] Web fonts have system font fallback stack
 
-### 4.3 WordPress Body Classes for CSS Targeting
-
-```css
-.page-id-42 .hero { ... }           /* specific page */
-.home .hero { min-height: 100svh; } /* front page */
-.logged-in .admin-notice { ... }    /* logged-in users */
-```
-
----
-
-## SECTION 5 — PRE-SHIP QC CHECKLIST
-
-Binary: Pass ✅ or Fail ❌. One ❌ blocks delivery.
-
-### Universal (All Types)
-
-```
-STRUCTURE
-[ ] No <h1> in injected HTML
-[ ] Heading levels sequential, no skipped ranks
-[ ] Every <section> has aria-labelledby
-[ ] No <main>/global <header>/global <footer> injected
-[ ] Every <img> has alt attribute
-[ ] Every <img> has width and height attributes
-
-ACCESSIBILITY
-[ ] All interactive elements are native HTML
-[ ] No <div onclick> or <span onclick>
-[ ] All interactive elements minimum 44px touch target
-[ ] :focus-visible on all interactive elements
-[ ] No positive tabindex integers
-[ ] aria-hidden never on elements with focusable children
-[ ] Every form input has explicit <label for="id">
-[ ] Every form input has autocomplete attribute
-
-CSS
-[ ] Zero raw hex values in CSS
-[ ] Zero arbitrary pixel values
-[ ] All colors use var(--color-*) tokens
-[ ] All spacing uses var(--space-*) or semantic tokens
-[ ] All font-sizes use var(--text-*) or clamp()
-[ ] No #FF0000 anywhere
-[ ] Animations only on transform and opacity
-
-MOBILE
-[ ] Renders correctly at 375px viewport
-[ ] No horizontal scroll
-[ ] Touch targets minimum 44×44px
-[ ] Body text minimum 16px
-[ ] Multi-column stacks to single below 768px
-[ ] 100svh used for full-height elements
-
-BRAND
-[ ] Only ETKM 5 colors (#000, #FFF, #CC0000, #575757, #BBBBBB)
-[ ] No gradients
-[ ] Red buttons have color: #fff !important
-[ ] Images have grayscale(100%) (or no-grayscale for logos)
-[ ] Montserrat for H1-H3, Inter for body
-```
-
-### WordPress Page Section
-
-```
-[ ] CSS scoped to component wrapper (no theme bleed)
-[ ] Full-bleed uses CSS Grid method (not negative margins)
-[ ] GeneratePress variable mapping present
-[ ] Correct HFCM injection location
-[ ] JS uses defer in wp_footer
-[ ] CSS in wp_head <style> block (not inline style attributes)
-```
-
-### Landing Page
-
-```
-[ ] Hero is <img fetchpriority="high"> not CSS background
-[ ] Hero img has width and height attributes
-[ ] StoryBrand sequence: Hero→Stakes→Guide→Plan→CTA→Proof→CTA
-[ ] Three-step plan has exactly 3 steps
-[ ] ETKM steps verbatim (see Section 7)
-[ ] Primary CTA in: hero, after plan, final section
-[ ] Single column below 768px
-[ ] Above fold 375px: headline + subhead + CTA visible
-[ ] Skip nav is first focusable element
-```
-
-### Email Template
-
-```
-[ ] DOCTYPE: XHTML 1.0 Transitional
-[ ] Max-width 600px on container
-[ ] Layout: HTML tables only (no Grid, no Flexbox)
-[ ] MSO conditional comments around table layout
-[ ] Critical CSS inlined on elements
-[ ] CTA: bulletproof VML table technique
-[ ] All images: absolute https:// URLs
-[ ] All images: display: block
-[ ] Preheader text present and visually hidden
-[ ] Dark mode meta tags present
-[ ] No position: absolute/relative
-[ ] No external <link> stylesheets
-```
-
-### Lead Magnet PDF
-
-```
-[ ] @page rule specifies size (8.5in 11in or 210mm 297mm)
-[ ] Playwright printBackground: true
+LEAD MAGNET PDF:
+[ ] @page size declared (8.5in 11in or 210mm 297mm)
+[ ] Playwright config has printBackground: true
 [ ] -webkit-print-color-adjust: exact !important present
-[ ] print-color-adjust: exact !important present (BOTH required)
-[ ] All image URLs absolute https://
-[ ] Fonts loaded via CDN or Base64 embedded
-[ ] break-inside: avoid on logical containers
-[ ] orphans: 3 and widows: 3 on paragraphs
-[ ] Playwright margin in API payload, not CSS body
-```
+[ ] print-color-adjust: exact !important present
+[ ] Fonts embedded as Base64 data URIs
+[ ] All images use https:// or data: URIs
+[ ] Major content blocks have break-inside: avoid
+[ ] orphans: 3; widows: 3; on paragraphs
+[ ] All colored sections have explicit background-color
 
 ---
 
-## SECTION 6 — AI FAILURE PREVENTION REFERENCE
+## STEP 6 — COMMON FAILURES REFERENCE
 
-| Failure | Prevention Rule | QC Check |
-|---|---|---|
-| Raw hex in CSS | Token law — no hex ever | Grep `#[0-9A-Fa-f]` in CSS |
-| `#FF0000` used | Token enforces `#CC0000` | Grep `FF0000` |
-| Multiple H1s | Injected HTML starts at H2 | Count H1 elements |
-| Divitis | Semantic decision tree | Check section/article use |
-| Missing alt | alt required on every img | Check all img tags |
-| No width/height | CLS rule — both always | Check all img tags |
-| Lazy on hero | Hero = fetchpriority="high" | Check first img |
-| CSS background hero | img tag rule — LCP | Check hero section |
-| flex:1 overflow | Always pair with min-width:0 | Inspect flex children |
-| auto-fill confusion | auto-fit for card grids | Check repeat() |
-| Gradient added | Prohibited — brand-kit | Grep `gradient` |
-| Wrong viewport unit | 100svh with 100vh fallback | Check min-height |
-| Positive tabindex | 0 or -1 only | Grep `tabindex="[1-9]` |
-| aria-hidden on button | Never on focusable elements | Check aria-hidden |
-| No autocomplete | Required on user data fields | Check all inputs |
-| No label | for/id explicit association | Check label pairs |
-| BEM double nesting | Elements flat to block | Check `__.*__` |
-| Email uses Flexbox | Tables only in email | Grep `flex` in email |
-| PDF background stripped | printBackground: true | Check API payload |
-| PDF print-color missing | Both prefixes required | Check print CSS |
-| Arbitrary z-index | Max z-index: 100 | Reject z-index > 100 |
+Failure | Prevention | QC Check
+H1 injected | Always start at H2 | Grep h1
+Raw hex in CSS | Tokens only | Grep # in CSS
+#FF0000 used | Token system | Grep FF0000
+Missing image dimensions | Template w+h | Check every img
+CSS background hero kills LCP | HTML img + fetchpriority | Inspect hero
+Flexbox in email | Table-only | Grep flex in email CSS
+Gradient in design | Prohibited | Grep gradient
+Arbitrary px spacing | Spacing token system | Grep px values
+Positive tabindex | Never use positive | Grep tabindex=[1-9]
+div onclick | Native button only | Inspect interactive
+Missing focus styles | focus-visible in global CSS | Tab through page
+Touch target under 44px | min-height: 44px on all interactive | DevTools
+No aria-labelledby | Required on every section | Check sections
+flex:1 overflow | min-width: 0 on flex children | Inspect flex
+Missing autocomplete | Required on all user data inputs | Check inputs
+PDF backgrounds missing | print-color-adjust: exact | Render test PDF
+Fonts to Times New Roman | Base64 embed fonts for PDF | Visual check
+lazy on LCP image | fetchpriority="high" on hero | Check hero img
+Double BEM nesting | .block__element only never __element__ | Review class names
+!important abuse | Utility overrides only | Review !important
 
 ---
 
-## SECTION 7 — ETKM BRAND CONSTANTS
+## DECISION TREES
 
-Colors (5 only):
-```
-#000000  Black   — backgrounds, text
-#FFFFFF  White   — backgrounds, text
-#CC0000  Red     — CTAs, accents (one per section max)
-#575757  Gray    — supporting, secondary text
-#BBBBBB  LtGray  — dividers, borders
-```
-Never: #FF0000 (retired). Never: gradients. Never: other colors.
+section vs div vs article:
+Content independently distributable? YES: article
+Groups thematic info AND needs heading? YES: section aria-labelledby
+Layout wrapper only? YES: div
 
-Typography:
-```
-H1-H3:    Montserrat 900
-Body/H4+: Inter 400
-Load:     Google Fonts CDN with preconnect
-```
+CSS Grid vs Flexbox:
+Layout defines sizes (equal columns)? Grid
+Content defines sizes (items flow)? Flexbox
+Navigation or button group? Flexbox
+Multi-column page layout? Grid
 
-Images: grayscale(100%) sitewide. Logos: no-grayscale class.
-Buttons (red): color: #fff !important always.
-Layout: Swiss International — asymmetric, left-aligned default.
+button vs anchor:
+Navigates to URL? YES: a href="..."
+Performs action (submit, toggle)? YES: button type="button"
+CTA styled as button that navigates? a href class="btn btn--primary"
 
-Tagline (exact — never rewrite): "Train More...Fear Less."
+LCP image:
+Above the fold? fetchpriority="high", HTML img, never CSS background
+Below the fold? loading="lazy"
 
-Three steps (exact — never rewrite):
-1. Attend a Free Trial Lesson
-2. Get Your Personalized Training Blueprint
-3. Become a Confident, Capable Protector
+Where does injected CSS go:
+Global to entire site? WordPress Additional CSS
+Component-specific? style block in HFCM wp_head, scoped to wrapper
+One specific page only? HFCM conditional targeting page ID, body.page-id-X
 
 ---
 
-## SECTION 8 — QUARTERLY MAINTENANCE
+## SKILL LOAD ORDER
+
+For any ETKM web production task, load in this order:
+
+1. etkm-web-production (this file — build protocol)
+2. etkm-web-production/CSS-SYSTEM (token reference)
+3. etkm-web-production/COMPONENT-LIBRARY (component patterns)
+4. etkm-web-production/OUTPUT-STANDARDS (output-type rules)
+5. etkm-brand-foundation (messaging and voice)
+6. etkm-brand-kit (visual standards)
+7. etkm-deliverable-qc (final QC before handoff)
+
+---
+
+## FILE RELATIONSHIP MAP
+
+CSS-SYSTEM:
+  Defines all tokens
+  Governs all CSS values
+  Consumed by all other files
+
+COMPONENT-LIBRARY:
+  13 ETKM components with HTML + token CSS
+  Instantiated by build protocol
+  Consumed by OUTPUT-STANDARDS per output type
+
+OUTPUT-STANDARDS:
+  WordPress/HFCM specific rules
+  Landing page StoryBrand sequence
+  Email template isolated CSS ruleset
+  Lead magnet PDF Playwright and print CSS
+
+etkm-web-production (this file):
+  Governs the build process
+  References all other files
+  Contains QC checklist
+  Contains decision trees
+
+---
+
+## QUARTERLY MAINTENANCE
 
 Next review: 2026-07-24
 
-- [ ] Verify skill files consistent with current etkm-global.css
-- [ ] Check new CSS features at 96%+ browser support
-- [ ] Review GeneratePress updates for DOM changes
-- [ ] Update tokens if brand palette changes
-- [ ] Add new components to COMPONENT-LIBRARY.md
-- [ ] Update QC checklist if new failure modes found
+[ ] Verify GeneratePress CSS variables still match (GP updates)
+[ ] Check HFCM hook names against current WordPress version
+[ ] Verify email CSS support matrix is current (Gmail and Outlook change)
+[ ] Confirm Playwright PDF API options unchanged
+[ ] Update component library for new ETKM sections
+[ ] Check browser support: container queries, :has(), CSS nesting (all 96%+ as of 2026)
+[ ] Update updated date and version number
+
+Version rules:
+Patch: QC item change (1.0 to 1.1)
+Minor: New component or output type (1.0 to 1.1)
+Major: Protocol change affecting all builds (1.0 to 2.0)
