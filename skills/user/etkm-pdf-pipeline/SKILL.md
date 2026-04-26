@@ -1,6 +1,7 @@
 ---
 name: etkm-pdf-pipeline
 version: 1.0
+updated: 2026-03-25
 locked: 2026-03-25
 description: >
   The locked production pipeline for ALL ETKM branded PDFs. Load this skill

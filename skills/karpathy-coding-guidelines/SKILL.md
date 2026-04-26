@@ -1,5 +1,7 @@
 ---
 name: karpathy-coding-guidelines
+version: 1.0
+updated: 2026-04-26
 description: Behavioral guidelines to reduce common LLM coding mistakes. Use when writing, reviewing, or refactoring code to avoid overcomplication, make surgical changes, surface assumptions, and define verifiable success criteria. Derived from Andrej Karpathy's observations on LLM coding pitfalls.
 license: MIT
 ---

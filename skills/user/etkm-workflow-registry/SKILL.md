@@ -1,5 +1,7 @@
 ---
 name: etkm-workflow-registry
+version: 2.2
+updated: 2026-04-01
 description: >
   Use this skill at the start of ANY session involving building, modifying,
   reviewing, or deploying any part of the ETKM system. Prevents duplicate

@@ -1,5 +1,7 @@
 ---
 name: etkm-brand-foundation
+version: 1.2
+updated: 2026-04-26
 description: >
   Use this skill for ANY task involving ETKM brand identity, messaging architecture,
   tone of voice, or StoryBrand framework. Trigger whenever the user is writing, editing,

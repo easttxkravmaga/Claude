@@ -1,6 +1,7 @@
 ---
 name: skill-lifecycle
 version: 1.0
+updated: 2026-04-26
 description: >
   Governs the full lifecycle of ETKM skill creation and updates — naming
   conventions, authoring standards, validation, push process, and recovery.
