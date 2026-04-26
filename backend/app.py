@@ -906,7 +906,7 @@ def handle_mcp_tool(tool_name: str, tool_input: dict) -> dict:
             return {"type": "text", "text": json.dumps({"skills": skill_names, "count": len(skill_names)})}
 
         elif tool_name == "get_skill":
-            skill_name = tool_input.get("skill_name", "")
+            skill_name = tool_input.get("skill_name", "").removeprefix("user/")
             try:
                 content = github_get_file(f"skills/user/{skill_name}/SKILL.md")
             except Exception:
@@ -946,6 +946,7 @@ def handle_mcp_tool(tool_name: str, tool_input: dict) -> dict:
             commit_message = tool_input.get("commit_message", f"Update skill: {skill_name}")
             if not skill_name or not content:
                 return {"type": "text", "text": "Error: skill_name and content are required"}
+            skill_name = skill_name.removeprefix("user/")
             path   = f"skills/user/{skill_name}/SKILL.md"
             result = github_push_file(path, content, commit_message)
             return {"type": "text", "text": json.dumps({
