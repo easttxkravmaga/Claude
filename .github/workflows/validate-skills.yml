@@ -1,0 +1,58 @@
+name: Validate Skill Files
+
+on:
+  push:
+    paths:
+      - 'skills/**'
+      - 'skills/user/**'
+  pull_request:
+    paths:
+      - 'skills/**'
+      - 'skills/user/**'
+
+jobs:
+  validate-skills:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate all SKILL.md files
+        run: |
+          python3 << 'PYEOF'
+          import os, sys
+
+          issues = []
+
+          for root, dirs, files in os.walk('skills'):
+            # Skip archive folder
+            dirs[:] = [d for d in dirs if d != 'archive']
+            for fname in files:
+              if fname != 'SKILL.md':
+                continue
+              path = os.path.join(root, fname)
+
+              # Block double-nested user/user paths
+              if os.sep + 'user' + os.sep + 'user' + os.sep in path or '/user/user/' in path:
+                issues.append(f'{path}: CORRUPT — double-nested user/user/ path detected')
+                continue
+
+              with open(path, 'r', encoding='utf-8') as f:
+                content = f.read()
+
+              stripped = content.strip()
+
+              if len(stripped) < 100:
+                issues.append(f'{path}: TOO SHORT ({len(stripped)} chars) — likely empty or corrupt')
+              elif '---' not in content:
+                issues.append(f'{path}: MISSING YAML frontmatter (---)')
+                              elif 'name:' not in content and 'description:' not in content:
+                                              issues.append(f'{path}: MISSING required frontmatter fields (name/description)')
+
+                                                        if issues:
+                                                                    print('SKILL VALIDATION FAILED:')
+                                                                                for issue in issues:
+                                                                                              print(f'  FAIL {issue}')
+                                                                                                          sys.exit(1)
+                                                                                                                    else:
+                                                                                                                                print(f'All skill files valid — no issues found')
+                                                                                                                                          PYEOF
