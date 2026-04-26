@@ -6,10 +6,24 @@
 # or deleting a skill in Claude.ai. Lines beginning with '#' and blank lines
 # are ignored.
 
+etkm-audience-intelligence
 etkm-behavior-intelligence
 etkm-brand-foundation
 etkm-brand-kit
+etkm-content-ecosystem
+etkm-crm-operations
+etkm-cta-architecture
 etkm-deliverable-qc
 etkm-leadgen-architecture
+etkm-marketing-engine
+etkm-notion-intelligence
+etkm-pdf-pipeline
+etkm-project-standard
+etkm-seo
+etkm-system-governance
+etkm-training-program
+etkm-web-production
+etkm-workflow-registry
 n8n-workflow-intelligence
 nate-collaboration-workflow
+skill-lifecycle
