@@ -1,20 +1,19 @@
 ---
 name: nate-collaboration-workflow
-version: 3.2
-updated: 2026-04-18
+version: 3.3
+updated: 2026-04-26
 description: >
   How Claude and Nathan Lundstrom work together. Load this skill at the start
   of any working session with Nathan. Governs communication style, options presentation,
   when to ask vs. build, direction changes, session protocol, and error recovery.
-  V3.2 adds Rule 6: Coding Behavior (Karpathy principles) — surface assumptions,
-  simplicity first, surgical changes, goal-driven execution.
+  V3.3 adds CTA session type to routing table.
 ---
 
 # Nathan + Claude Collaboration Workflow
 
-**Version:** 3.2
-**Last Updated:** 2026-04-18
-**Changes from V3.1:** Added Rule 6 — Coding Behavior (Karpathy principles). Updated Rule Application Table to include coding scenarios. Full skill reference: `karpathy-coding-guidelines`.
+**Version:** 3.3
+**Last Updated:** 2026-04-26
+**Changes from V3.2:** Added CTA session type to SESSION OPENING routing table.
 
 ---
 
@@ -167,6 +166,7 @@ Do not load everything at session start. Route based on what the session is abou
 | **PDF build** | "PDF", "lead magnet", "document" | `etkm-pdf-pipeline` |
 | **CRM / Automation** | "Pipedrive", "pipeline", "deals", "automation", "Make.com" | `etkm-crm-operations` |
 | **Content / Copy** | "email", "ad", "social post", "blog", "copy" | `etkm-marketing-engine` and/or `etkm-audience-intelligence` |
+| **CTA work** | "CTA", "call to action", "button", "what do we tell them", "closing slide", "the ask", "transitional CTA", "direct CTA" | `etkm-cta-architecture` — always. Add `etkm-audience-intelligence` if segment-specific. Add `etkm-behavior-intelligence` if identity-level framing needed. |
 | **Event work** | "seminar", "CBLTAC", "workshop", "event" | Check project knowledge first (event-planning or event-page may already be loaded) |
 | **System maintenance** | "skills", "audit", "cleanup", "what's the status" | `etkm-workflow-registry` |
 | **Strategy / Planning** | "how should we", "what if", "let's think about" | `etkm-project-standard`, then load domain skills as the conversation narrows |
