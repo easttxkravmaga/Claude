@@ -1,7 +1,10 @@
-# Skills currently mounted at /mnt/skills/user/ in Claude.ai chat sessions.
-# Anthropic owns the actual mount; this file mirrors what they have so we can
-# detect drift in CI. Update this list when Anthropic registers or de-registers
-# a skill. Lines beginning with '#' and blank lines are ignored.
+# Skills currently uploaded to Claude.ai (Customize → Skills) for this account
+# and mounted at /mnt/skills/user/ in chat sessions. Skills are uploaded by the
+# account owner via the Claude.ai UI — this file mirrors what's actually there
+# so CI can detect drift between the repo and the mount. Upload procedure:
+# docs/skill-upload-procedure.md. Update this list immediately after uploading
+# or deleting a skill in Claude.ai. Lines beginning with '#' and blank lines
+# are ignored.
 
 etkm-behavior-intelligence
 etkm-brand-foundation

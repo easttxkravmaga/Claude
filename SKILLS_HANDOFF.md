@@ -60,9 +60,12 @@ duplicate skills, and registry staleness are now impossible to merge.
   exist. Stubs flag the gap; Nathan pastes real content from the Claude.ai
   skills UI when ready.
 
-### Documentation
-- `docs/anthropic-registration-request.md` — ready-to-send request listing the
-  14 pending skills for Anthropic to register on the disk mount
+### Documentation and tooling
+- `docs/skill-upload-procedure.md` — step-by-step procedure for uploading
+  skills to Claude.ai (Customize → Skills) so they mount at `/mnt/skills/user/`
+- `scripts/package_skills.py` — packages any skill (or all pending skills)
+  into ready-to-upload ZIP files in `dist/skills/` with the correct folder
+  structure for Claude.ai's upload UI
 
 ---
 
@@ -73,7 +76,7 @@ duplicate skills, and registry staleness are now impossible to merge.
 | Total skills | 22 (1 general, 21 ETKM-specific) |
 | Skills passing validation | 22/22 |
 | Skills mounted on Claude.ai | 7 |
-| Skills pending registration | 14 |
+| Skills pending upload | 14 |
 | `SKILLS.md` freshness | Current (CI-verified) |
 | Working tree | Clean, on `main` |
 
@@ -81,22 +84,31 @@ duplicate skills, and registry staleness are now impossible to merge.
 
 ## Open Items (Nathan)
 
-1. **Send registration request.** Share `docs/anthropic-registration-request.md`
-   with Anthropic to register the 14 pending skills on the disk mount. Update
-   `skills/user/REGISTERED.txt` once they confirm and regenerate `SKILLS.md`.
+1. **Upload the 14 pending skills to Claude.ai.** Self-service through
+   Customize → Skills. Full procedure: `docs/skill-upload-procedure.md`.
+   Quick version:
+   ```bash
+   python3 scripts/package_skills.py --pending
+   ```
+   This produces 14 ready-to-upload ZIPs in `dist/skills/`. For each ZIP:
+   open Claude.ai → Customize → Skills → "+" → "+ Create skill" and drag in
+   the ZIP. After all are uploaded, add the 14 names to
+   `skills/user/REGISTERED.txt` (alphabetical), regenerate `SKILLS.md`, and
+   commit.
 
-2. **Replace the three reference stubs with real content.** Each stub is
-   minimal and explicitly marked "Content needed." Open the Claude.ai skills
-   UI for `etkm-brand-foundation`, copy the contents of each file from the
-   `references/` folder there, and paste over the stub. Files:
-   - `skills/user/etkm-brand-foundation/references/brand-identity.md`
-   - `skills/user/etkm-brand-foundation/references/storybrand-framework.md`
-   - `skills/user/etkm-brand-foundation/references/voice-and-themes.md`
-
-3. **Verify Render deploy succeeded** for the `app.py` template fix. Live
-   verification was not possible from this session (no Render API access).
-   Confirm the deployed `scaffold_skill` now includes `updated:` in its output
-   by calling it once and inspecting the template.
+2. **Verify references/ files load correctly after re-uploading
+   etkm-brand-foundation.** The skill is already mounted, but the three
+   reference files (`brand-identity.md`, `storybrand-framework.md`,
+   `voice-and-themes.md`) were added to the repo after the original upload.
+   Re-upload the skill via:
+   ```bash
+   python3 scripts/package_skills.py etkm-brand-foundation
+   ```
+   Then in a fresh Claude.ai chat, ask Claude to load the brand-foundation
+   skill and reference one of the files (e.g., "what does the
+   storybrand-framework reference file say?"). If it can read them, the
+   `references/` directory works as expected. If not, see the fallback note
+   in `docs/skill-upload-procedure.md`.
 
 ---
 
@@ -110,10 +122,15 @@ duplicate skills, and registry staleness are now impossible to merge.
 4. Run `python3 scripts/generate_skills_registry.py` — regenerates `SKILLS.md`
 5. Commit both files together
 
-### After Anthropic registers a skill
-1. Add the skill name to `skills/user/REGISTERED.txt`
-2. Run `python3 scripts/generate_skills_registry.py`
-3. Commit
+### Uploading a new or updated skill to Claude.ai
+1. Run `python3 scripts/package_skills.py <skill-name>` — produces
+   `dist/skills/<skill-name>.zip`
+2. In Claude.ai → Customize → Skills, click "+" → "+ Create skill" (or
+   Edit on an existing skill) and upload the ZIP
+3. Confirm the skill toggles on
+4. Mirror in repo: add the name to `skills/user/REGISTERED.txt` (if new),
+   run `python3 scripts/generate_skills_registry.py`, and commit
+5. Full procedure with edge cases: `docs/skill-upload-procedure.md`
 
 ### When CI fails
 - "missing required frontmatter field" → add the missing field to YAML

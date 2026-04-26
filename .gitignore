@@ -4,5 +4,6 @@ __pycache__/
 *.pyd
 fonts/
 output/
+dist/
 *.egg-info/
 .env

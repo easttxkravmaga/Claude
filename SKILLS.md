@@ -37,7 +37,7 @@
 
 ## Disk Mount Registration
 
-These skills are registered on the Claude.ai disk mount (`/mnt/skills/user/`) and load automatically in chat sessions. Anthropic owns the mount; we mirror the list in `skills/user/REGISTERED.txt` so drift is detectable.
+These skills are uploaded to Claude.ai (Customize → Skills) and load automatically in chat sessions from `/mnt/skills/user/`. Skills are private to each account and uploaded individually. We mirror the uploaded list in `skills/user/REGISTERED.txt` so CI can detect drift between repo and mount. Upload procedure: `docs/skill-upload-procedure.md`.
 
 | Skill | In Repo? | Notes |
 |---|---|---|
@@ -49,9 +49,9 @@ These skills are registered on the Claude.ai disk mount (`/mnt/skills/user/`) an
 | `n8n-workflow-intelligence` | yes | — |
 | `nate-collaboration-workflow` | yes | — |
 
-### Pending Registration
+### Pending Upload
 
-In repo at `skills/user/` but not yet on the disk mount. Request registration from Anthropic to make these available in Claude.ai chat sessions:
+In repo at `skills/user/` but not yet uploaded to Claude.ai. To onboard them, run `python3 scripts/package_skills.py --pending` to produce ZIPs in `dist/skills/`, then upload each via Claude.ai → Customize → Skills. Mirror the upload back to `REGISTERED.txt` afterward. Full procedure: `docs/skill-upload-procedure.md`.
 
 - `etkm-audience-intelligence`
 - `etkm-content-ecosystem`

@@ -69,10 +69,11 @@ def render(skills: list[Skill], registered: list[str]) -> str:
     lines.append("## Disk Mount Registration")
     lines.append("")
     lines.append(
-        "These skills are registered on the Claude.ai disk mount "
-        "(`/mnt/skills/user/`) and load automatically in chat sessions. "
-        "Anthropic owns the mount; we mirror the list in "
-        "`skills/user/REGISTERED.txt` so drift is detectable."
+        "These skills are uploaded to Claude.ai (Customize → Skills) and load "
+        "automatically in chat sessions from `/mnt/skills/user/`. Skills are "
+        "private to each account and uploaded individually. We mirror the "
+        "uploaded list in `skills/user/REGISTERED.txt` so CI can detect drift "
+        "between repo and mount. Upload procedure: `docs/skill-upload-procedure.md`."
     )
     lines.append("")
     lines.append("| Skill | In Repo? | Notes |")
@@ -82,7 +83,7 @@ def render(skills: list[Skill], registered: list[str]) -> str:
     for name in sorted(registered):
         in_repo = name in repo_user
         check = "yes" if in_repo else "**no**"
-        note = "—" if in_repo else "**Missing from repo.** De-register at Anthropic or author the skill."
+        note = "—" if in_repo else "**Missing from repo.** Either author it or remove from REGISTERED.txt."
         lines.append(f"| `{name}` | {check} | {note} |")
     lines.append("")
 
@@ -91,19 +92,22 @@ def render(skills: list[Skill], registered: list[str]) -> str:
         for s in skills
         if s.location.startswith("skills/user/") and s.name not in set(registered)
     )
-    lines.append("### Pending Registration")
+    lines.append("### Pending Upload")
     lines.append("")
     if pending:
         lines.append(
-            "In repo at `skills/user/` but not yet on the disk mount. Request "
-            "registration from Anthropic to make these available in Claude.ai "
-            "chat sessions:"
+            "In repo at `skills/user/` but not yet uploaded to Claude.ai. To "
+            "onboard them, run `python3 scripts/package_skills.py --pending` "
+            "to produce ZIPs in `dist/skills/`, then upload each via "
+            "Claude.ai → Customize → Skills. Mirror the upload back to "
+            "`REGISTERED.txt` afterward. Full procedure: "
+            "`docs/skill-upload-procedure.md`."
         )
         lines.append("")
         for name in pending:
             lines.append(f"- `{name}`")
     else:
-        lines.append("None — every skill in `skills/user/` is registered.")
+        lines.append("None — every skill in `skills/user/` is uploaded to Claude.ai.")
     lines.append("")
 
     lines.append("## Schema")
