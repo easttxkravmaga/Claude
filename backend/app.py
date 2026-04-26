@@ -889,6 +889,31 @@ MCP_TOOLS = [
         "name": "p6_check_auth",
         "description": "Check whether Dropbox OAuth is configured and working.",
         "inputSchema": {"type": "object", "properties": {}}
+    },
+    {
+        "name": "scaffold_skill",
+        "description": "Generate a properly-structured SKILL.md template for a new skill. Returns a ready-to-fill template with correct frontmatter. Always call this before push_skill when creating a new skill.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "skill_name":  {"type": "string", "description": "Kebab-case skill name, e.g. etkm-brand-foundation"},
+                "description": {"type": "string", "description": "One-sentence description for the frontmatter"},
+                "triggers":    {"type": "array", "items": {"type": "string"}, "description": "Trigger phrases for the frontmatter"}
+            },
+            "required": ["skill_name"]
+        }
+    },
+    {
+        "name": "validate_skill",
+        "description": "Validate a SKILL.md content before pushing. Non-destructive — reports errors and warnings without writing to GitHub. Always call before push_skill.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "skill_name": {"type": "string"},
+                "content":    {"type": "string", "description": "The full SKILL.md content to validate"}
+            },
+            "required": ["skill_name", "content"]
+        }
     }
 ]
 
@@ -1038,6 +1063,89 @@ def handle_mcp_tool(tool_name: str, tool_input: dict) -> dict:
                 "created":          created,
                 "error_details":    errors,
                 "timestamp":        datetime.utcnow().isoformat() + "Z"
+            })}
+
+        elif tool_name == "scaffold_skill":
+            skill_name  = tool_input.get("skill_name", "")
+            description = tool_input.get("description", "Describe what this skill does and when to load it.")
+            triggers    = tool_input.get("triggers", [])
+            if not skill_name:
+                return {"type": "text", "text": "Error: skill_name is required"}
+            while skill_name.startswith("user/"):
+                skill_name = skill_name[5:]
+            trigger_lines = "\n".join(f'  - "{t}"' for t in triggers) if triggers else '  - "describe when to load this skill"'
+            title = skill_name.replace("-", " ").title()
+            lines = [
+                "---",
+                f"name: {skill_name}",
+                "version: 1.0",
+                "description: >",
+                f"  {description}",
+                "triggers:",
+                trigger_lines,
+                "---",
+                "",
+                f"# {title}",
+                "",
+                "## Purpose",
+                "Describe what this skill enables Claude to do that it could not do reliably otherwise.",
+                "",
+                "## When to Load",
+                "List every realistic trigger condition for this skill. Be exhaustive.",
+                "",
+                "## Core Instructions",
+                "<!-- Replace with the main content of this skill -->",
+                "",
+                "## Step-by-Step Process",
+                "1. Step one",
+                "2. Step two",
+                "3. Step three",
+                "",
+                "## What Not to Do",
+                "- Never do X",
+                "- Avoid Y under all circumstances",
+                "",
+                "## Recovery",
+                "Describe what to do when things go wrong.",
+                "",
+            ]
+            template = "\n".join(lines)
+            return {"type": "text", "text": template}
+
+        elif tool_name == "validate_skill":
+            skill_name = tool_input.get("skill_name", "")
+            content    = tool_input.get("content", "")
+            errors     = []
+            warnings   = []
+            while skill_name.startswith("user/"):
+                skill_name = skill_name[5:]
+            if not skill_name:
+                errors.append("skill_name is required")
+            if "user/user/" in skill_name:
+                errors.append(f"Double-nested path detected: strip the user/ prefix from skill_name")
+            stripped = content.strip()
+            if len(stripped) < 100:
+                errors.append(f"Content too short: {len(stripped)} chars (minimum 100)")
+            if "---" not in content:
+                errors.append("Missing YAML frontmatter — content must contain a --- block")
+            if stripped and not stripped.startswith("---"):
+                warnings.append("Content does not begin with frontmatter — expected --- as first line")
+            if "name:" not in content:
+                warnings.append("Frontmatter missing name: field")
+            if "description:" not in content:
+                warnings.append("Frontmatter missing description: field")
+            if "triggers:" not in content:
+                warnings.append("Frontmatter missing triggers: field")
+            if len(stripped) < 500:
+                warnings.append(f"Content is short ({len(stripped)} chars) — consider adding more detail")
+            passed = len(errors) == 0
+            return {"type": "text", "text": json.dumps({
+                "valid":          passed,
+                "skill_name":     skill_name,
+                "content_length": len(stripped),
+                "errors":         errors,
+                "warnings":       warnings,
+                "message":        "Validation passed — safe to push" if passed else f"{len(errors)} error(s) must be fixed before pushing"
             })}
 
         else:
