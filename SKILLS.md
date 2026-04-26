@@ -21,6 +21,7 @@
 | `etkm-crm-operations` | `skills/user/etkm-crm-operations/SKILL.md` | 1.3 | 2026-04-15 | The routing brain for all ETKM CRM and automation work |
 | `etkm-cta-architecture` | `skills/user/etkm-cta-architecture/SKILL.md` | 1.1 | 2026-04-26 | The single authority on CTA construction for every ETKM deliverable |
 | `etkm-deliverable-qc` | `skills/user/etkm-deliverable-qc/SKILL.md` | 2.1 | 2026-03-14 | Non-negotiable QC gate for ALL ETKM deliverables before they reach Nathan |
+| `etkm-leadgen-architecture` | `skills/user/etkm-leadgen-architecture/SKILL.md` | 0.1 | 2026-04-10 | Use this skill for ANY task involving ETKM lead generation content architecture — free reports, lead magnets, opt-in pages, drip sequences, blog post… |
 | `etkm-marketing-engine` | `skills/user/etkm-marketing-engine/SKILL.md` | 1.2 | 2026-04-26 | The routing brain for all ETKM marketing, funnel, lead generation, content creation, offer positioning, and nurture sequence work |
 | `etkm-notion-intelligence` | `skills/user/etkm-notion-intelligence/SKILL.md` | 1.1 | 2026-04-24 | Load this skill for ANY task that reads, writes, queries, or builds on top of ETKM's Notion workspace |
 | `etkm-pdf-pipeline` | `skills/user/etkm-pdf-pipeline/SKILL.md` | 1.0 | 2026-03-25 | The locked production pipeline for ALL ETKM branded PDFs |
@@ -44,7 +45,7 @@ These skills are registered on the Claude.ai disk mount (`/mnt/skills/user/`) an
 | `etkm-brand-foundation` | yes | — |
 | `etkm-brand-kit` | yes | — |
 | `etkm-deliverable-qc` | yes | — |
-| `etkm-leadgen-architecture` | **no** | **Missing from repo.** De-register at Anthropic or author the skill. |
+| `etkm-leadgen-architecture` | yes | — |
 | `n8n-workflow-intelligence` | yes | — |
 | `nate-collaboration-workflow` | yes | — |
 
