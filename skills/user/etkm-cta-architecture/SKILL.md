@@ -1,6 +1,6 @@
 ---
 name: etkm-cta-architecture
-version: 1.0
+version: 1.1
 updated: 2026-04-26
 description: >
   The single authority on CTA construction for every ETKM deliverable. Load this
@@ -20,7 +20,7 @@ description: >
 
 # ETKM CTA Architecture
 
-**Version:** 1.0
+**Version:** 1.1
 **Established:** 2026-04-26
 **Source Doctrine:** Donald Miller — *Building a StoryBrand*, *Marketing Made Simple*
 **Governs:** Every CTA across every ETKM channel, format, and audience segment.
@@ -526,12 +526,241 @@ whatever other skills are already loaded for the task.
 
 ---
 
+## SECTION 8: CTA DERIVATION ENGINE
+
+The Language Bank in Section 3 provides pre-approved CTA language organized
+by program and arc. But the right CTA for any specific piece of content is
+not found by selecting from a menu — it is derived from what the content
+itself is doing.
+
+Every piece of ETKM content makes an implicit promise to the reader. It names
+a specific problem, points toward a specific transformation, and leaves the
+reader in a specific emotional and identity state. The CTA must be the natural
+conclusion of that specific job. A CTA that introduces new framing, pivots to
+a different problem, or asks for something the content did not earn will not
+convert — regardless of how technically correct it is.
+
+This engine is a four-step derivation protocol. Run it on any piece of content
+before writing the CTA. The output tells you exactly which Language Bank entry
+to pull — or whether the content is specific enough to warrant a custom CTA
+built directly from the four-element structure.
+
+---
+
+### Step 1 — Read the Content for Four Signals
+
+Before writing a single word of CTA copy, extract these four signals from the
+content. They are always present. If any of them are missing, the content arc
+is incomplete and the CTA will not convert — fix the content first.
+
+**Signal A: The Problem Named**
+
+What specific problem did this content address? Identify the layer:
+
+| Layer | What It Sounds Like in the Content | What It Means for the CTA |
+|---|---|---|
+| External | "You could be followed to your car." "Crime is up in Tyler." | CTA can be functional — the reader is thinking about the situation, not themselves |
+| Internal | "You don't want to feel helpless." "That fear is always there." | CTA must be identity-level — the transformation statement carries the weight |
+| Philosophical | "Nobody should have to feel unsafe in their own community." "Your family deserves better." | CTA has a moral dimension — the stakes line can carry real weight |
+
+Most ETKM content addresses all three layers. The dominant layer — the one
+the content spent the most time on — determines the emotional register of
+the CTA. Internal dominant = transformation statement leads. Philosophical
+dominant = stakes line is strong. External dominant = direct CTA can be more
+functional, less identity-heavy.
+
+**Signal B: The Arc the Reader Is In**
+
+Based on what resonated in the content, which arc does the reader most likely
+occupy? Use the language the content used to identify it.
+
+| If the content talked about... | The reader is probably in... |
+|---|---|
+| Protecting family, being there for people who depend on them | The Protector |
+| Getting back to something they used to have, reclaiming capability | The Regainer |
+| A specific incident, a close call, a moment of realization | The Awakened |
+| Quiet self-improvement, no drama, just building real skill | The Quiet Builder |
+| Healing, feeling safe again, moving past something that happened | The Survivor |
+| Job-related risk, operational readiness, professional standards | The Professional |
+
+If the content speaks to multiple arcs (a general awareness post), use the
+ETKM General program entries from Section 3A and keep the CTA universal.
+
+**Signal C: The Funnel Stage**
+
+What stage is this content operating in? The funnel stage determines how
+hard the direct CTA can push.
+
+| Stage | Appropriate Direct CTA Pressure | Transitional CTA Role |
+|---|---|---|
+| TOFU (Awareness) | Low — the reader just learned about the problem. Ask is curiosity, not commitment. | Carries the primary conversion load at this stage |
+| MOFU (Consideration) | Medium — the reader is weighing options. Ask is a low-risk next step. | Reinforces the direct CTA for hesitant readers |
+| BOFU (Decision) | High — the reader is ready. Ask is the room, the booking, the commitment. | Secondary — the direct CTA is the job |
+
+**Signal D: The Implicit Promise**
+
+What transformation did the content point toward? This is the most important
+signal. Stated in one sentence: "By the end of this content, the reader has
+been shown that they can go from [current state] to [desired state]."
+
+This sentence becomes the raw material for the transformation statement in
+Element 1 of the CTA structure. Do not write the transformation statement
+until Signal D is clearly identified — it must mirror the content's own
+language and framing.
+
+---
+
+### Step 2 — Match Signals to the Language Bank
+
+With the four signals identified, locate the correct Language Bank entry:
+
+**If Signal B returned a clear arc AND Signal A is internal or philosophical dominant:**
+→ Pull the arc-specific entry from Section 3B. This is the highest-precision match.
+
+**If Signal B returned a clear arc but Signal A is external dominant:**
+→ Pull the arc-specific entry from Section 3B but make the transformation
+statement more functional and the stakes line lighter. The reader is thinking
+about the situation, not their identity yet.
+
+**If the content is program-specific (Fight Back ETX, ACT, EFC, Youth):**
+→ Pull the program-specific entry from Section 3A that matches the program,
+then calibrate to the arc from Signal B.
+
+**If the content speaks to multiple arcs or is a general awareness post:**
+→ Use the ETKM General entries from Section 3A.
+
+**If no Language Bank entry fits the specific content precisely:**
+→ Proceed to Step 3 and build a custom CTA. This is expected for highly
+specific content (a post about a specific technique, a story about a specific
+student, a campaign tied to a specific event).
+
+---
+
+### Step 3 — Build the CTA From the Content's Own Language
+
+When a custom CTA is needed — or when refining a Language Bank entry to fit
+specific content — build each element using the content's own language as
+the raw material.
+
+**Transformation Statement — built from Signal D**
+
+The implicit promise the content made, made explicit. The transformation
+statement must echo the specific language the content used. It does not
+introduce new framing.
+
+| Content Used This Language | Transformation Statement Should Echo It |
+|---|---|
+| "Freezing when it matters" | "Stop freezing. Start deciding." |
+| "Feeling like a target in your own neighborhood" | "Stop feeling like a target. Start moving like someone who knows what to do." |
+| "Your kids watching how you handle fear" | "You already decided your family matters. This is what that decision looks like." |
+| "Wishing you had started sooner" | "The version of you that wishes they had started — they started today." |
+
+Never introduce a transformation the content did not earn. If the content
+talked about freezing, the transformation statement is about freezing. If the
+content talked about a parent's responsibility, the transformation statement
+is about that. The reader should read the transformation statement and think:
+*that is exactly what I was just thinking about.*
+
+**Direct CTA — built from Signal C (funnel stage)**
+
+| Funnel Stage | Direct CTA Calibration |
+|---|---|
+| TOFU | Softer ask — "Download the free guide" / "DM us [KEYWORD]" can serve as the direct CTA at this stage |
+| MOFU | Standard ask — "Schedule Your Free Trial Lesson" / "Attend a Free Trial Class" |
+| BOFU | Specific ask — name the time, the date, the next available session. Remove all friction. |
+
+**Transitional CTA — built from Signal B (arc)**
+
+The transitional CTA should offer something that serves the specific arc the
+reader is in — not a generic download.
+
+| Arc | Transitional CTA Direction |
+|---|---|
+| Protector | Family safety guide, "what to teach your kids" resource |
+| Regainer | Returning-to-training guide, "where to start" resource |
+| Awakened | Post-incident resource, "what to do next" guide |
+| Quiet Builder | Training system overview, technique breakdown |
+| Survivor | Personal safety guide — always "no commitment, just information" framing |
+| Professional | Course overview, department brief, program summary |
+
+**Stakes Line — built from Signal A (problem layer) and Signal B (arc)**
+
+The stakes line names what happens without acting. It must be true — not
+manufactured. The content itself already told you what the real stakes are.
+Use that. Do not invent stakes the content did not name.
+
+| Content Named This as the Real Risk | Stakes Line |
+|---|---|
+| Freezing in a real situation | "Freezing is a skill too. It just works against you." |
+| A close call that could have gone differently | "That close call was a warning. The next one might not be." |
+| A family member's safety | "Every week you wait is a week your family does not have this." |
+| Professional readiness gap | "The call you trained for and the call you get are rarely the same." |
+| General unpreparedness | "Hoping is not a plan." |
+
+**Survivor arc exception:** Stakes line is always omitted. See Section 3B.
+
+---
+
+### Step 4 — Verify the Arc Is Complete
+
+The CTA only converts when the preceding content did its job. Before placing
+the CTA, run this check against the content:
+
+| Arc Stage | Check |
+|---|---|
+| Problem named | Did the content address the internal problem — not just the external situation? |
+| Guide present | Is ETKM positioned as empathetic and authoritative — not as the hero? |
+| Plan implied | Did the content make the path forward feel simple and achievable? |
+| Stakes acknowledged | Did the content briefly name what happens without acting — without dwelling? |
+| Success visible | Did the content show who the reader becomes by acting? |
+
+**If any stage is missing:** The CTA will not convert. The missing stage is the
+real problem — not the CTA language. Fix the content arc before writing the CTA.
+
+**If all stages are present:** The CTA is the final beat. The reader has been
+moved. The ask is earned. Write it, place it, ship it.
+
+---
+
+### Derivation Engine — Quick Reference
+
+```
+STEP 1: Extract four signals from the content
+  A — Problem layer (external / internal / philosophical)
+  B — Reader arc (Protector / Regainer / Awakened / Quiet Builder / Survivor / Professional)
+  C — Funnel stage (TOFU / MOFU / BOFU)
+  D — Implicit promise (from [current state] to [desired state])
+
+STEP 2: Match to Language Bank
+  Clear arc + internal/philosophical dominant → Section 3B arc entry
+  Program-specific content → Section 3A program entry, calibrated to arc
+  Multi-arc or general → Section 3A ETKM General
+  No entry fits → proceed to Step 3
+
+STEP 3: Build custom CTA from content's own language
+  Transformation statement ← Signal D (echo the content's language)
+  Direct CTA ← Signal C (calibrated to funnel stage)
+  Transitional CTA ← Signal B (arc-matched resource)
+  Stakes line ← Signal A + B (true, proportional, from the content itself)
+
+STEP 4: Verify arc completion before placing the CTA
+  Problem named → Guide present → Plan implied → Stakes acknowledged → Success visible
+  Missing stage = content problem, not CTA problem. Fix the content first.
+```
+
+---
+
 ## SECTION 7: CHANGELOG
 
+- V1.1 — 2026-04-26 — Added Section 8: CTA Derivation Engine. Four-step protocol
+  for deriving CTA language from content signals rather than selecting from a menu.
+  Covers four content signals (problem layer, reader arc, funnel stage, implicit
+  promise), Language Bank matching logic, custom CTA construction from content
+  language, and arc-completion verification gate. Replaces planned V1.1
+  format-specific rules — derivation engine is a more precise and useful mechanism.
 - V1.0 — 2026-04-26 — Initial build. Codifies Miller's StoryBrand CTA doctrine
   (three rules, four-element structure). Program-specific CTA Language Bank
   (ETKM General, Fight Back ETX, ACT, EFC, Youth) with primary and alternate
   sets. Arc-specific CTA Language Bank (Protector, Regainer, Awakened, Quiet
   Builder, Survivor, Professional). Quality gates, anti-patterns, and
-  cross-references established. V1.1 planned: format-specific application
-  rules (carousel, email, landing page, PDF, social post, ad).
+  cross-references established.
