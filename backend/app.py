@@ -1075,10 +1075,12 @@ def handle_mcp_tool(tool_name: str, tool_input: dict) -> dict:
                 skill_name = skill_name[5:]
             trigger_lines = "\n".join(f'  - "{t}"' for t in triggers) if triggers else '  - "describe when to load this skill"'
             title = skill_name.replace("-", " ").title()
+            today = datetime.utcnow().strftime("%Y-%m-%d")
             lines = [
                 "---",
                 f"name: {skill_name}",
                 "version: 1.0",
+                f"updated: {today}",
                 "description: >",
                 f"  {description}",
                 "triggers:",

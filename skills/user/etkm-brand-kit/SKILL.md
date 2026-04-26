@@ -1,5 +1,7 @@
 ---
 name: etkm-brand-kit
+version: 3.1
+updated: 2026-03-29
 description: >
   Use this skill whenever producing any visual output for ETKM — HTML pages, PDFs,
   presentations, forms, social media image briefs, React artifacts, SVGs, flyers,

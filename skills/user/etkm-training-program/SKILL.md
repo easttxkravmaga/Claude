@@ -1,5 +1,7 @@
 ---
 name: etkm-training-program
+version: 2.1
+updated: 2026-03-29
 description: >
   Use this skill for ANY question or task related to the East Texas Krav Maga (ETKM)
   training program. This includes curriculum structure, level progressions (Yellow

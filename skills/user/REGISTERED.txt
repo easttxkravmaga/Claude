@@ -1,0 +1,12 @@
+# Skills currently mounted at /mnt/skills/user/ in Claude.ai chat sessions.
+# Anthropic owns the actual mount; this file mirrors what they have so we can
+# detect drift in CI. Update this list when Anthropic registers or de-registers
+# a skill. Lines beginning with '#' and blank lines are ignored.
+
+etkm-behavior-intelligence
+etkm-brand-foundation
+etkm-brand-kit
+etkm-deliverable-qc
+etkm-leadgen-architecture
+n8n-workflow-intelligence
+nate-collaboration-workflow

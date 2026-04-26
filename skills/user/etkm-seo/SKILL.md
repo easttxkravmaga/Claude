@@ -1,5 +1,7 @@
 ---
 name: etkm-seo
+version: 1.0
+updated: 2026-03-09
 description: >
   Use this skill whenever writing, reviewing, or publishing any content for ETKM
   websites — blog posts, page copy, page rewrites, landing pages, or any content
