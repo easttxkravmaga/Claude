@@ -33,7 +33,7 @@
 | `etkm-workflow-registry` | `skills/user/etkm-workflow-registry/SKILL.md` | 2.2 | 2026-04-01 | Use this skill at the start of ANY session involving building, modifying, reviewing, or deploying any part of the ETKM system |
 | `n8n-workflow-intelligence` | `skills/user/n8n-workflow-intelligence/SKILL.md` | 1.0 | 2026-04-23 | Bulletproof n8n intelligence layer for all three Claude surfaces — Chat, Cowork, and Code |
 | `nate-collaboration-workflow` | `skills/user/nate-collaboration-workflow/SKILL.md` | 3.3 | 2026-04-26 | How Claude and Nathan Lundstrom work together |
-| `skill-lifecycle` | `skills/user/skill-lifecycle/SKILL.md` | 1.1 | 2026-04-26 | Governs the full lifecycle of ETKM skill creation and updates — naming conventions, authoring standards, validation, push process, and recovery |
+| `skill-lifecycle` | `skills/user/skill-lifecycle/SKILL.md` | 1.2 | 2026-04-26 | Governs the full lifecycle of ETKM skill creation and updates — naming conventions, authoring standards, validation, push process, Claude.ai upload,… |
 
 ## Disk Mount Registration
 
