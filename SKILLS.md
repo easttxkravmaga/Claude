@@ -12,28 +12,27 @@
 
 | Skill | Location | Version | Updated | Purpose |
 |---|---|---|---|---|
-| `karpathy-coding-guidelines` | `skills/karpathy-coding-guidelines/SKILL.md` | 1.0 | 2026-04-26 | Behavioral guidelines to reduce common LLM coding mistakes |
-| `etkm-audience-intelligence` | `skills/user/etkm-audience-intelligence/SKILL.md` | 1.1 | 2026-04-26 | The routing brain for all ETKM audience-specific work |
-| `etkm-behavior-intelligence` | `skills/user/etkm-behavior-intelligence/SKILL.md` | 1.1 | 2026-04-26 | Load this skill when producing any ETKM output where behavioral influence, identity framing, or persuasion architecture is at play |
-| `etkm-brand-foundation` | `skills/user/etkm-brand-foundation/SKILL.md` | 1.2 | 2026-04-26 | Use this skill for ANY task involving ETKM brand identity, messaging architecture, tone of voice, or StoryBrand framework |
-| `etkm-brand-kit` | `skills/user/etkm-brand-kit/SKILL.md` | 3.1 | 2026-03-29 | Use this skill whenever producing any visual output for ETKM — HTML pages, PDFs, presentations, forms, social media image briefs, React artifacts, SV… |
-| `etkm-content-ecosystem` | `skills/user/etkm-content-ecosystem/SKILL.md` | 1.0 | 2026-04-03 | The production routing skill for all ETKM content runs — from a single blog post to a full topic cluster package |
-| `etkm-crm-operations` | `skills/user/etkm-crm-operations/SKILL.md` | 1.3 | 2026-04-15 | The routing brain for all ETKM CRM and automation work |
-| `etkm-cta-architecture` | `skills/user/etkm-cta-architecture/SKILL.md` | 1.1 | 2026-04-26 | The single authority on CTA construction for every ETKM deliverable |
-| `etkm-deliverable-qc` | `skills/user/etkm-deliverable-qc/SKILL.md` | 2.1 | 2026-03-14 | Non-negotiable QC gate for ALL ETKM deliverables before they reach Nathan |
-| `etkm-leadgen-architecture` | `skills/user/etkm-leadgen-architecture/SKILL.md` | 0.1 | 2026-04-10 | Use this skill for ANY task involving ETKM lead generation content architecture — free reports, lead magnets, opt-in pages, drip sequences, blog post… |
-| `etkm-marketing-engine` | `skills/user/etkm-marketing-engine/SKILL.md` | 1.2 | 2026-04-26 | The routing brain for all ETKM marketing, funnel, lead generation, content creation, offer positioning, and nurture sequence work |
-| `etkm-notion-intelligence` | `skills/user/etkm-notion-intelligence/SKILL.md` | 1.1 | 2026-04-24 | Load this skill for ANY task that reads, writes, queries, or builds on top of ETKM's Notion workspace |
-| `etkm-pdf-pipeline` | `skills/user/etkm-pdf-pipeline/SKILL.md` | 1.0 | 2026-03-25 | The locked production pipeline for ALL ETKM branded PDFs |
-| `etkm-project-standard` | `skills/user/etkm-project-standard/SKILL.md` | 1.1 | 2026-03-29 | The master production standard for every ETKM project — regardless of type, tool, or deliverable |
-| `etkm-seo` | `skills/user/etkm-seo/SKILL.md` | 1.0 | 2026-03-09 | Use this skill whenever writing, reviewing, or publishing any content for ETKM websites — blog posts, page copy, page rewrites, landing pages, or any… |
-| `etkm-system-governance` | `skills/user/etkm-system-governance/SKILL.md` | 1.0 | 2026-03-29 | The constitution for the ETKM skill and database system |
-| `etkm-training-program` | `skills/user/etkm-training-program/SKILL.md` | 2.1 | 2026-03-29 | Use this skill for ANY question or task related to the East Texas Krav Maga (ETKM) training program |
-| `etkm-web-production` | `skills/user/etkm-web-production/SKILL.md` | 1.0 | 2026-04-24 | Load this skill for ANY task that produces HTML or CSS for ETKM |
-| `etkm-workflow-registry` | `skills/user/etkm-workflow-registry/SKILL.md` | 2.2 | 2026-04-01 | Use this skill at the start of ANY session involving building, modifying, reviewing, or deploying any part of the ETKM system |
-| `n8n-workflow-intelligence` | `skills/user/n8n-workflow-intelligence/SKILL.md` | 1.0 | 2026-04-23 | Bulletproof n8n intelligence layer for all three Claude surfaces — Chat, Cowork, and Code |
-| `nate-collaboration-workflow` | `skills/user/nate-collaboration-workflow/SKILL.md` | 3.3 | 2026-04-26 | How Claude and Nathan Lundstrom work together |
-| `skill-lifecycle` | `skills/user/skill-lifecycle/SKILL.md` | 1.1 | 2026-04-26 | Governs the full lifecycle of ETKM skill creation and updates — naming conventions, authoring standards, validation, push process, and recovery |
+| `etkm-audience-intelligence` | `skills/user/etkm-audience-intelligence/` | 1.1 | 2026-04-26 | Use this skill whenever producing content, campaigns, copy, or strategy aimed at any ETKM audience segment — prospects, students, or past students |
+| `etkm-behavior-intelligence` | `skills/user/etkm-behavior-intelligence/` | 1.1 | 2026-04-26 | Load this skill when producing any ETKM output where behavioral influence, identity framing, or persuasion architecture is at play |
+| `etkm-brand-foundation` | `skills/user/etkm-brand-foundation/` | 1.2 | 2026-04-26 | Use this skill for ANY task involving ETKM brand identity, messaging architecture, tone of voice, or StoryBrand framework |
+| `etkm-brand-kit` | `skills/user/etkm-brand-kit/` | 3.1 | 2026-03-29 | Use this skill whenever producing any visual output for ETKM — HTML pages, PDFs, presentations, forms, social media image briefs, React artifacts, SVGs, flyers, email templates, landing pages, or any design deliverable |
+| `etkm-content-ecosystem` | `skills/user/etkm-content-ecosystem/` | 1.0 | 2026-04-03 | Governs all ETKM content strategy and production — how content pieces connect, what each format is designed to do, and how to build and maintain the full content system |
+| `etkm-crm-operations` | `skills/user/etkm-crm-operations/` | 1.3 | 2026-04-15 | Governs all ETKM Pipedrive CRM operations — pipeline architecture, stage definitions, deal hygiene, activity logging, and CRM-to-automation handoff |
+| `etkm-cta-architecture` | `skills/user/etkm-cta-architecture/` | 1.1 | 2026-04-26 | Governs all calls-to-action across ETKM content — digital and print, primary and secondary, inline and terminal |
+| `etkm-deliverable-qc` | `skills/user/etkm-deliverable-qc/` | 2.1 | 2026-03-14 | Non-negotiable QC gate for ALL ETKM deliverables before they reach Nathan |
+| `etkm-leadgen-architecture` | `skills/user/etkm-leadgen-architecture/` | 0.1 | 2026-04-10 | Content architecture for all ETKM lead-gen and funnel content |
+| `etkm-marketing-engine` | `skills/user/etkm-marketing-engine/` | 1.2 | 2026-04-26 | Governs all ETKM marketing strategy and campaign execution — paid ads, email sequences, social content, referral programs, and event promotion |
+| `etkm-notion-intelligence` | `skills/user/etkm-notion-intelligence/` | 1.1 | 2026-04-24 | Governs all work inside the ETKM Notion workspace — reading, writing, updating, and structuring pages and databases |
+| `etkm-pdf-pipeline` | `skills/user/etkm-pdf-pipeline/` | 1.0 | 2026-03-25 | Production pipeline for all ETKM PDF deliverables — lead magnets, guides, reference sheets, and printed assets |
+| `etkm-project-standard` | `skills/user/etkm-project-standard/` | 1.1 | 2026-03-29 | The operating standard for all ETKM projects — how work is scoped, handed off, tracked, and closed |
+| `etkm-seo` | `skills/user/etkm-seo/` | 1.0 | 2026-03-09 | Use this skill whenever writing, reviewing, or publishing any content for ETKM websites |
+| `etkm-system-governance` | `skills/user/etkm-system-governance/` | 1.0 | 2026-03-29 | Governs how the ETKM system (skills, automations, CRM, content, and toolstack) is maintained, audited, and evolved |
+| `etkm-training-program` | `skills/user/etkm-training-program/` | 2.1 | 2026-03-29 | Use this skill for ANY question or task related to the East Texas Krav Maga (ETKM) training program |
+| `etkm-web-production` | `skills/user/etkm-web-production/` | 1.0 | 2026-04-24 | Governs all ETKM web production work — HTML page builds, WordPress deployment, and web asset production |
+| `etkm-workflow-registry` | `skills/user/etkm-workflow-registry/` | 2.2 | 2026-04-01 | The authoritative registry of all ETKM automation workflows across Make.com and n8n |
+| `n8n-workflow-intelligence` | `skills/user/n8n-workflow-intelligence/` | 1.0 | 2026-04-23 | Bulletproof n8n intelligence layer for all three Claude surfaces — Chat, Cowork, and Code |
+| `nate-collaboration-workflow` | `skills/user/nate-collaboration-workflow/` | 3.3 | 2026-04-26 | How Claude and Nathan Lundstrom work together |
+| `skill-lifecycle` | `skills/user/skill-lifecycle/` | 1.1 | 2026-04-26 | Governs the full lifecycle of every skill in the ETKM skill system — authoring, validation, registration, versioning, and retirement |
 
 ## Disk Mount Registration
 
@@ -41,40 +40,33 @@ These skills are uploaded to Claude.ai (Customize → Skills) and load automatic
 
 | Skill | In Repo? | Notes |
 |---|---|---|
+| `etkm-audience-intelligence` | yes | — |
 | `etkm-behavior-intelligence` | yes | — |
 | `etkm-brand-foundation` | yes | — |
 | `etkm-brand-kit` | yes | — |
+| `etkm-content-ecosystem` | yes | — |
+| `etkm-crm-operations` | yes | — |
+| `etkm-cta-architecture` | yes | — |
 | `etkm-deliverable-qc` | yes | — |
 | `etkm-leadgen-architecture` | yes | — |
+| `etkm-marketing-engine` | yes | — |
+| `etkm-notion-intelligence` | yes | — |
+| `etkm-pdf-pipeline` | yes | — |
+| `etkm-project-standard` | yes | — |
+| `etkm-seo` | yes | — |
+| `etkm-system-governance` | yes | — |
+| `etkm-training-program` | yes | — |
+| `etkm-web-production` | yes | — |
+| `etkm-workflow-registry` | yes | — |
 | `n8n-workflow-intelligence` | yes | — |
 | `nate-collaboration-workflow` | yes | — |
+| `skill-lifecycle` | yes | — |
 
-### Pending Upload
+## Pending Upload
 
-In repo at `skills/user/` but not yet uploaded to Claude.ai. To onboard them, run `python3 scripts/package_skills.py --pending` to produce ZIPs in `dist/skills/`, then upload each via Claude.ai → Customize → Skills. Mirror the upload back to `REGISTERED.txt` afterward. Full procedure: `docs/skill-upload-procedure.md`.
+Skills in the repo but not yet in `REGISTERED.txt` (not mounted):
 
-- `etkm-audience-intelligence`
-- `etkm-content-ecosystem`
-- `etkm-crm-operations`
-- `etkm-cta-architecture`
-- `etkm-marketing-engine`
-- `etkm-notion-intelligence`
-- `etkm-pdf-pipeline`
-- `etkm-project-standard`
-- `etkm-seo`
-- `etkm-system-governance`
-- `etkm-training-program`
-- `etkm-web-production`
-- `etkm-workflow-registry`
-- `skill-lifecycle`
+| Skill | Location | Version | Updated |
+|---|---|---|---|
 
-## Schema
-
-Every `SKILL.md` must contain YAML frontmatter with:
-
-- `name` — slug matching the directory name
-- `version` — semver-style (e.g. `1.0`, `2.3`)
-- `updated` — ISO date (`YYYY-MM-DD`)
-- `description` — when to load the skill, scope, exclusions
-
-`.github/workflows/validate-skills.yml` enforces this schema and the SKILLS.md freshness check on every push.
+*(none — all repo skills are registered)*
