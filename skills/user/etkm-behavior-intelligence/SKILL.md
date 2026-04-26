@@ -1,7 +1,7 @@
 ---
 name: etkm-behavior-intelligence
-version: 1.0
-updated: 2026-04-11
+version: 1.1
+updated: 2026-04-26
 description: >
   Load this skill when producing any ETKM output where behavioral influence,
   identity framing, or persuasion architecture is at play. Triggers include:
@@ -19,8 +19,8 @@ description: >
 
 # ETKM Behavior Intelligence
 
-**Version:** 1.0
-**Last Updated:** 2026-04-11
+**Version:** 1.1
+**Last Updated:** 2026-04-26
 **Source:** Chase Hughes — synthesized from *The Ellipsis Manual*, *Six-Minute X-Ray*,
 *The Behavior Operations Manual*, and public appearances (Diary of a CEO,
 Shawn Ryan Show #253, JRE #2278).
@@ -115,6 +115,9 @@ Four-step sequence for aligning a desired action with an existing identity.
    they already want to become
 
 **Use in:** Email sequences, enrollment conversations, lead magnet CTAs.
+**CTA application:** The IDEA framework maps directly onto the four-element
+CTA structure in etkm-cta-architecture. Transformation statement = Empower + Align.
+Load etkm-cta-architecture to build the CTA once IDEA is applied.
 
 ### 4. The Safe Haven Trigger
 Bypasses defenses by naming the reader's unspoken experience before they do.
@@ -187,6 +190,10 @@ with a permission structure that makes action feel natural, not forced.
 **Right order:** "Here's who you already are → here's what that means → here's
 the next natural step for someone like you"
 
+**CTA note:** The permission structure at the end of the PCP sequence is where the
+CTA lives. Load etkm-cta-architecture to build the CTA — the transformation statement
+element maps directly onto the permission stage.
+
 ---
 
 ## Segment-to-Identity Map — ETKM Audiences
@@ -216,12 +223,14 @@ The 6-step identity trap maps directly onto sequence structure:
 ### Lead-gen PDFs
 Open with safe haven trigger or negative dissociation. Use IDEA framework
 to structure the middle. Close with Lego technique — place pieces, let
-reader reach the conclusion. Never hard-close a PDF.
+reader reach the conclusion. Never hard-close a PDF. CTA at the end:
+load etkm-cta-architecture for structure.
 
 ### Enrollment / trial copy
 PCP model governs the page structure. FATE activates in this order:
 Tribe headline → Authority credibility signal → Emotion (internal problem
 named) → Focus (unexpected specificity that creates pattern interrupt).
+CTA is the permission stage — load etkm-cta-architecture.
 
 ### Curriculum framing
 Students adopt training identity through positive group attribution
@@ -253,5 +262,16 @@ student experience arc should follow the IDEA framework across weeks 1–6.
 - Does it follow PCP order — perception first, permission last?
 - Is any aimed language present? (If yes — rewrite as world observation.)
 - Does the reader reach the conclusion themselves, or are we stating it?
+- Is the CTA built per etkm-cta-architecture — transformation statement present,
+  direct and transitional CTAs present, stakes line calibrated to the arc?
 - Does the ETKM brand-foundation skill still govern voice and tone?
   (This skill adds behavioral architecture — it does not replace brand voice.)
+
+---
+
+## Changelog
+
+- V1.1 — 2026-04-26 — Added etkm-cta-architecture cross-references to IDEA
+  Framework, PCP Model, Application by Content Type, and Final Check. No
+  existing content removed or modified.
+- V1.0 — 2026-04-11 — Initial build.
