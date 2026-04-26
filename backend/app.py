@@ -906,7 +906,9 @@ def handle_mcp_tool(tool_name: str, tool_input: dict) -> dict:
             return {"type": "text", "text": json.dumps({"skills": skill_names, "count": len(skill_names)})}
 
         elif tool_name == "get_skill":
-            skill_name = tool_input.get("skill_name", "").removeprefix("user/")
+            skill_name = tool_input.get("skill_name", "")
+            while skill_name.startswith("user/"):
+                skill_name = skill_name[5:]
             try:
                 content = github_get_file(f"skills/user/{skill_name}/SKILL.md")
             except Exception:
@@ -946,7 +948,12 @@ def handle_mcp_tool(tool_name: str, tool_input: dict) -> dict:
             commit_message = tool_input.get("commit_message", f"Update skill: {skill_name}")
             if not skill_name or not content:
                 return {"type": "text", "text": "Error: skill_name and content are required"}
-            skill_name = skill_name.removeprefix("user/")
+            while skill_name.startswith("user/"):
+                skill_name = skill_name[5:]
+            if len(content.strip()) < 100:
+                return {"type": "text", "text": "Error: skill content too short (min 100 chars). Refusing to overwrite."}
+            if "---" not in content:
+                return {"type": "text", "text": "Error: skill content missing YAML frontmatter (---). All SKILL.md files require frontmatter."}
             path   = f"skills/user/{skill_name}/SKILL.md"
             result = github_push_file(path, content, commit_message)
             return {"type": "text", "text": json.dumps({
