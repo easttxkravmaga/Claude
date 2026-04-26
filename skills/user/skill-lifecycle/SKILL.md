@@ -1,6 +1,6 @@
 ---
 name: skill-lifecycle
-version: 1.0
+version: 1.1
 updated: 2026-04-26
 description: >
   Governs the full lifecycle of ETKM skill creation and updates — naming
@@ -47,6 +47,7 @@ file — the frontmatter must be correct from line one.
 ---
 name: <skill-name-in-kebab-case>
 version: 1.0
+updated: <YYYY-MM-DD>
 description: >
   One to three sentences. What this skill does and exactly when to load it.
   Be specific about trigger conditions — vague descriptions cause missed loads.
