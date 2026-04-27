@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>The Training Matrix — East Texas Krav Maga</title>
+<style>
+  :root {
+    --bg: #000000;
+    --surface: #111111;
+    --line: #2A2A2A;
+    --text: #FFFFFF;
+    --muted: #B8B8B8;
+    --etkm-red: #CC0000;
+    --q-green:  #2E8B3D;
+    --q-yellow: #C9A227;
+    --q-orange: #E87A1F;
+    --q-red:    #CC0000;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+  }
+
+  .frame {
+    width: 100%;
+    max-width: 1080px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    padding: 56px 56px 48px;
+  }
+
+  .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 24px;
+  }
+
+  .eyebrow .bar {
+    width: 36px;
+    height: 2px;
+    background: var(--etkm-red);
+  }
+
+  h1 {
+    font-size: 56px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    line-height: 1.02;
+    margin-bottom: 14px;
+  }
+
+  .lede {
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--muted);
+    max-width: 720px;
+    margin-bottom: 40px;
+  }
+
+  .lede strong { color: var(--text); font-weight: 600; }
+
+  /* Matrix layout: y-axis label column | grid + x-axis label rows */
+  .matrix {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    grid-template-rows: 1fr auto;
+    gap: 0;
+  }
+
+  .y-axis {
+    grid-column: 1;
+    grid-row: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid var(--line);
+  }
+
+  .y-axis span {
+    transform: rotate(-90deg);
+    white-space: nowrap;
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .grid {
+    grid-column: 2;
+    grid-row: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 4px;
+    background: var(--bg);
+  }
+
+  .x-axis {
+    grid-column: 2;
+    grid-row: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding-top: 16px;
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .x-axis .arrow {
+    width: 80px;
+    height: 1px;
+    background: var(--line);
+  }
+
+  .cell {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    color: #FFFFFF;
+    overflow: hidden;
+  }
+
+  .cell .axis-tag {
+    font-size: 10px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    opacity: 0.85;
+    font-weight: 600;
+  }
+
+  .cell .verdict {
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+  }
+
+  .cell .desc {
+    font-size: 13px;
+    line-height: 1.45;
+    opacity: 0.92;
+    max-width: 90%;
+  }
+
+  .cell .corner {
+    position: absolute;
+    top: 18px;
+    right: 22px;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    font-weight: 700;
+    opacity: 0.9;
+  }
+
+  .q-tl { background: var(--q-red); }       /* High risk, Low freq  -> DRILL IT */
+  .q-tr { background: var(--q-orange); }    /* High risk, High freq -> DRILL IT */
+  .q-bl { background: var(--q-green); }     /* Low risk,  Low freq  -> NO DRILL */
+  .q-br { background: var(--q-yellow); }    /* Low risk,  High freq -> NO DRILL */
+
+  .footer {
+    margin-top: 36px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-top: 1px solid var(--line);
+    padding-top: 20px;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .footer .rule {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text);
+    max-width: 640px;
+  }
+
+  .footer .rule .accent {
+    color: var(--etkm-red);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+
+  .footer .mark {
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 720px) {
+    .frame { padding: 36px 24px; }
+    h1 { font-size: 40px; }
+    .cell .verdict { font-size: 22px; }
+    .cell { padding: 20px; }
+    .cell .corner { top: 14px; right: 16px; font-size: 10px; }
+  }
+</style>
+</head>
+<body>
+  <main class="frame">
+
+    <div class="eyebrow">
+      <span class="bar"></span>
+      <span>East Texas Krav Maga / Decision Tool</span>
+    </div>
+
+    <h1>The Training Matrix</h1>
+
+    <p class="lede">
+      Wilson's risk and frequency grid. Two questions decide whether a technique earns reps:
+      <strong>How likely is it to happen?</strong> and <strong>How bad is it if it does?</strong>
+      Plot the threat. Train where it counts.
+    </p>
+
+    <section class="matrix" aria-label="Training Matrix">
+      <div class="y-axis"><span>Risk &nbsp; &rarr; &nbsp; High</span></div>
+
+      <div class="grid">
+        <!-- Top-Left: High Risk, Low Frequency -->
+        <div class="cell q-tl">
+          <div class="corner">Red</div>
+          <div class="axis-tag">High Risk &middot; Low Frequency</div>
+          <div class="verdict">Drill It.</div>
+          <div class="desc">Rare, but it can end you. Train it cold so the body knows the answer when the mind goes blank.</div>
+        </div>
+
+        <!-- Top-Right: High Risk, High Frequency -->
+        <div class="cell q-tr">
+          <div class="corner">Orange</div>
+          <div class="axis-tag">High Risk &middot; High Frequency</div>
+          <div class="verdict">Drill It.</div>
+          <div class="desc">Common and dangerous. This is the core of the curriculum. Reps every week, every cycle.</div>
+        </div>
+
+        <!-- Bottom-Left: Low Risk, Low Frequency -->
+        <div class="cell q-bl">
+          <div class="corner">Green</div>
+          <div class="axis-tag">Low Risk &middot; Low Frequency</div>
+          <div class="verdict">No Drill Needed.</div>
+          <div class="desc">Unlikely and survivable. Don't spend mat time here. Awareness handles it.</div>
+        </div>
+
+        <!-- Bottom-Right: Low Risk, High Frequency -->
+        <div class="cell q-br">
+          <div class="corner">Yellow</div>
+          <div class="axis-tag">Low Risk &middot; High Frequency</div>
+          <div class="verdict">No Drill Needed.</div>
+          <div class="desc">Happens often, costs little. Note it, move on. Reps spent here are reps stolen from real threats.</div>
+        </div>
+      </div>
+
+      <div class="x-axis">
+        <span>Low</span>
+        <span class="arrow"></span>
+        <span>Frequency</span>
+        <span class="arrow"></span>
+        <span>High</span>
+      </div>
+    </section>
+
+    <div class="footer">
+      <p class="rule">
+        <span class="accent">THE RULE:</span>
+        Reps belong where the cost is real. Train the threats that are likely, severe, or both.
+        Skip the rest.
+      </p>
+      <div class="mark">East Texas Krav Maga</div>
+    </div>
+
+  </main>
+</body>
+</html>
