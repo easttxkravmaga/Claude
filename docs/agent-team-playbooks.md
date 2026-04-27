@@ -56,12 +56,12 @@ Files owned: `output/qa-report.md`
 Receives: File path from Developer  
 QA checklist for this project type:
 - Zero prohibited words in copy
-- No light/white backgrounds anywhere
-- Red used correctly (accent only, not decorative)
+- No light/white backgrounds anywhere — **automated:** run `node tools/playwright/qc-html.mjs output` and confirm PASS for this file in `output/qa-report-visual.md`
+- Red used correctly (accent only, not decorative) — same automated check flags overuse (>12 elements)
 - All CTAs present and functional
 - No placeholder text remaining
 - File is self-contained (no broken external links)
-- Mobile layout intact
+- Mobile layout intact — automated screenshot at 390×844 written to `output/qc-screenshots/<slug>-mobile.png`; QA reviews
 - Nathan's experience described in evergreen phrasing only
 If failures found: Message Developer (copy issues → message Copy Writer) with numbered list.  
 When all gates pass: Confirm PASS to main agent.
