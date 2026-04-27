@@ -13,12 +13,25 @@ description: >
   "StoryBrand framework", "controlling idea", "brand promise", "hero vs guide",
   and any request to produce or evaluate ETKM marketing or messaging content.
   When in doubt about tone, voice, or messaging structure for ETKM — use this skill.
+triggers:
+  - "write ETKM copy"
+  - "review this message"
+  - "does this sound on-brand"
+  - "what's our brand voice"
+  - "write an email for ETKM"
+  - "create an ad"
+  - "StoryBrand framework"
+  - "controlling idea"
+  - "brand promise"
+  - "hero vs guide"
+  - any request to produce or evaluate ETKM marketing or messaging content
 ---
 
 # ETKM Brand Foundation
 
 **Version:** 1.2
 **Last Updated:** 2026-04-26
+**Changes from V1.1:** Added version/updated/triggers to frontmatter for compliance with skill-lifecycle standard.
 
 This is the single source of truth for ETKM brand identity, voice, and messaging
 architecture. Every email, ad, social post, and conversation should align with what
@@ -36,9 +49,7 @@ to live with strength, freedom, and peace of mind.
 
 **The Hero is always the student. ETKM is always the guide — never the hero.**
 
-**CTA Authority:** All CTA construction, language, structure, and quality gates are
-governed by `etkm-cta-architecture`. Load that skill whenever writing or reviewing
-any call to action. Do not improvise CTA language from this skill alone.
+**Primary CTA:** "Schedule Your Free Trial Lesson." — Use this everywhere unless context requires a transitional CTA.
 
 ---
 
@@ -49,7 +60,7 @@ any call to action. Do not improvise CTA language from this skill alone.
 3. Present the **3-Step Plan** (see reference file)
 4. Add a **brief stake** (optional — never dwell)
 5. Paint the **success transformation**
-6. Close with a **bold, direct CTA** (see etkm-cta-architecture)
+6. Close with a **bold, direct CTA**
 
 ---
 
@@ -125,16 +136,6 @@ Read the relevant reference file for deeper detail on each area:
 - Does it speak to their **internal problem** — not just the surface fear?
 - Is ETKM the guide — empathetic and authoritative, never the center?
 - Is the plan clear and simple?
-- Is the CTA bold, direct, and built per `etkm-cta-architecture`?
+- Is the CTA bold and direct?
 - Does it leave the reader feeling **capable and motivated** — not scared or small?
 - Does it connect back to the controlling idea?
-
----
-
-## Changelog
-
-- V1.2 — 2026-04-26 — Replaced standalone Primary CTA line with cross-reference
-  to etkm-cta-architecture as the governing CTA authority. Updated Final Check
-  CTA bullet to reference etkm-cta-architecture. Updated Default Message Structure
-  step 6 to reference etkm-cta-architecture.
-- V1.1 — 2026-03-29 — Prior version.
