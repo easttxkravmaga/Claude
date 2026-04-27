@@ -4,6 +4,7 @@
 **Authority:** Nathan Lundstrom / East Texas Krav Maga  
 **Version:** 1.0  
 **Repo:** easttxkravmaga/Claude  
+**Location:** Tyler, Texas  
 
 ---
 
