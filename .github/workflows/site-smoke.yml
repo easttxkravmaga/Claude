@@ -1,0 +1,155 @@
+name: Site Smoke Test
+
+on:
+  schedule:
+    # 13:00 UTC daily = 8AM Central (CDT) / 7AM Central (CST)
+    - cron: '0 13 * * *'
+  workflow_dispatch:
+    inputs:
+      url:
+        description: 'Override URL to smoke-test'
+        required: false
+        default: ''
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/site-smoke.yml'
+      - 'tools/playwright/flows/etxkravmaga-smoke.mjs'
+      - 'tools/playwright/package.json'
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: site-smoke
+  cancel-in-progress: false
+
+env:
+  TRACKING_ISSUE_TITLE: 'Site smoke test failing: etxkravmaga.com'
+
+jobs:
+  lint:
+    name: Lint smoke script
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax check
+        run: |
+          node --check tools/playwright/flows/etxkravmaga-smoke.mjs
+          node --check tools/playwright/qc-html.mjs
+
+  smoke:
+    name: Run smoke test
+    needs: lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: tools/playwright/package.json
+
+      - name: Install Playwright deps
+        working-directory: tools/playwright
+        run: npm install --no-audit --no-fund
+
+      - name: Cache Playwright browsers
+        id: pw-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: pw-browsers-${{ runner.os }}-1.56.1
+
+      - name: Install Chromium
+        if: steps.pw-cache.outputs.cache-hit != 'true'
+        working-directory: tools/playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Install browser system deps (cache hit)
+        if: steps.pw-cache.outputs.cache-hit == 'true'
+        working-directory: tools/playwright
+        run: npx playwright install-deps chromium
+
+      - name: Run smoke test
+        id: smoke
+        env:
+          SMOKE_URL: ${{ github.event.inputs.url || 'https://etxkravmaga.com' }}
+          SMOKE_ARTIFACTS_DIR: ${{ github.workspace }}/artifacts
+        run: node tools/playwright/flows/etxkravmaga-smoke.mjs
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-artifacts-${{ github.run_id }}
+          path: artifacts/
+          retention-days: 14
+          if-no-files-found: warn
+
+      - name: Open or update tracking issue on failure
+        if: failure() && steps.smoke.conclusion == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          REPORT_PATH="artifacts/smoke-report.md"
+          REPORT_BODY=""
+          if [ -f "$REPORT_PATH" ]; then
+            REPORT_BODY="$(cat "$REPORT_PATH")"
+          else
+            REPORT_BODY="_(smoke-report.md was not produced — runner-level failure; see workflow logs)_"
+          fi
+          BODY=$(cat <<EOF
+          $REPORT_BODY
+
+          ---
+          - Workflow run: $RUN_URL
+          - Triggered by: \`${{ github.event_name }}\`
+          - Commit: ${{ github.sha }}
+          EOF
+          )
+
+          EXISTING=$(gh issue list \
+            --state open \
+            --search "$TRACKING_ISSUE_TITLE in:title" \
+            --json number,title \
+            --jq '[.[] | select(.title == env.TRACKING_ISSUE_TITLE)] | first | .number // empty')
+
+          if [ -n "$EXISTING" ]; then
+            echo "Commenting on existing issue #$EXISTING"
+            gh issue comment "$EXISTING" --body "$BODY"
+          else
+            echo "Opening new tracking issue"
+            gh issue create \
+              --title "$TRACKING_ISSUE_TITLE" \
+              --label "smoke-test,site-down" \
+              --body "$BODY"
+          fi
+
+      - name: Close tracking issue on recovery
+        if: success() && steps.smoke.conclusion == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          EXISTING=$(gh issue list \
+            --state open \
+            --search "$TRACKING_ISSUE_TITLE in:title" \
+            --json number,title \
+            --jq '[.[] | select(.title == env.TRACKING_ISSUE_TITLE)] | first | .number // empty')
+          if [ -n "$EXISTING" ]; then
+            echo "Closing recovered issue #$EXISTING"
+            gh issue close "$EXISTING" \
+              --comment "Smoke test passing again. Run: $RUN_URL"
+          else
+            echo "No open tracking issue — nothing to close."
+          fi

@@ -14,9 +14,11 @@ import { join, resolve, relative, basename, extname } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { createRequire } from 'node:module';
 
-// Resolve playwright from globals if not in this project
+// Resolve playwright from local tools dir, repo root, then globals
 function loadPlaywright() {
+  const here = new URL('.', import.meta.url).pathname;
   const candidates = [
+    here,                                   // tools/playwright/ (npm ci here in CI)
     process.cwd(),
     '/opt/node22/lib/node_modules',
     '/usr/lib/node_modules',
@@ -28,7 +30,7 @@ function loadPlaywright() {
       return req('playwright');
     } catch { /* try next */ }
   }
-  throw new Error('playwright not found. Install with: npm install -g playwright');
+  throw new Error('playwright not found. Run `npm ci` in tools/playwright or `npm install -g playwright`');
 }
 
 if (!process.env.PLAYWRIGHT_BROWSERS_PATH && existsSync('/opt/pw-browsers')) {

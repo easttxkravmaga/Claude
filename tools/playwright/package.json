@@ -1,0 +1,13 @@
+{
+  "name": "etkm-playwright-tools",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "ETKM internal Playwright tooling — QC, smoke tests, recon",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "playwright": "1.56.1"
+  }
+}
