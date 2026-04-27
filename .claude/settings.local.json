@@ -1,5 +1,11 @@
 {
   "experimental": {
     "agentTeams": true
+  },
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p .claude/hooks)",
+      "Bash(chmod +x .claude/hooks/session-start.sh)"
+    ]
   }
 }
