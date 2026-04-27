@@ -1,7 +1,7 @@
 ---
 name: etkm-brand-kit
-version: 3.1
-updated: 2026-03-29
+version: 3.2
+updated: 2026-04-26
 description: >
   Use this skill whenever producing any visual output for ETKM — HTML pages, PDFs,
   presentations, forms, social media image briefs, React artifacts, SVGs, flyers,
@@ -13,13 +13,25 @@ description: >
   "black and white design". If the output will be seen by students, prospects, or
   the public and carries the ETKM name, use this skill. Non-negotiable for all
   final-revision and production-ready visual work.
+triggers:
+  - "make it on-brand"
+  - "ETKM brand"
+  - "brand colors"
+  - "brand kit"
+  - "visual style"
+  - "design for ETKM"
+  - "branded"
+  - "Swiss layout"
+  - "red accent"
+  - "black and white design"
+  - any visual output that will carry the ETKM name
 ---
 
 # ETKM Brand Kit
 
-**Version:** 3.1
-**Last Updated:** 2026-03-29
-**Changes from V3.0:** #FF0000 → #CC0000 sitewide. Added Section 8 (Cinematic Visual Doctrine core rules). Added changelog.
+**Version:** 3.2
+**Last Updated:** 2026-04-26
+**Changes from V3.1:** Added version/updated/triggers to frontmatter for compliance with skill-lifecycle standard.
 
 ---
 
@@ -181,5 +193,6 @@ When creating AI image prompts, Canva image briefs, or any visual content direct
 
 ## CHANGELOG
 
-- V3.1 — 2026-03-29 — #FF0000 → #CC0000 sitewide. Added Section 8 (Cinematic Visual Doctrine core rules absorbed from etkm-cinematic-doctrine). Added changelog.
+- V3.2 — 2026-04-26 — Added version/updated/triggers to frontmatter for skill-lifecycle compliance.
+- V3.1 — 2026-03-29 — #FF0000 → #CC0000 sitewide. Added Section 8 (Cinematic Visual Doctrine core rules). Added changelog.
 - V3.0 — 2026-03-09 — Full restructure with Swiss layout system, image handling rules, and prohibited elements.
