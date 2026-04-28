@@ -1,17 +1,14 @@
 ---
 name: etkm-carousel-system
-version: 1.1
+version: 1.2
 updated: 2026-04-27
 description: >
   Production ruleset for building ETKM Instagram carousels. Carries slide type
   selection logic, key rules per type A-Z, design tokens, responsive headline
-  sizing, StoryBrand compliance, and dual-mode QC gates (Gate 1: design
-  compliance, Gate 2: messaging compliance). Load this skill at the start of
-  every carousel build session. References ETKM Carousel System Notion page
-  (34e924c8) for full visual specs — this skill carries execution rules only.
-  Depends on etkm-brand-foundation and etkm-cta-architecture. Load
-  etkm-audience-intelligence on-demand when building segment-specific carousels.
-  V1.1: Added Type Z Brand Close back cover spec and static/dynamic layer rule.
+  sizing, StoryBrand compliance, and dual-mode QC gates. V1.2: Type G (separate
+  CTA slide) retired. Type Z now serves as the single final slide carrying both
+  the StoryBrand four-element CTA and the brand close. Standard carousel is now
+  10 positions. References ETKM Carousel System Notion page (34e924c8).
 triggers:
   - "build a carousel"
   - "carousel slide"
@@ -25,7 +22,8 @@ triggers:
   - "save magnet"
   - "carousel QC"
   - "back cover"
-  - "brand close"
+  - "final slide"
+  - "CTA slide"
 depends_on:
   - etkm-brand-foundation
   - etkm-cta-architecture
@@ -35,21 +33,15 @@ loads_on_demand:
 
 # ETKM Carousel System
 
-**Version:** 1.1
+**Version:** 1.2
 **Last Updated:** 2026-04-27
-**Changes from V1.0:** Added Type Z Brand Close spec (Section 5 and Section 13). Updated standard carousel sequence to 11 positions. Added static/dynamic layer rule for back cover production.
-**Notion Reference:** ETKM Carousel System — Design & Messaging Standards (page 34e924c8)
-**Library Reference:** ETKM Carousel Slide Type Library v3 (25 types A-Y) + Type Z Brand Close
-
-This skill governs execution. Full visual specs, pixel values, and layout documentation
-live in the Notion page and HTML library. This skill answers three operational questions:
-Which type do I select? What are the non-negotiable rules? Did the output pass the gate?
+**Changes from V1.1:** Type G (separate CTA close) retired. Type Z now unified — carries StoryBrand four-element CTA + brand close on one black slide. Standard carousel sequence is 10 positions. Production template: etkm_final_slide_TEMPLATE.html. Only badge and counter change per carousel.
+**Notion Reference:** ETKM Carousel System (page 34e924c8)
+**Library Reference:** ETKM Carousel Slide Type Library v3 (25 types A-Y) + Type Z
 
 ---
 
 ## Section 1 — Design Token System (Locked)
-
-Five tokens. Two fonts. One canvas. No exceptions.
 
 | Token | Value | Role |
 |---|---|---|
@@ -57,93 +49,79 @@ Five tokens. Two fonts. One canvas. No exceptions.
 | Primary white | #FFFFFF | Headlines, body copy |
 | Signal red | #CC0000 | Accent, badge, CTA button, red bar |
 | Mid gray | #575757 | Eyebrows, swipe cue, dividers |
-| Light gray | #BBBBBB | Counters, attribution, ghost numerals |
+| Light gray | #BBBBBB | Counters, attribution |
 | Headline font | Montserrat 900 | ALL CAPS, all headlines |
 | Body font | Inter 400/600 | Sub-lines, body, spec text |
 | Canvas | 1080x1350px | 4:5 portrait, sRGB, JPG 90% |
 
 Hard rules:
-- #CC0000 appears maximum three places per slide: red bar (always), series badge bg (always), one optional H1 accent line
-- #BBBBBB and #575757 never appear on the same text element at the same weight
-- #FF0000 is permanently retired — never use
-- Gradients, pastels, and trend palettes are prohibited
+- #CC0000: red bar (always) + series badge bg (always) + one optional H1 accent line per body slide
+- #FF0000 permanently retired
+- Gradients, pastels, trend palettes prohibited
 
 ---
 
 ## Section 2 — Structural Elements (Fixed Layer)
 
-These six elements appear on every slide at fixed positions. They never move, scale, or change color.
+Present on every slide at fixed positions. Never move, scale, or change color.
 
 | Element | Position | Size | Color | Override |
 |---|---|---|---|---|
-| Red bar | Left edge, full height | 25px wide | #CC0000 | None — never removed |
-| Series badge | Top-left X:100px Y:60px | Montserrat 900 22px | #FFF on #CC0000 bg | Content changes per series only |
+| Red bar | Left edge, full height | 25px | #CC0000 | None — never removed |
+| Series badge | Top-left X:100px Y:60px | Montserrat 900 22px | #FFF on #CC0000 | Content changes per series only |
 | Slide counter | Top-right X:1020px Y:68px | Inter 400 22px | #BBBBBB | Numbers change only |
-| ETKM logo | Bottom-left X:100px Y:1255px | Montserrat 900 28px | #CC0000 | CTA slide: 48px centered. Back cover: omitted (logo image used instead) |
-| Swipe cue | Bottom-right X:1020px Y:1258px | Inter 400 18px | #575757 | CTA slide: ETXKRAVMAGA.COM. Back cover: omitted |
-| Bottom rule | Y:1230px X:100px-980px | 1px | rgba(255,255,255,0.10) | CTA slide: 0.20 opacity. Back cover: present in static layer |
+| ETKM logo text | Bottom-left X:100px Y:1255px | Montserrat 900 28px | #CC0000 | Type Z: in static core |
+| Swipe cue | Bottom-right X:1020px Y:1258px | Inter 400 18px | #575757 | Type Z: omitted (no swipe on final slide) |
+| Bottom rule | Y:1230px X:100px-980px | 1px | rgba(255,255,255,0.10) | Type Z: in static core |
 
 ---
 
 ## Section 3 — Photo & Background Treatment (Locked)
 
-Every slide (01 through N-2): Two-layer system applied identically.
+Body slides (01 through N-1): Two-layer system applied identically.
+- Layer A: grayscale 100%, brightness 40%, contrast +20%, 4:5 portrait crop
+- Layer B: solid black overlay, 45% opacity
 
-Layer A — Image processing:
-- Color mode: grayscale 100%
-- Brightness: 40%
-- Contrast: +20%
-- Crop: 4:5 portrait, action zone centered
-
-Layer B — Normalization overlay:
-- Type: solid black rectangle, full bleed
-- Opacity: 45%
-- CTA slide override: 60% opacity only
-
-Series photo rule: One photo per carousel. Same photo, identical treatment, all body slides.
-CTA close (Type G): no photo — #000 solid field.
-Back cover (Type Z): no photo — #000 solid field. Static core PNG handles the full layout.
-
-Graphic-only slides (no photo available): #000 solid background. All structural elements unchanged.
+Series photo rule: One photo per carousel. Same photo, same treatment, all body slides.
+Type Z (final slide): #000000 solid — no photo, no overlay. Static core PNG handles all layout.
 
 ---
 
 ## Section 4 — Typography Hierarchy
 
-| Role | Font | Size (canvas) | Case | Color | Usage |
-|---|---|---|---|---|---|
-| H1 Headline | Montserrat 900 | 108px | ALL CAPS | #FFFFFF | Cover headlines |
-| H1 Responsive | Montserrat 900 | See below | ALL CAPS | #FFFFFF | Body slide headlines |
-| H2 Sub-headline | Inter 600 | 36px | Sentence | rgba(255,255,255,0.60) | Supporting context |
-| Body copy | Inter 400 | 30px | Sentence | rgba(255,255,255,0.75) | Content slides only |
-| Micro label | Montserrat 900 | 22px | ALL CAPS | #BBBBBB | Eyebrows, counters, step labels |
+| Role | Font | Canvas size | Color |
+|---|---|---|---|
+| H1 Cover | Montserrat 900 | 108px | #FFFFFF |
+| H1 Body (responsive) | Montserrat 900 | See below | #FFFFFF |
+| H2 Sub-headline | Inter 600 | 36px | rgba(255,255,255,0.60) |
+| Body copy | Inter 400 | 30px | rgba(255,255,255,0.75) |
+| Micro label | Montserrat 900 | 22px | #BBBBBB |
 
 Responsive headline sizing (body slides):
-- 1-2 words per line: 52px tracking -1.5px
-- 3-4 words per line: 46px tracking -1px
-- 5+ words per line: 36px tracking -0.5px
-- max-width: 340px on all body slide headlines — hard limit, no exceptions
+- 1-2 words per line: 52px, -1.5px tracking
+- 3-4 words per line: 46px, -1px tracking
+- 5+ words per line: 36px, -0.5px tracking
+- max-width: 340px — hard limit, no exceptions
 
-H1 red accent rule: Maximum one line per slide rendered in #CC0000. One line only.
+Red accent rule: Maximum one line per slide in #CC0000.
 
 ---
 
 ## Section 5 — Slide Type Selection Logic
 
-### The 11-Position Standard Sequence (Full Carousel with Back Cover)
+### Standard 10-Position Sequence
 
-| Position | Type | Job | Non-negotiable rule |
+| Position | Type | Job | Key rule |
 |---|---|---|---|
-| Slide 01 | A Cover Hook | Stop the scroll | External problem only, no solutions, sub-line max 12 words |
-| Slide 02 | B Re-Hook | Second-chance hook | Inverts cover register, works cold, internal problem |
-| Slide 03 | C Stakes Bridge | Authority establishment | Philosophical claim, bridge line required, never bashes alternatives |
+| Slide 01 | A Cover Hook | Stop the scroll | External problem, no solutions, sub-line max 12 words |
+| Slide 02 | B Re-Hook | Second-chance hook | Inverts cover, works cold, internal problem |
+| Slide 03 | C Stakes Bridge | Authority + philosophical problem | Bridge line required, never bashes alternatives |
 | Slides 04-N | D Principle Body | Value delivery | One idea per slide, max 40 words, bridge line on all but final |
-| Midpoint slide 5-7 | E H I or O (one only) | Pattern interrupt | Maximum ONE per carousel, breaks visual rhythm |
-| Slide N-2 | F Save Magnet | Algorithm play | Reference card format, Screenshot this, standalone test required |
-| Slide N-1 | G CTA Close | Conversion | Four StoryBrand elements, #CC0000 button, prohibited language check |
-| Slide N | Z Brand Close | Brand impression | Static core PNG + dynamic badge and counter only |
+| Midpoint 5-7 | E/H/I/O/U/V (one only) | Pattern interrupt | Maximum ONE per carousel |
+| Slide N-1 | F Save Magnet | Algorithm play | Reference card, "Screenshot this", standalone test required |
+| Slide N | Z Final Slide | CTA + Brand close | Static core PNG — edit badge and counter only |
 
-### Content Type to Slide Type Matrix
+### Content Type Matrix
 
 | Carousel type | Slide 03 | Body slides | Pattern interrupt |
 |---|---|---|---|
@@ -157,231 +135,213 @@ H1 red accent rule: Maximum one line per slide rendered in #CC0000. One line onl
 
 ### Additional Type Insertion Rules
 
-| Type | When to insert | Position |
+| Type | When | Position |
 |---|---|---|
-| L Book Reference | When a principle can be sourced to a named book | Any body position |
-| M Three-Step Process | What to do when X scenarios | Any body position |
-| N Extended Quote | External authority reinforces the point | After Type D body slides |
-| O Myth Buster | A held belief needs correcting | Pattern interrupt position |
-| P Before/After | Transformation arc needs making visible | Before CTA slide |
-| Q Framework | Teaching a named mental model | Body position after context |
-| R Timeline | Curriculum or progression content | Body position |
-| S Comparison Table | Two approaches across multiple dimensions | Body position |
-| T Checklist | Actionable audit the viewer applies now | Body position |
-| U Misconception Chain | Compounding false beliefs to bad outcome | Pattern interrupt |
-| V Did You Know | Three rapid-fire surprising facts | Body or pattern interrupt |
-| W Decision Tree | Conditional protocol: if X do Y | Body position |
-| X Authority Credentials | Guide authority needed | Slide 5 or later — never 1-3 |
-| Y Social Proof | Student proof before conversion | Before CTA slide |
-| Z Brand Close | Every carousel — always last | Final slide N — always |
+| L Book Reference | Principle sourced to a named book | Any body position |
+| M Three-Step Process | What to do when X | Any body position |
+| N Extended Quote | External authority reinforces point | After Type D |
+| O Myth Buster | Held belief needs correcting | Pattern interrupt |
+| P Before/After | Transformation arc needs visibility | Before final slide |
+| Q Framework | Named mental model | Body after context |
+| R Timeline | Curriculum or progression | Body position |
+| S Comparison Table | Two approaches, multiple dimensions | Body position |
+| T Checklist | Actionable audit | Body position |
+| U Misconception Chain | Compounding false beliefs | Pattern interrupt |
+| V Did You Know | Three rapid-fire facts | Body or pattern interrupt |
+| W Decision Tree | If X do Y protocol | Body position |
+| X Authority Credentials | Guide authority needed | Slide 5 or later |
+| Y Social Proof | Student proof before conversion | Before final slide |
 
 ---
 
 ## Section 6 — StoryBrand Compliance Rules
 
-The hero rule: The student is always the hero. ETKM is always the guide.
-- Every headline must be about the student's reality — not ETKM's credentials
+Hero rule: Student is always hero. ETKM is always guide.
+- Every headline is about the student's reality — not ETKM's credentials
 - ETKM is never the subject of a body slide sentence
-- Authority is established by depth of knowledge, not by self-promotion
 
-The villain rule: The threat, the false belief, or the missed skill is the villain.
-- Never make another school, approach, or instructor the villain
-- Never shame the audience for not knowing something
+Villain rule: The threat, false belief, or missed skill is the villain.
+- Never make another school or instructor the villain
+- Never shame the audience
 
-The guide formula: Empathy first, authority second.
-- Empathy = naming what the hero already feels
-- Authority = delivering the plan with confidence, not credentials
+Guide formula: Empathy first, authority second.
 - Never lead with ETKM's history or certifications
 
 Bridge line rule: Every body slide (D-S) except the final principle slide ends with a bridge line.
-- Bridge lines open a loop — they do not reveal the answer
+- Opens a loop, never reveals the answer
 - Format: italic, Inter 400, 10px, #575757
 
-CTA four-element rule (Type G):
-1. Transformation statement: Stop [X]. Start [Y]. — identity shift, not skill promise
-2. Direct CTA: action verb + specific action + location (Attend a Free Trial Class — Tyler, TX)
-3. Transitional CTA: DM keyword format (DM us PRINCIPLES for the free guide)
-4. Stakes line (optional ~50%): acknowledgment that waiting has a cost
-
-Prohibited CTA language: Learn More / Get Started / Click Here / Sign Up — never on any slide
+CTA rules (all governed by etkm-cta-architecture skill):
+- Four-element structure: transformation → direct CTA → transitional CTA → stakes line
+- Direct CTA: action verb + specific action + location (Tyler, TX)
+- Prohibited: "Learn More" / "Get Started" / "Click Here" / "Sign Up"
+- ETKM General primary set: "Stop hoping you could handle it. Start knowing." / "Attend a Free Trial Class" / "DM us CONFIDENT" / "Because waiting does not make the threat go away."
 
 ---
 
 ## Section 7 — Arc Construction Protocol
 
-Before building any carousel, the arc must be locked. Building before arc lock is prohibited.
+Arc must be locked before building. Building before arc lock is prohibited.
 
-Step 1 — Content type selection: Identify the carousel type from the matrix in Section 5. Name the content arc explicitly.
-
-Step 2 — Principle sequence: Order principles by how they activate in a real encounter.
-Physical logic: Awareness to Distance to Mobility to Angle to Improvise (Krav)
-De-escalation logic: Awareness to Verbal to Distance to Positioning to Physical
-
-Step 3 — Pattern interrupt placement: Identify the midpoint slide (position 5-7). Select pattern interrupt type. Mark it in the arc before building.
-
-Step 4 — Save magnet content: Draft the save magnet before building body slides. If it cannot be drafted, the arc is incomplete.
-
-Step 5 — Nathan approval: Present the complete arc map before building. Do not build until arc is approved. Non-negotiable per Rule 1 of nate-collaboration-workflow.
+1. Content type: identify from matrix in Section 5
+2. Principle sequence: order by physical activation in a real encounter
+3. Pattern interrupt: identify midpoint position (5-7), select type, mark in arc
+4. Save magnet: draft before building body slides — if it can't be drafted, arc is incomplete
+5. Nathan approval: present complete arc map before building — explicit approval required
 
 ---
 
 ## Section 8 — QC Gate 1 (Design Compliance — Claude Runs)
 
-Environment Claude Code (Playwright — authoritative): Claude renders every slide as PNG. Visual inspection and overflow check. Values verified against rendered output, not source.
+Hard stop rule: No slide presented to Nathan with a known Gate 1 failure. Rebuild before presenting. No exceptions.
 
-Environment Chat (Structured source audit): Claude reads HTML source. Checks each item against the code. Produces written QC report with explicit pass/fail.
+Claude Code environment: Playwright renders every slide as PNG. Pixel-level overflow check. Authoritative.
+Chat environment: HTML source audit. Written QC report. Overflow estimated via font metrics.
 
-The hard stop rule: No slide is presented to Nathan with a known Gate 1 failure. Rebuild before presenting. No exceptions.
+Gate 1 Checklist — 15 items, binary pass/fail:
+1. Red bar: left edge, 25px, #CC0000, full height
+2. Series badge: top-left, correct name, #CC0000 bg, #FFF text
+3. Slide counter: top-right, "01 / 09" format, #BBBBBB, zero-padded
+4. Safe zone: all text 100-980px horizontal, 80-1230px vertical
+5. Photo treatment (body slides): grayscale, 40% brightness, +20% contrast, 45% overlay
+6. Headline overflow: no headline exceeds 340px max-width
+7. Red accent limit: maximum one #CC0000 line per slide
+8. Body copy restriction: no body copy on Type A (cover) or Type Z (final)
+9. ETKM logo/wordmark: present, correct position, #CC0000
+10. Swipe cue: present on all slides except final, bottom-right, #575757
+11. Bottom rule: present, correct opacity
+12. Tier 1 token integrity: no Tier 1 token modified
+13. Word count: Type A sub-line max 12 words, Type D body max 40 words
+14. Type Z: static core PNG rendering correctly, no photo layer
+15. Type Z: only badge and counter changed from template, badge matches series name throughout
 
-Gate 1 Checklist — Binary pass/fail:
-- Red bar present, left edge, 25px, #CC0000, full height
-- Series badge present, top-left, correct series name, #CC0000 bg, #FFF text
-- Slide counter present, top-right, 01 / 09 format, #BBBBBB, zero-padded
-- All headline text within safe zone (100-980px horizontal, 80-1230px vertical)
-- Photo treatment applied on body slides: grayscale, 40% brightness, +20% contrast, 45% overlay
-- Headline does not overflow 340px max-width
-- Maximum one #CC0000 line in headline per slide
-- Body copy absent from Type A and Type G slides
-- ETKM logo present, bottom-left, #CC0000, correct size
-- Swipe cue present on all slides except CTA and back cover, bottom-right, #575757
-- Bottom rule present, correct opacity per slide type
-- No Tier 1 design token modified
-- Word count within limit for slide type
-- Type G: #CC0000 button present, #000 background, no photo layer
-- Type Z: static core PNG present, only badge and counter in dynamic layer
-
-Gate 1 report format: "Gate 1 QC: [X]/15 items pass. [List any failures with slide number and item.]"
+Gate 1 report: "Gate 1 QC: [X]/15 items pass. [Failures listed with slide number and item.]"
 
 ---
 
 ## Section 9 — QC Gate 2 (Messaging Compliance — Nathan Approves)
 
-Claude prepares this report. Nathan reviews and approves before the carousel ships.
+Claude prepares, Nathan approves. Nothing ships without Gate 2 sign-off.
 
-Gate 2 Checklist:
-
-Cover (Type A): External problem addressed, question or declarative tension, student is implied subject.
-
-Re-hook (Type B): Works standalone cold, inverts cover register, names internal problem.
-
-Stakes (Type C): Guide authority without implying others are inferior, specific philosophical claim, bridge line opens loop.
-
-Body slides (D-S): Student is hero, one idea per slide, bridge lines present and open loops, red accent on most resonant phrase, word count within limit.
-
-Save magnet (Type F): Reference tool not recap, passes 30-day test, save cue explicit.
-
-CTA (Type G): All four StoryBrand elements present, transformation uses identity language, direct CTA has verb plus action plus Tyler TX, prohibited language absent, DM keyword present.
-
+Cover (A): External problem, question or declarative tension, student is implied subject.
+Re-hook (B): Standalone cold, inverts cover register, names internal problem.
+Stakes (C): Guide authority without implying others inferior, specific claim, bridge line opens loop.
+Body (D-S): Student is hero, one idea per slide, bridge lines open loops, red accent on most resonant phrase.
+Save magnet (F): Reference tool not recap, passes 30-day test, save cue explicit.
+Final slide (Z): All four StoryBrand elements present, transformation uses identity language, direct CTA has verb + action + Tyler TX, prohibited language absent, DM keyword present, badge matches series name.
 Full arc: StoryBrand hero's journey complete, slide 2 works cold, no contradictions, consistent voice.
 
-Back cover (Type Z): Static core present, only badge and counter changed from template, badge matches series name used throughout carousel.
-
-Gate 2 report format: "Gate 2 QC prepared for Nathan review. [X]/[total] items pass. Items requiring Nathan judgment: [list]. Ready to ship pending Nathan approval."
+Gate 2 report: "Gate 2 QC prepared for Nathan review. [X]/[total] items pass. Items requiring Nathan judgment: [list]. Ready to ship pending Nathan approval."
 
 ---
 
-## Section 10 — Canva Production Spec (Quick Reference)
+## Section 10 — Canva Production Spec
 
 | Element | Canva setting |
 |---|---|
 | Canvas size | 1080x1350px custom |
-| Photo layer | Grayscale filter: 100%, Brightness: -60%, Contrast: +20% |
-| Black overlay | Rectangle, full bleed, black fill, 45% transparency |
-| Red bar | Rectangle, 25px wide, full height, locked layer |
-| Series badge | Text box, Montserrat Bold 900, 22px, #FFF, #CC0000 bg rectangle |
-| Slide counter | Text box, Inter Regular, 22px, #BBBBBB |
-| ETKM logo text | Text box, Montserrat Bold 900, 28px, #CC0000 |
-| Swipe cue | Text box, Inter Regular, 18px, #575757 |
+| Photo layer | Grayscale 100%, Brightness -60%, Contrast +20% |
+| Black overlay | Rectangle, full bleed, black, 45% transparency |
+| Red bar | Rectangle, 25px, full height, locked layer |
+| Series badge | Montserrat Bold 900, 22px, #FFF, #CC0000 bg |
+| Slide counter | Inter Regular, 22px, #BBBBBB |
+| ETKM logo text | Montserrat Bold 900, 28px, #CC0000 |
+| Swipe cue | Inter Regular, 18px, #575757 |
 | Bottom rule | Line, 1px, rgba(255,255,255,0.10) |
-| Export | JPG, 90% quality, download all slides as ZIP |
-| Back cover | Use etkm_back_cover_TEMPLATE.html — change badge and counter only |
-
-Layer order (bottom to top): Photo, Overlay, Red bar, Content elements
+| Export | JPG, 90% quality, all slides as ZIP |
+| Final slide | Use etkm_final_slide_TEMPLATE.html — change badge and counter only |
 
 ---
 
 ## Section 11 — Notion Reference Map
 
-| Need | Notion page / database |
+| Need | Location |
 |---|---|
-| Full visual specs + pixel values | ETKM Carousel System (34e924c8) |
+| Full visual specs | ETKM Carousel System (34e924c8) |
 | Content arc library | ETKM Carousel System Section 9 |
-| Production status tracker | ETKM Carousel System Section 12 |
-| Slide type library (visual) | ETKM Carousel Slide Type Library v3 (HTML file) |
+| Production status | ETKM Carousel System Section 12 |
+| Slide type library | ETKM Carousel Slide Type Library v3 (HTML) |
 | CTA language bank | etkm-cta-architecture skill |
-| Audience segment data | etkm-audience-intelligence skill |
-| Brand voice rules | etkm-brand-foundation skill |
+| Audience segments | etkm-audience-intelligence skill |
+| Brand voice | etkm-brand-foundation skill |
 
 ---
 
 ## Section 12 — Session Opening Protocol
 
-At the start of every carousel session:
-1. Load this skill (etkm-carousel-system)
+1. Load etkm-carousel-system
 2. Load etkm-brand-foundation
 3. Load etkm-cta-architecture
-4. If segment-specific carousel: load etkm-audience-intelligence
-5. Confirm the content arc with Nathan before building
-6. Pull the current production status from Notion (34e924c8 Section 12)
-7. State: Ready to build. Arc is [confirmed / needs confirmation]. Last completed slide: [X].
+4. If segment-specific: load etkm-audience-intelligence
+5. Confirm arc with Nathan before building
+6. Pull production status from Notion (34e924c8 Section 12)
+7. State: "Ready to build. Arc is [confirmed / needs confirmation]. Last completed slide: [X]."
 
 ---
 
-## Section 13 — Type Z Brand Close (Back Cover) Spec
+## Section 13 — Type Z Final Slide Spec (Unified CTA + Brand Close)
 
-Type Z is the final slide of every carousel. Always. No exceptions.
+Type Z is the final slide of every carousel. Always. One slide. Two jobs.
 
-### Architecture: Static Core + Dynamic Layer
+### Architecture
 
-Static core (never edit):
-- Rendered PNG: etkm_back_cover_TEMPLATE.html static layer
-- Contains: black background (#000000), red left bar, ETKM circle logo (148px), etxkravmaga.com website, Tyler Texas Est. 2006 tagline, red rule, FB/IG/LI/YT social icons in #CC0000, bottom rule, ETKM wordmark bottom-left, Tyler TX bottom-right
-- This PNG is pre-rendered and embedded. It never changes.
+Static core (never edit): Pre-rendered PNG containing the complete layout.
+- Black background (#000000), red left bar
+- ETKM circle logo (110px centered)
+- ETXkravmaga.com (ETX in #CC0000, KRAVMAGA.COM in #FFF)
+- Tyler, Texas · Est. 2006 tagline (#575757)
+- Red rule (40px)
+- FB / IG / LI / YT social icons (#CC0000, 20px)
+- Horizontal mid-rule separating brand from CTA
+- CTA Element 1 — Transformation: "STOP HOPING YOU COULD HANDLE IT. START KNOWING." (#FFF / #CC0000)
+- CTA Element 2 — Direct CTA button: "ATTEND A FREE TRIAL CLASS" (#CC0000 bg, #FFF text)
+- CTA Element 3 — Transitional: "Not ready? DM us CONFIDENT for the free training checklist."
+- CTA Element 4 — Stakes: "Because waiting does not make the threat go away."
+- Bottom rule, ETKM wordmark, Tyler TX
 
 Dynamic layer (edit per carousel — two elements only):
-1. Series badge (top-left): Change text to match the series name used throughout the carousel
-2. Slide counter (top-right): Change to "XX / XX" matching the carousel total
+1. .series-badge (top-left): series name matching all other slides
+2. .slide-counter (top-right): "XX / XX" matching carousel total
 
-Production rule: Open etkm_back_cover_TEMPLATE.html. Change the text inside .series-badge and .slide-counter. Export. Done. Nothing else is touched.
+Production: Open etkm_final_slide_TEMPLATE.html. Change badge and counter. Export. Done.
 
-### Design spec
+### CTA Language Source
 
-| Element | Value |
-|---|---|
-| Background | #000000 solid — no photo, no overlay |
-| Red bar | Present — left edge, 5px, #CC0000, full height |
-| Logo | ETKM circle logo, 148x148px, centered |
-| Website | ETX in #CC0000, KRAVMAGA.COM in #FFFFFF, Montserrat 900, 15px |
-| Tagline | Tyler, Texas · Est. 2006, #575757, Inter 400, 9px |
-| Red rule | 48px wide, 2px tall, #CC0000, centered |
-| Social icons | FB, IG, LI, YT — #CC0000 fill SVG, 24px, 18px gap |
-| Bottom rule | rgba(255,255,255,0.08) |
-| Logo wordmark | ETKM, bottom-left, #CC0000, Montserrat 900, 10px |
-| Location | Tyler, TX, bottom-right, #575757, Inter 400, 8px |
+ETKM General primary set from etkm-cta-architecture skill Section 3A.
+For segment-specific carousels: rebuild static core using the arc-appropriate language from Section 3B.
+The static core is rebuilt once per segment, then reused for all carousels in that segment series.
 
-### Logo rendering note
+### Logo Rendering Note
 
-The ETKM circle logo PNG has a black (#000000) background. On the pure black slide field, the logo background is invisible — white ring, red text, and white symbol render cleanly with no transparency processing required. Do not convert the logo to RGBA. Do not add mix-blend-mode. Place it as-is. The black-on-black merge is the intended behavior.
+ETKM circle logo PNG has black (#000000) background. On the black slide field the logo background is invisible — white ring, red text, and white symbol render cleanly. No transparency processing required. Place as-is.
 
-### QC Gate 1 addition for Type Z
+### Final Slide Background
 
-- Static core PNG present and rendering correctly
-- Only .series-badge and .slide-counter changed from template
-- Badge text matches series name used on all other slides in the carousel
-- Counter format correct: "XX / XX" zero-padded, spaces around slash
-- No other element in the static layer has been modified
+#000000 solid. No photo. No overlay. Static core PNG handles all layout.
+This is a system rule — not a slide-by-slide decision.
+
+### Sequence Position
+
+| Slide | Type | Background |
+|---|---|---|
+| 01 | A Cover | Photo + 45% overlay |
+| 02 | B Re-Hook | Photo + 45% overlay |
+| 03 | C Stakes | Photo + 45% overlay |
+| 04-N | D-Y Body | Photo + 45% overlay |
+| N-1 | F Save Magnet | Photo + 45% overlay |
+| N | Z Final Slide | #000 solid — static core |
 
 ---
 
 ## Non-Negotiables
 
-- Never build a carousel without a locked arc
+- Never build without a locked arc
 - Never present a slide with a known Gate 1 failure
 - Never use prohibited CTA language
 - Never make ETKM the hero
 - Never modify a Tier 1 design token
-- Never use #FF0000 — ever
-- Never present options when direction has already been given
+- Never use #FF0000
 - Always run Gate 1 before Gate 2
 - Always run Gate 2 before handoff to Nathan
-- Type Z is always the final slide — never omit the back cover
+- Type Z is always the final slide — one slide, two jobs — never omit
+- Type G is retired — do not use a separate CTA-only slide
