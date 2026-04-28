@@ -1,15 +1,15 @@
 ---
 name: etkm-carousel-system
-version: 2.2
+version: 2.3
 updated: 2026-04-27
 description: >
-  Production ruleset for building ETKM Instagram carousels. V2.2: Section 8
-  (Arc Construction Protocol) rewritten with StoryBrand-first build sequence.
-  Beat map is the governing spine — slide type is the last decision, not the
-  first. Full source routing table lives in Carousel Source Protocol page
-  (350924c8-1673-81b1-983c-e0ab7a0a34e6). All 20 books from Book Intelligence
-  Library mapped to beats. etkm-cta-architecture Derivation Engine closes every
-  carousel at Beat 11. No arc map approved without all 11 beats sourced.
+  Production ruleset for building ETKM Instagram carousels. V2.3: Section 4
+  (Typography Hierarchy) updated with production canvas calibration standard.
+  All type sizing is calibrated to the 1080x1350 production canvas — not the
+  400x500 HTML preview. Display sizes are multiplied by 2.7 at export. Minimum
+  headline dominance rule added: largest headline must fill at least 40% of
+  slide width at production scale. This corrects the systematic undersizing
+  error identified in the Street Reality college carousel v1-v2 builds.
 triggers:
   - "build a carousel"
   - "carousel slide"
@@ -36,9 +36,9 @@ loads_on_demand:
 
 # ETKM Carousel System
 
-**Version:** 2.2
+**Version:** 2.3
 **Last Updated:** 2026-04-27
-**Changes from V2.1:** Section 8 (Arc Construction Protocol) completely rewritten. StoryBrand beats now govern the build sequence. Slide type is the last decision. Full source routing table in Carousel Source Protocol (350924c8-1673-81b1-983c-e0ab7a0a34e6). 20 books from Book Intelligence Library mapped to beats. Beat map is the permanent 11-position spine of every carousel.
+**Changes from V2.2:** Section 4 (Typography Hierarchy) updated with production canvas calibration standard. All sizing is calibrated to the 1080×1350 production canvas. The HTML preview (400×500) scales at 2.7× on export — type that looks correct in preview is systematically undersized at production scale. Section 4 now carries both display sizes and production canvas equivalents, plus the minimum headline dominance rule.
 **Carousel Source Protocol (Notion):** 350924c8-1673-81b1-983c-e0ab7a0a34e6
 **Library (Notion):** ETKM Carousel Slide Type Library — 350924c8-1673-815d-a299-d8f50b8c14ee
 **Template:** etkm_final_slide_TYPE_Z_TEMPLATE.html
@@ -83,32 +83,64 @@ One photo per carousel. Same photo, same treatment, all body slides.
 
 ---
 
-## Section 4 — Typography Hierarchy
+## Section 4 — Typography Hierarchy (Production Canvas Standard)
 
-| Role | Font | Canvas size | Color |
+### The Calibration Rule
+
+All type is sized for the 1080×1350 production canvas. The HTML build environment renders slides at 400×500 (display). Playwright exports at 2.7× scale to produce 1080×1350. Type that looks correct in the 400px preview is systematically 35-50% undersized at the production scale the audience actually sees.
+
+**The operating rule:** Build in HTML at 400px display. Before exporting, verify every headline against the production canvas standard below — not the preview render.
+
+**Minimum headline dominance rule:** The largest headline on any slide must fill at least 40% of the slide width at production scale (432px of 1080px). If it doesn't — it's undersized. Increase until it does.
+
+### Production Canvas Type Standards
+
+| Role | Display size (400px HTML) | Production equivalent (1080px) | Color |
 |---|---|---|---|
-| H1 Cover | Montserrat 900 | 108px | #FFFFFF |
-| H1 Body responsive | Montserrat 900 | 52/46/36px by line length | #FFFFFF |
-| H2 Sub-headline | Inter 600 | 36px | rgba(255,255,255,0.60) |
-| Body copy | Inter 400 | 30px | rgba(255,255,255,0.75) |
-| Eyebrow / label | Montserrat 900 | 22px | #BBBBBB |
-| CTA setup line (Z) | Inter 700 | 20px display | #575757 |
-| CTA headline (Z) | Montserrat 900 | 64px display | #FFF / #CC0000 |
+| H1 Cover | 46px | 124px | #FFFFFF |
+| H1 Body — 1-2 words/line | 60-72px | 162-194px | #FFFFFF |
+| H1 Body — 3-4 words/line | 46-54px | 124-146px | #FFFFFF |
+| H1 Body — 5+ words/line | 34-40px | 92-108px | #FFFFFF |
+| Stat number | 90-100px | 243-270px | #CC0000 |
+| Quote text | 13-16px | 35-43px | #FFFFFF italic |
+| H2 Sub-headline | 12-14px | 32-38px | rgba(255,255,255,0.60) |
+| Body copy | 11-13px | 30-35px | rgba(255,255,255,0.55) |
+| Eyebrow / label | 7px | 19px | #575757 |
+| Bridge line | 9-10px | 24-27px | #444 italic |
+| Save magnet title | 12-13px | 32-35px | #FFFFFF |
+| Save magnet item title | 11-12px | 30-32px | #FFFFFF |
+| Save magnet item desc | 9-10px | 24-27px | rgba(255,255,255,0.50) |
+| Save cue | 10px | 27px | #CC0000 |
+| CTA setup line (Z) | 14px | 38px | #575757 |
+| CTA headline (Z) | 64-72px | 173-194px | #FFF / #CC0000 |
+| CTA command (Z) | 11px | 30px | #CC0000 |
 
-Responsive headline sizing: 1-2 words/line = 52px. 3-4 = 46px. 5+ = 36px. max-width: 340px hard limit.
+### Responsive Headline Selection
+
+Use word count per line to select the correct H1 Body size:
+- 1-2 words/line: 60-72px display — these are the punchy one-word-per-line stacks (CALM. / AWARE. / READY.)
+- 3-4 words/line: 46-54px display — standard principle headlines
+- 5+ words/line: 34-40px display — longer philosophical statements
+
+max-width: 320px display (864px production) — hard limit, no exceptions.
+
+### The 50% Growth Rule (From Nathan, v2.3)
+
+When a carousel build is reviewed and headlines feel undersized, the correction is approximately +50% on all affected body headlines. This reflects the systematic calibration gap between the 400px preview and the 1080px production canvas. If in doubt — go bigger. GBRS and Jocko run their headlines large enough to stop a scroll at full canvas scale. Timid type doesn't stop a scroll.
+
+### What Does Not Change With Scale
+
+Structural elements (badge, counter, footer, red bar, eyebrow) stay at their display sizes — these are deliberately small. The hierarchy depends on the contrast between dominant headlines and subordinate structural elements. The badge at 7px display is correct at both scales — it should feel small. The headline at 46px display is correct at production scale — it should feel dominant.
 
 ---
 
 ## Section 5 — Slide Type Library
 
 Full specs in Notion Slide Type Library (350924c8-1673-815d-a299-d8f50b8c14ee).
-Operational summary in this skill Section 5 (unchanged from v2.1 — see prior version for full type tables).
 
 ---
 
 ## Section 6 — The 11-Position StoryBrand Beat Map
-
-This is the permanent spine of every ETKM carousel. The beat column is the narrative architecture. The type column serves the beat — never the other way around.
 
 | Position | Type | StoryBrand Beat | Beat Job |
 |---|---|---|---|
@@ -137,126 +169,50 @@ CTA: Governed entirely by etkm-cta-architecture. See Section 13.
 
 ## Section 8 — Arc Construction Protocol (StoryBrand-First Build Sequence)
 
-This is the complete 9-stage build sequence. Every carousel follows every stage in order.
-No HTML is written until Stage 8 is complete and Nathan has approved the arc map.
+Nine stages. Every carousel. No exceptions. No HTML before Stage 8 approval.
 
-### Stage 1 — Identify Segment and Pull StoryBrand Arc
-
-Identify the target segment. Pull from the Story Arcs Master File (335924c8-1673-814c-ae2e-e0ff833c8760) for the segment's hero's journey arc. This arc is the governing narrative — every subsequent stage must serve it.
-
-Use the Quick Reference Index (335924c8-1673-8144-a201-d7c0e4b35aee) to locate the segment's arc number and cross-reference it to the Problem-Solution Map section and Fear-Based Messaging section.
-
-### Stage 2 — Pull Problem-Solution Map for the Segment
-
-Query Problem & Solution Maps (335924c8-1673-815c-87f4-dd02d0c8d0eb) for the segment's entry. Extract all four components:
-- External Problem → Beat 01, 02
-- Internal Problem → Beat 02, 03
-- Philosophical Problem → Beat 03
-- ETKM Solution → Beat 08
-
-This is the raw material for the narrative spine. Not to be improvised.
-
-### Stage 3 — Pull Fear-Based Messaging Entry for the Segment
-
-Query Fear-Based Messaging Framework (335924c8-1673-8113-9d86-de99b1cf1f07) for the segment's entry. Extract:
-- Fear statement → Beat 02, 06
-- Mindset component → Beat 08
-- Skill component → Beat 08, 10
-- Drill component → Beat 10
-
-### Stage 4 — Query Book Intelligence for Beat-Relevant Entries
-
-Query Content Bank database (30aa3a08-c412-4eed-874a-537a8221ea1b) for books relevant to the carousel topic. Use the Carousel Source Protocol beat-to-source table (350924c8-1673-81b1-983c-e0ab7a0a34e6) to identify which books serve which beats.
-
-Priority lookup by beat:
-- Beats 01, 02, 04-05: Awareness & Threat Recognition category (Left of Bang, Situational Awareness, Gift of Fear, Six Minute X-Ray, Protecting the Gift)
-- Beat 07 (guide signal): Pull one extended quote from the most relevant book. Mark as verbatim or paraphrase before the arc map is written. Verbatim = Type M. Paraphrase = Type U.
-- Beat 08 (plan): Communication & Influence category first (Verbal Judo — de-escalation as the first tool). Then Krav Maga & Combat category. Then Tactics & Survival.
-- Beats 06, 09: Mindset & Psychology category (On Combat, Unthinkable, Deep Survival, Meditations on Violence)
-
-### Stage 5 — Pull Messaging Themes and Principles
-
-Query Messaging Themes, Principles & Taglines (335924c8-1673-8184-9412-d2cc89e3ba43). Identify:
-- The ETKM principle(s) most relevant to the carousel topic
-- The philosophical statement that serves Beat 03
-- The tagline(s) that fit the segment and arc
-
-### Stage 6 — Map Content to the 11 Beat Positions
-
-With all source material pulled, map extracted content to the 11-position beat table. Every beat must be filled before the arc map is written. If any beat cannot be filled from the available sources — stop. Either the segment is wrong, the topic needs adjustment, or a source is missing. Do not improvise content to fill a gap.
-
-### Stage 7 — Assign Slide Types
-
-With beats mapped and content sourced, assign the slide type that best presents each beat's content. Type is the last decision. The content determines the type.
-
-Content type to slide type selection guide:
-- External problem with a scenario: Type A (cover) or Type G (scenario frame)
-- Internal problem as a statement: Type B (re-hook) or Type F (body)
-- Philosophical claim: Type C (stakes bridge)
-- Single stat with reframe: Type N (stat card)
-- Three rapid facts: Type O (did you know)
-- Book-sourced verbatim quote: Type M (extended quote)
-- Book-sourced paraphrased principle: Type U (book reference)
-- Named framework or model: Type S (framework)
-- Protocol or steps: Type Q (three-step process)
-- Before/after transformation: Type H (before/after)
-- Myth correction: Type Y (myth buster)
-- Reference card: Type D (save magnet)
-- Final: Type Z — always
-
-### Stage 8 — Draft Three-Column Arc Map for Nathan's Approval
-
-Draft the complete arc map with three columns:
-
-| Slide | Type + StoryBrand Beat | Content source + draft |
-|---|---|---|
-
-The source column must name the specific source document for every slide — not general knowledge. If a slide's content came from the Problem-Solution Map, name it. If it came from Left of Bang, name it. If it came from the Fear-Based Messaging Framework, name it.
-
-Gate: Nathan approves the arc map explicitly before Stage 9 begins. No HTML is written without Nathan's approval. No exceptions.
-
-### Stage 9 — CTA Derivation Engine
-
-Before writing a single word of copy for Type Z, run the Derivation Engine from etkm-cta-architecture Section 8. Extract four signals from the completed arc:
-- Signal A: Problem layer dominant (external / internal / philosophical)
-- Signal B: Reader arc (Protector / Awakened / Regainer / Quiet Builder / Survivor / Professional)
-- Signal C: Funnel stage (TOFU / MOFU / BOFU)
-- Signal D: Implicit promise (from [current state] → to [desired state])
-
-Match signals to Language Bank (etkm-cta-architecture Section 3). The arc determines every word on the final slide. Never default to ETKM General without checking the arc first.
+Stage 1: Pull segment StoryBrand arc from Story Arcs Master File (335924c8-1673-814c-ae2e-e0ff833c8760)
+Stage 2: Pull Problem-Solution Map (335924c8-1673-815c-87f4-dd02d0c8d0eb) — External / Internal / Philosophical / Solution
+Stage 3: Pull Fear-Based Messaging entry (335924c8-1673-8113-9d86-de99b1cf1f07) — Fear / Mindset / Skill / Drill
+Stage 4: Query Book Intelligence (30aa3a08-c412-4eed-874a-537a8221ea1b) using Carousel Source Protocol beat-to-source table (350924c8-1673-81b1-983c-e0ab7a0a34e6)
+Stage 5: Pull Messaging Themes and Principles (335924c8-1673-8184-9412-d2cc89e3ba43)
+Stage 6: Map all sourced content to 11 beat positions — every beat filled before arc map is written
+Stage 7: Assign slide types — type is the LAST decision, beat and source determine it
+Stage 8: Present three-column arc map (Slide | Type + Beat | Source + draft) — Nathan approves before HTML is written
+Stage 9: Run CTA Derivation Engine (etkm-cta-architecture Section 8) — four signals → Language Bank → final slide copy
 
 ---
 
 ## Section 9 — QC Gate 1 (Design Compliance — Claude Runs)
 
-Hard stop rule: No slide presented with a known Gate 1 failure. Rebuild before presenting. No exceptions.
+Hard stop rule: Rebuild any failing slide before presenting. No exceptions.
 
-15-item checklist (full detail in prior skill versions):
-1. Red bar — left edge, 25px, #CC0000, full height
+15-item checklist:
+1. Red bar — 25px, #CC0000, full height
 2. Series badge — correct name, #CC0000 bg
 3. Slide counter — zero-padded, "01 / 11" format
 4. Safe zone — all text within bounds
-5. Photo treatment (A-Y) — grayscale, 40% brightness, +20% contrast, 45% overlay
-6. Headline overflow — max-width 340px
-7. Red accent — one #CC0000 line per slide maximum
-8. Body copy absent — Type A cover and Type Z final
-9. Handle/logo present — correct position
+5. Photo treatment (A-Y) — grayscale 40% brightness +20% contrast 45% overlay
+6. Headline overflow — max-width 320px display
+7. Red accent — one #CC0000 line maximum per slide
+8. Body copy — absent from Type A and Type Z
+9. Handle/logo — present, correct position
 10. Swipe cue — present A-Y, absent Z
 11. Bottom rule — present, correct opacity
 12. Tier 1 tokens — not modified
 13. Word count — within type limits
-14. Type Z static layer — bg + bar + footer only, no photo, no baked-in CTA
-15. Type Z dynamic layer — all 8 elements present, badge matches series name throughout
+14. Type Z static layer — bg + bar + footer only
+15. Type Z dynamic layer — all 8 elements present, badge matches throughout
 
-Gate 1 report: "Gate 1 QC: [X]/15 items pass."
+**Typography production check (new in v2.3):** Before Gate 1 passes on any carousel, verify the largest headline on each body slide against Section 4 production canvas standards. If the headline fails the 40% dominance rule — flag as a Gate 1 failure and rebuild at correct size.
+
+Gate 1 report: "Gate 1 QC: [X]/15 items pass. Typography production check: [pass/flag]."
 
 ---
 
 ## Section 10 — QC Gate 2 (Messaging — Nathan Approves)
 
-Three-column arc map verified before Gate 2 runs. Gate 2 checks messaging compliance per position. Nothing ships without Nathan's sign-off.
-
-Additional Gate 2 check (new in v2.2): Source verification. Every body slide's content is traceable to a named source in the arc map. No slide should contain improvised content without a source citation. If a slide's content cannot be traced to a source — flag it.
+Claude prepares, Nathan approves. Nothing ships without sign-off. Source verification: every body slide traceable to a named source.
 
 Gate 2 report: "Gate 2 QC — [Name]. PASS: [X]/[total]. Source verification: [pass/flag]. Ready pending Nathan approval."
 
@@ -264,29 +220,32 @@ Gate 2 report: "Gate 2 QC — [Name]. PASS: [X]/[total]. Source verification: [p
 
 ## Section 11 — Canva Production Spec
 
-Unchanged from v2.1. Canvas 1080x1350px. Photo layer grayscale/brightness/contrast. Overlay 45% black. Export JPG 90%.
+Canvas 1080x1350px. Photo layer grayscale/brightness/contrast. Overlay 45% black. Export JPG 90%.
 Final slide: Use etkm_final_slide_TYPE_Z_TEMPLATE.html — edit all 8 dynamic elements per arc derivation.
+
+**Canva type note:** When building in Canva rather than HTML, use the production canvas sizes from Section 4 directly. Canva renders at native 1080px so no scaling factor applies.
 
 ---
 
 ## Section 12 — Session Opening Protocol
 
-1. Load etkm-carousel-system (this skill) — confirm v2.2
+1. Load etkm-carousel-system v2.3
 2. Load etkm-brand-foundation
-3. Load etkm-cta-architecture (required — governs Beat 11)
+3. Load etkm-cta-architecture
 4. Load etkm-audience-intelligence if segment-specific
-5. Pull Carousel Source Protocol from Notion (350924c8-1673-81b1-983c-e0ab7a0a34e6)
-6. Pull production status from Notion (34e924c8 Section 12)
+5. Pull Carousel Source Protocol (350924c8-1673-81b1-983c-e0ab7a0a34e6)
+6. Pull production status (34e924c8 Section 12)
 7. Confirm segment and arc with Nathan
-8. State: "Skills loaded. Source Protocol pulled. Segment confirmed: [X]. Arc: [confirmed / needs confirmation]."
+8. State: "Skills loaded. Source Protocol pulled. Segment: [X]. Arc: [confirmed / needs confirmation]."
 
 ---
 
 ## Section 13 — Type Z Final Slide Spec
 
-Unchanged from v2.1. GBRS/Jocko register. Pure black. Pure command. No photo.
+GBRS/Jocko register. Pure black. Pure command. No photo.
 Static core: bg + red bar + @etxkravmaga + Tyler TX + bottom rule.
 Dynamic: 8 elements, all from etkm-cta-architecture Derivation Engine.
+.cta-command must sit on one line — shorten if it wraps.
 Survivor arc: omit .cta-stakes always.
 
 Arc Quick Reference:
@@ -302,7 +261,7 @@ Arc Quick Reference:
 
 | Need | Location | ID |
 |---|---|---|
-| **Carousel Source Protocol (routing table)** | **Carousel Source Protocol** | **350924c8-1673-81b1-983c-e0ab7a0a34e6** |
+| **Carousel Source Protocol** | **Carousel Source Protocol** | **350924c8-1673-81b1-983c-e0ab7a0a34e6** |
 | Slide type specs | ETKM Carousel Slide Type Library | 350924c8-1673-815d-a299-d8f50b8c14ee |
 | Full visual specs | ETKM Carousel System | 34e924c8 |
 | Production status | ETKM Carousel System Section 12 | 34e924c8 |
@@ -321,17 +280,17 @@ Arc Quick Reference:
 ## Non-Negotiables
 
 - Never build without a locked arc
-- Never write a single word of copy before Stages 1-7 are complete
+- Never write copy before Stages 1-7 complete
 - Never present a slide with a known Gate 1 failure
+- Typography production check runs before Gate 1 passes — undersized headlines are Gate 1 failures
 - Never use prohibited CTA language
 - Never make ETKM the hero
 - Never modify a Tier 1 design token
 - Never use #FF0000
-- Every slide A-Y carries the photo background — no exceptions
-- Type Z is the ONLY slide without a photo
+- Every slide A-Y carries photo background — Type Z is the ONLY exception
 - Type Z is always the final slide — never omitted
-- CTA copy always derived from etkm-cta-architecture — never improvised
-- Every body slide's content is traceable to a named source
-- Slide type is always the last decision — the beat and source determine type
-- Beat map is the spine — 11 positions, all beats present before arc map is approved
+- CTA copy always from etkm-cta-architecture — never improvised
+- Every body slide traceable to a named source
+- Slide type is always the last decision
 - Survivor arc never carries a stakes line
+- .cta-command on Type Z must sit on one line — shorten if it wraps
