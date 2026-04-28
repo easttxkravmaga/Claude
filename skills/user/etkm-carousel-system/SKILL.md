@@ -1,16 +1,15 @@
 ---
 name: etkm-carousel-system
-version: 2.1
+version: 2.2
 updated: 2026-04-27
 description: >
-  Production ruleset for building ETKM Instagram carousels. V2.1: Added Notion
-  Slide Type Library page (350924c8-1673-815d-a299-d8f50b8c14ee) to reference
-  map — this is now the authoritative type reference for Claude during sessions.
-  Slide types regrouped by format: Structural (A-D), Narrative (F-I), List
-  Formats (J-K), Quote Formats (L-M), Data & Stats (N-P), Protocol & Decision
-  (Q-R), Framework & Model (S-T), Authority & Proof (U-W), Pattern Interrupts
-  (X-Y), Final Slide (Z). All slides A-Y carry photo background. Type Z is the
-  single exception: pure black, always final, CTA copy from etkm-cta-architecture only.
+  Production ruleset for building ETKM Instagram carousels. V2.2: Section 8
+  (Arc Construction Protocol) rewritten with StoryBrand-first build sequence.
+  Beat map is the governing spine — slide type is the last decision, not the
+  first. Full source routing table lives in Carousel Source Protocol page
+  (350924c8-1673-81b1-983c-e0ab7a0a34e6). All 20 books from Book Intelligence
+  Library mapped to beats. etkm-cta-architecture Derivation Engine closes every
+  carousel at Beat 11. No arc map approved without all 11 beats sourced.
 triggers:
   - "build a carousel"
   - "carousel slide"
@@ -25,20 +24,23 @@ triggers:
   - "carousel QC"
   - "final slide"
   - "CTA slide"
+  - "storybrand carousel"
+  - "book intelligence carousel"
 depends_on:
   - etkm-brand-foundation
   - etkm-cta-architecture
 loads_on_demand:
   - etkm-audience-intelligence
+  - etkm-behavior-intelligence
 ---
 
 # ETKM Carousel System
 
-**Version:** 2.1
+**Version:** 2.2
 **Last Updated:** 2026-04-27
-**Changes from V2.0:** Added Notion Slide Type Library page to Section 14. This page (350924c8-1673-815d-a299-d8f50b8c14ee) is now the authoritative type reference Claude reads via Notion MCP during sessions. The HTML library (etkm_carousel_library_v4_FINAL.html) is Nathan's Canva visual companion — not for Claude's operational use.
+**Changes from V2.1:** Section 8 (Arc Construction Protocol) completely rewritten. StoryBrand beats now govern the build sequence. Slide type is the last decision. Full source routing table in Carousel Source Protocol (350924c8-1673-81b1-983c-e0ab7a0a34e6). 20 books from Book Intelligence Library mapped to beats. Beat map is the permanent 11-position spine of every carousel.
+**Carousel Source Protocol (Notion):** 350924c8-1673-81b1-983c-e0ab7a0a34e6
 **Library (Notion):** ETKM Carousel Slide Type Library — 350924c8-1673-815d-a299-d8f50b8c14ee
-**Library (Visual):** etkm_carousel_library_v4_FINAL.html (Nathan's Canva reference only)
 **Template:** etkm_final_slide_TYPE_Z_TEMPLATE.html
 
 ---
@@ -56,32 +58,28 @@ loads_on_demand:
 | Body font | Inter 400/600/700 | Sub-lines, body, setup line |
 | Canvas | 1080x1350px | 4:5 portrait, sRGB, JPG 90% |
 
-Hard rules: #CC0000 max three places per slide (bar + badge + one accent line). #FF0000 permanently retired. Gradients and trend palettes prohibited.
+Hard rules: #CC0000 max three places per slide. #FF0000 permanently retired. Gradients prohibited.
 
 ---
 
 ## Section 2 — Structural Elements (Fixed Layer — Every Slide)
 
-| Element | Position | Size | Color | Override |
-|---|---|---|---|---|
-| Red bar | Left edge, full height | 25px | #CC0000 | None — never removed |
-| Series badge | Top-left | Montserrat 900 22px | #FFF on #CC0000 | Text changes per series only |
-| Slide counter | Top-right | Inter 400 22px | #BBBBBB | Numbers change only |
-| ETKM logo/handle | Footer bottom-left | Montserrat 900 | #CC0000 | Type Z: @etxkravmaga in #333 |
-| Swipe cue / location | Footer bottom-right | Inter 400 | #575757 | Type Z: Tyler, TX in #333 |
-| Bottom rule | Footer top | 0.5px | rgba(255,255,255,0.10) | Type Z: 0.06 opacity |
+| Element | Position | Color | Override |
+|---|---|---|---|
+| Red bar | Left edge, full height | #CC0000 | Never removed |
+| Series badge | Top-left | #FFF on #CC0000 | Text changes per series only |
+| Slide counter | Top-right | #BBBBBB | Numbers change only |
+| ETKM logo/handle | Footer bottom-left | #CC0000 | Type Z: @etxkravmaga in #333 |
+| Swipe cue / location | Footer bottom-right | #575757 | Type Z: Tyler, TX in #333 |
+| Bottom rule | Footer top | rgba(255,255,255,0.10) | Type Z: 0.06 opacity |
 
 ---
 
 ## Section 3 — Photo & Background Treatment (Locked)
 
-EVERY slide A through Y: Two-layer system applied identically.
-- Layer A: grayscale 100%, brightness 40%, contrast +20%, 4:5 portrait crop centered on action zone
-- Layer B: solid black overlay, 45% opacity
-
-Type Z ONLY: #000000 solid — no photo, no overlay. This is the single exception in the entire system.
-
-Series photo rule: One photo per carousel. Same photo, same treatment, all body slides.
+Every slide A through Y: grayscale 100%, brightness 40%, contrast +20%, 4:5 portrait crop, 45% black overlay.
+Type Z ONLY: #000000 solid. No photo. No overlay. The single exception in the system.
+One photo per carousel. Same photo, same treatment, all body slides.
 
 ---
 
@@ -90,288 +88,213 @@ Series photo rule: One photo per carousel. Same photo, same treatment, all body 
 | Role | Font | Canvas size | Color |
 |---|---|---|---|
 | H1 Cover | Montserrat 900 | 108px | #FFFFFF |
-| H1 Body responsive | Montserrat 900 | See below | #FFFFFF |
+| H1 Body responsive | Montserrat 900 | 52/46/36px by line length | #FFFFFF |
 | H2 Sub-headline | Inter 600 | 36px | rgba(255,255,255,0.60) |
 | Body copy | Inter 400 | 30px | rgba(255,255,255,0.75) |
 | Eyebrow / label | Montserrat 900 | 22px | #BBBBBB |
 | CTA setup line (Z) | Inter 700 | 20px display | #575757 |
 | CTA headline (Z) | Montserrat 900 | 64px display | #FFF / #CC0000 |
 
-Responsive headline sizing (body slides): 1-2 words/line = 52px (-1.5px tracking). 3-4 words = 46px (-1px). 5+ words = 36px (-0.5px). max-width: 340px hard limit.
-Red accent rule: Maximum one line per slide in #CC0000.
+Responsive headline sizing: 1-2 words/line = 52px. 3-4 = 46px. 5+ = 36px. max-width: 340px hard limit.
 
 ---
 
 ## Section 5 — Slide Type Library
 
-Reference the Notion Slide Type Library (350924c8-1673-815d-a299-d8f50b8c14ee) for full specs per type.
-Below is the operational summary for session use.
-
-### Complete Type Reference (A-Z)
-
-**GROUP 1: STRUCTURAL** — Position-fixed. Never interchangeable.
-
-| Type | Name | Position | Job |
-|---|---|---|---|
-| A | Cover Hook | Slide 01 — always | Stop the scroll · external problem · no solutions |
-| B | Re-Hook | Slide 02 — always | Second-chance hook · internal problem · works cold · inverts cover |
-| C | Stakes Bridge | Slide 03 — always | Philosophical problem · guide authority · bridge line required |
-| D | Save Magnet | Slide N-1 — always | Reference card · "Screenshot this." · standalone test required |
-
-**GROUP 2: NARRATIVE** — Content delivery. One idea per slide. Bridge lines required except final principle slide.
-
-| Type | Name | Job |
-|---|---|---|
-| F | Principle / Body | The workhorse · responsive headline sizing · max 40 words |
-| G | Scenario Frame | Places viewer in a real-world situation · present tense always |
-| H | Before / After | Transformation arc in one slide · first-person identity language · student hero in both columns |
-| I | Misconception Chain | 3 connected beliefs to 1 outcome · nodes escalate in color · beliefs are villain not person |
-
-**GROUP 3: LIST FORMATS** — Scannable items. #1 save-rate format category.
-
-| Type | Name | Job |
-|---|---|---|
-| J | Numbered List | Multiple items · max 6 · reference-worthy not narrative · #1 save-rate format |
-| K | Checklist | Actionable audit · ~50% checked · max 6 items · highest repeat-save format |
-
-**GROUP 4: QUOTE FORMATS** — Both carry photo background.
-
-| Type | Name | Job |
-|---|---|---|
-| L | Quote Card | Short powerful statement · pattern interrupt at midpoint · max 8 words · max one per carousel |
-| M | Extended Quote | Longer attributed quote · author name as authority · must be exact and verifiable |
-
-**GROUP 5: DATA & STATS** — Number-forward. All stats must be citable before carousel ships.
-
-| Type | Name | Job |
-|---|---|---|
-| N | Stat Card | Large number dominant · reframe delivers the meaning · not a restatement |
-| O | Did You Know | Three rapid-fire facts · exactly 3 · highest send/forward rate · all verifiable |
-| P | Comparison Table | Side-by-side multi-attribute · max 4 rows · 2 columns · never name a competitor |
-
-**GROUP 6: PROTOCOL & DECISION** — Highest save rate: in-the-moment reference cards.
-
-| Type | Name | Job |
-|---|---|---|
-| Q | Three-Step Process | Exactly 3 steps — non-negotiable · sequential protocol · action verb leads each step |
-| R | Decision Tree | If X to Y / if not X to Z · root node #CC0000 · YES neutral · NO red · max 2 levels deep |
-
-**GROUP 7: FRAMEWORK & MODEL** — Named mental models.
-
-| Type | Name | Job |
-|---|---|---|
-| S | Framework Slide | Named model · framework name in #CC0000 · max 4 components · if no name exists, create one |
-| T | Timeline / Progression | Sequential phases · active nodes #CC0000 · inactive at 45% opacity · max 4 phases |
-
-**GROUP 8: AUTHORITY & PROOF** — Used after value delivery. V and W never on the same slide.
-
-| Type | Name | Job |
-|---|---|---|
-| U | Book Reference | Attribute concept to named book · takeaway leads · book in source block always |
-| V | Authority Credentials | Instructor proof · matter-of-fact · factual only · never slides 1-3 |
-| W | Community / Social Proof | Student outcome numbers · 2x2 stat grid · outcome-based not vanity · primes conversion |
-
-**GROUP 9: PATTERN INTERRUPTS** — Maximum ONE per carousel. Inserted at midpoint (slides 5-7).
-
-| Type | Name | Job |
-|---|---|---|
-| X | Wrong / Right Split | What most people do vs Krav approach · wrong column never shames |
-| Y | Myth Buster | Widely held belief corrected · highest share-rate format · myth is villain not person |
-
-**TYPE Z: FINAL SLIDE — ALWAYS LAST**
-The ONLY slide without a photo background. Pure black. GBRS/Jocko register. One CTA in the system.
-See Section 13 for full spec.
+Full specs in Notion Slide Type Library (350924c8-1673-815d-a299-d8f50b8c14ee).
+Operational summary in this skill Section 5 (unchanged from v2.1 — see prior version for full type tables).
 
 ---
 
-## Section 6 — Standard 10-Position Sequence
+## Section 6 — The 11-Position StoryBrand Beat Map
 
-| Position | Type | Job |
-|---|---|---|
-| Slide 01 | A — Cover Hook | External problem |
-| Slide 02 | B — Re-Hook | Internal problem · works cold |
-| Slide 03 | C — Stakes Bridge | Philosophical problem · guide authority |
-| Slides 04-N | F-Y body slides | Value delivery · type selected by content |
-| Midpoint 5-7 | Pattern interrupt (one only) | Engagement reset |
-| Slide N-1 | D — Save Magnet | Reference card |
-| Slide N | Z — Final Slide | Arc-derived CTA + brand close |
+This is the permanent spine of every ETKM carousel. The beat column is the narrative architecture. The type column serves the beat — never the other way around.
 
-### Content Type to Slide Type Matrix
-
-| Carousel type | Slide 03 | Body slides | Pattern interrupt |
+| Position | Type | StoryBrand Beat | Beat Job |
 |---|---|---|---|
-| Principles | C | F (one per principle) | L (quote card) |
-| Top 5 / List | C | J (numbered list) | Y (myth buster) |
-| Statistics | C | N (stat card) + F | O (did you know) |
-| Scenario | C | G (scenario frame) + F | R (decision tree) |
-| How-to / Protocol | C | Q (3-step process) + F | X (wrong/right) |
-| Framework | C | S (framework) + F | L or M (quote) |
-| Education / Deep | C | F + U (book ref) + M (quote) | H (before/after) |
-
-### Additional Type Insertion Rules
-
-| Type | When | Position |
-|---|---|---|
-| G Scenario Frame | Scenario-based carousel | Body position |
-| H Before/After | Transformation needs making visible | Before final slide |
-| I Misconception Chain | Compounding false beliefs | Pattern interrupt |
-| K Checklist | Actionable audit content | Body position |
-| M Extended Quote | External authority reinforces point | After F body slides |
-| O Did You Know | Three rapid-fire facts needed | Body or pattern interrupt |
-| P Comparison Table | Two approaches across multiple dimensions | Body position |
-| R Decision Tree | Conditional protocol content | Body position |
-| T Timeline | Curriculum or progression content | Body position |
-| U Book Reference | Principle can be sourced to a named book | Any body position |
-| V Authority Credentials | Guide authority needed | Slide 5 or later — never 1-3 |
-| W Social Proof | Student proof before conversion | Before final slide |
+| 01 | A — Cover Hook | External problem | Name the villain. Stop the scroll. No solutions. |
+| 02 | B — Re-Hook | External problem (cold entry) | Works with zero context. Inverts cover register. |
+| 03 | C — Stakes Bridge | Internal + philosophical problem | The wound beneath the surface. The injustice behind it. |
+| 04-05 | N, O — Data | Villain named with evidence | Proof the threat is real. Stats, behavioral patterns, citations. |
+| 06 | F — Fears | Internal problem deepened | What freezing actually feels like. Cost of unpreparedness. |
+| 07 | M — Quote | Guide introduced — empathy signal | External authority names the problem and points toward the path. |
+| 08 | F — Solution | Guide introduces the plan | What training produces. The finish line — identity, not technique. |
+| 09 | Y — Myth Buster | Stakes / failure without acting | The belief that puts people at risk. Named and corrected. |
+| 10 | D — Save Magnet | Success visible / tools given | The hero equipped. Reference card. Screenshot-worthy. |
+| 11 | Z — Final | CTA — hero asked to act | Arc complete. etkm-cta-architecture Derivation Engine closes it. |
 
 ---
 
 ## Section 7 — StoryBrand Compliance Rules
 
-Hero rule: Student is always hero. ETKM is always guide. ETKM never the subject of a body slide sentence.
-Villain rule: The threat, false belief, or missed skill. Never another school. Never shame the audience.
-Guide formula: Empathy first, authority second. Never lead with credentials.
-Bridge line rule: Every body slide (F-Y) except the final principle slide ends with a bridge line. Opens a loop, never reveals the answer. Format: italic, Inter 400, 10px, #575757.
-CTA: Governed entirely by etkm-cta-architecture skill. See Section 13.
+Hero: Student always hero. ETKM always guide. ETKM never the subject of a body slide sentence.
+Villain: The threat, false belief, or missed skill. Never another school. Never shame.
+Guide formula: Empathy first. Authority second. Never lead with credentials.
+Bridge lines: Every body slide (F-Y) except the final principle slide ends with a bridge line.
+CTA: Governed entirely by etkm-cta-architecture. See Section 13.
 
 ---
 
-## Section 8 — Arc Construction Protocol
+## Section 8 — Arc Construction Protocol (StoryBrand-First Build Sequence)
 
-Arc locked before building. Arc map approved by Nathan before any HTML written.
-1. Content type: identify from matrix in Section 6
-2. Principle sequence: order by physical activation order in a real encounter
-3. Pattern interrupt: marked at midpoint position (5-7) in the arc map before building
-4. Save magnet: drafted before body slides — if it cannot be drafted, the arc is incomplete
-5. Final slide CTA signals: extracted at arc mapping stage (problem layer, reader arc, funnel stage, implicit promise)
-6. Nathan explicit approval required before Stage 3 begins
+This is the complete 9-stage build sequence. Every carousel follows every stage in order.
+No HTML is written until Stage 8 is complete and Nathan has approved the arc map.
+
+### Stage 1 — Identify Segment and Pull StoryBrand Arc
+
+Identify the target segment. Pull from the Story Arcs Master File (335924c8-1673-814c-ae2e-e0ff833c8760) for the segment's hero's journey arc. This arc is the governing narrative — every subsequent stage must serve it.
+
+Use the Quick Reference Index (335924c8-1673-8144-a201-d7c0e4b35aee) to locate the segment's arc number and cross-reference it to the Problem-Solution Map section and Fear-Based Messaging section.
+
+### Stage 2 — Pull Problem-Solution Map for the Segment
+
+Query Problem & Solution Maps (335924c8-1673-815c-87f4-dd02d0c8d0eb) for the segment's entry. Extract all four components:
+- External Problem → Beat 01, 02
+- Internal Problem → Beat 02, 03
+- Philosophical Problem → Beat 03
+- ETKM Solution → Beat 08
+
+This is the raw material for the narrative spine. Not to be improvised.
+
+### Stage 3 — Pull Fear-Based Messaging Entry for the Segment
+
+Query Fear-Based Messaging Framework (335924c8-1673-8113-9d86-de99b1cf1f07) for the segment's entry. Extract:
+- Fear statement → Beat 02, 06
+- Mindset component → Beat 08
+- Skill component → Beat 08, 10
+- Drill component → Beat 10
+
+### Stage 4 — Query Book Intelligence for Beat-Relevant Entries
+
+Query Content Bank database (30aa3a08-c412-4eed-874a-537a8221ea1b) for books relevant to the carousel topic. Use the Carousel Source Protocol beat-to-source table (350924c8-1673-81b1-983c-e0ab7a0a34e6) to identify which books serve which beats.
+
+Priority lookup by beat:
+- Beats 01, 02, 04-05: Awareness & Threat Recognition category (Left of Bang, Situational Awareness, Gift of Fear, Six Minute X-Ray, Protecting the Gift)
+- Beat 07 (guide signal): Pull one extended quote from the most relevant book. Mark as verbatim or paraphrase before the arc map is written. Verbatim = Type M. Paraphrase = Type U.
+- Beat 08 (plan): Communication & Influence category first (Verbal Judo — de-escalation as the first tool). Then Krav Maga & Combat category. Then Tactics & Survival.
+- Beats 06, 09: Mindset & Psychology category (On Combat, Unthinkable, Deep Survival, Meditations on Violence)
+
+### Stage 5 — Pull Messaging Themes and Principles
+
+Query Messaging Themes, Principles & Taglines (335924c8-1673-8184-9412-d2cc89e3ba43). Identify:
+- The ETKM principle(s) most relevant to the carousel topic
+- The philosophical statement that serves Beat 03
+- The tagline(s) that fit the segment and arc
+
+### Stage 6 — Map Content to the 11 Beat Positions
+
+With all source material pulled, map extracted content to the 11-position beat table. Every beat must be filled before the arc map is written. If any beat cannot be filled from the available sources — stop. Either the segment is wrong, the topic needs adjustment, or a source is missing. Do not improvise content to fill a gap.
+
+### Stage 7 — Assign Slide Types
+
+With beats mapped and content sourced, assign the slide type that best presents each beat's content. Type is the last decision. The content determines the type.
+
+Content type to slide type selection guide:
+- External problem with a scenario: Type A (cover) or Type G (scenario frame)
+- Internal problem as a statement: Type B (re-hook) or Type F (body)
+- Philosophical claim: Type C (stakes bridge)
+- Single stat with reframe: Type N (stat card)
+- Three rapid facts: Type O (did you know)
+- Book-sourced verbatim quote: Type M (extended quote)
+- Book-sourced paraphrased principle: Type U (book reference)
+- Named framework or model: Type S (framework)
+- Protocol or steps: Type Q (three-step process)
+- Before/after transformation: Type H (before/after)
+- Myth correction: Type Y (myth buster)
+- Reference card: Type D (save magnet)
+- Final: Type Z — always
+
+### Stage 8 — Draft Three-Column Arc Map for Nathan's Approval
+
+Draft the complete arc map with three columns:
+
+| Slide | Type + StoryBrand Beat | Content source + draft |
+|---|---|---|
+
+The source column must name the specific source document for every slide — not general knowledge. If a slide's content came from the Problem-Solution Map, name it. If it came from Left of Bang, name it. If it came from the Fear-Based Messaging Framework, name it.
+
+Gate: Nathan approves the arc map explicitly before Stage 9 begins. No HTML is written without Nathan's approval. No exceptions.
+
+### Stage 9 — CTA Derivation Engine
+
+Before writing a single word of copy for Type Z, run the Derivation Engine from etkm-cta-architecture Section 8. Extract four signals from the completed arc:
+- Signal A: Problem layer dominant (external / internal / philosophical)
+- Signal B: Reader arc (Protector / Awakened / Regainer / Quiet Builder / Survivor / Professional)
+- Signal C: Funnel stage (TOFU / MOFU / BOFU)
+- Signal D: Implicit promise (from [current state] → to [desired state])
+
+Match signals to Language Bank (etkm-cta-architecture Section 3). The arc determines every word on the final slide. Never default to ETKM General without checking the arc first.
 
 ---
 
 ## Section 9 — QC Gate 1 (Design Compliance — Claude Runs)
 
-Hard stop rule: No slide presented to Nathan with a known Gate 1 failure. Rebuild before presenting. No exceptions.
+Hard stop rule: No slide presented with a known Gate 1 failure. Rebuild before presenting. No exceptions.
 
-Claude Code (authoritative): Playwright renders every slide as PNG. Pixel-level overflow check.
-Chat: HTML source audit. Written QC report. Overflow estimated via font metrics — risks flagged explicitly.
+15-item checklist (full detail in prior skill versions):
+1. Red bar — left edge, 25px, #CC0000, full height
+2. Series badge — correct name, #CC0000 bg
+3. Slide counter — zero-padded, "01 / 11" format
+4. Safe zone — all text within bounds
+5. Photo treatment (A-Y) — grayscale, 40% brightness, +20% contrast, 45% overlay
+6. Headline overflow — max-width 340px
+7. Red accent — one #CC0000 line per slide maximum
+8. Body copy absent — Type A cover and Type Z final
+9. Handle/logo present — correct position
+10. Swipe cue — present A-Y, absent Z
+11. Bottom rule — present, correct opacity
+12. Tier 1 tokens — not modified
+13. Word count — within type limits
+14. Type Z static layer — bg + bar + footer only, no photo, no baked-in CTA
+15. Type Z dynamic layer — all 8 elements present, badge matches series name throughout
 
-15-item checklist:
-1. Red bar: left edge, 25px, #CC0000, full height
-2. Series badge: top-left, correct name, #CC0000 bg, #FFF text
-3. Slide counter: top-right, "01 / 09" format, #BBBBBB, zero-padded
-4. Safe zone: all text 100-980px H, 80-1230px V
-5. Photo treatment (A-Y): grayscale 100%, brightness 40%, contrast +20%, overlay 45%
-6. Headline overflow: no headline exceeds 340px max-width
-7. Red accent: maximum one #CC0000 line per slide
-8. Body copy: absent from Type A (cover) and Type Z (final)
-9. Logo/handle: present, correct position
-10. Swipe cue: present on A-Y, absent on Z
-11. Bottom rule: present, correct opacity
-12. Tier 1 tokens: not modified
-13. Word count: within limit for slide type (A sub-line: max 12 words. F body: max 40 words.)
-14. Type Z: static layer contains background + bar + footer only. No photo. No CTA baked in.
-15. Type Z: all 8 dynamic elements present. Badge matches series name throughout.
-
-Gate 1 report: "Gate 1 QC: [X]/15 items pass. [Failures by slide and item.]"
+Gate 1 report: "Gate 1 QC: [X]/15 items pass."
 
 ---
 
 ## Section 10 — QC Gate 2 (Messaging — Nathan Approves)
 
-Claude prepares. Nathan approves. Nothing ships without Gate 2 sign-off.
+Three-column arc map verified before Gate 2 runs. Gate 2 checks messaging compliance per position. Nothing ships without Nathan's sign-off.
 
-Cover (A): External problem. Question or declarative tension. Student implied subject. No ETKM mention.
-Re-hook (B): Standalone cold. Inverts cover register. Names internal problem.
-Stakes (C): Guide authority without implying others inferior. Specific philosophical claim. Bridge line opens loop.
-Body (F-Y): Student is hero. One idea per slide. Bridge lines open loops. Red accent on most resonant phrase.
-Save magnet (D): Reference tool not recap. Passes 30-day test. Save cue explicit.
-Final slide (Z): CTA derived from correct arc. All 8 dynamic elements present. Survivor arc stakes omitted. Badge matches series name.
-Full arc: StoryBrand hero's journey complete. Slide 2 works cold. No contradictions. Consistent voice.
+Additional Gate 2 check (new in v2.2): Source verification. Every body slide's content is traceable to a named source in the arc map. No slide should contain improvised content without a source citation. If a slide's content cannot be traced to a source — flag it.
 
-Judgment calls flagged explicitly with Claude's assessment. Nathan decides.
-Revision protocol: revise flagged slides only, Gate 1 re-runs on revised slides, Gate 2 re-runs on full arc.
-
-Gate 2 report: "Gate 2 QC — [Name]. PASS: [X]/[total]. [Judgment calls listed.] Ready pending Nathan approval."
+Gate 2 report: "Gate 2 QC — [Name]. PASS: [X]/[total]. Source verification: [pass/flag]. Ready pending Nathan approval."
 
 ---
 
 ## Section 11 — Canva Production Spec
 
-| Element | Setting |
-|---|---|
-| Canvas size | 1080x1350px custom |
-| Photo layer | Grayscale 100%, Brightness -60%, Contrast +20% |
-| Black overlay | Rectangle, full bleed, black, 45% transparency |
-| Red bar | Rectangle, 25px, full height, locked layer |
-| Series badge | Montserrat Bold 900, 22px, #FFF, #CC0000 bg |
-| Slide counter | Inter Regular, 22px, #BBBBBB |
-| ETKM logo | Montserrat Bold 900, 28px, #CC0000 |
-| Swipe cue | Inter Regular, 18px, #575757 |
-| Bottom rule | Line, 1px, rgba(255,255,255,0.10) |
-| Export | JPG, 90% quality, all slides as ZIP |
-| Final slide | Use etkm_final_slide_TYPE_Z_TEMPLATE.html — edit all 8 dynamic elements per arc |
-
-Layer order (bottom to top): Photo, Overlay, Red bar, Content elements
+Unchanged from v2.1. Canvas 1080x1350px. Photo layer grayscale/brightness/contrast. Overlay 45% black. Export JPG 90%.
+Final slide: Use etkm_final_slide_TYPE_Z_TEMPLATE.html — edit all 8 dynamic elements per arc derivation.
 
 ---
 
 ## Section 12 — Session Opening Protocol
 
-1. Load etkm-carousel-system (this skill)
+1. Load etkm-carousel-system (this skill) — confirm v2.2
 2. Load etkm-brand-foundation
-3. Load etkm-cta-architecture (required — governs final slide)
-4. If segment-specific: load etkm-audience-intelligence
-5. Pull production status from Notion (34e924c8 Section 12)
-6. Confirm arc with Nathan before building
-7. State: "Ready to build. Arc is [confirmed / needs confirmation]. Last completed: [slide X or new carousel]."
+3. Load etkm-cta-architecture (required — governs Beat 11)
+4. Load etkm-audience-intelligence if segment-specific
+5. Pull Carousel Source Protocol from Notion (350924c8-1673-81b1-983c-e0ab7a0a34e6)
+6. Pull production status from Notion (34e924c8 Section 12)
+7. Confirm segment and arc with Nathan
+8. State: "Skills loaded. Source Protocol pulled. Segment confirmed: [X]. Arc: [confirmed / needs confirmation]."
 
 ---
 
 ## Section 13 — Type Z Final Slide Spec
 
-### Design Register
-GBRS Group / Jocko Willink aesthetic. Pure black. Pure command. No logo. No photo. No decoration. The words do all the work. The restraint is the authority signal.
+Unchanged from v2.1. GBRS/Jocko register. Pure black. Pure command. No photo.
+Static core: bg + red bar + @etxkravmaga + Tyler TX + bottom rule.
+Dynamic: 8 elements, all from etkm-cta-architecture Derivation Engine.
+Survivor arc: omit .cta-stakes always.
 
-### Architecture
-Static core (never edit): background (#000) + red left bar + @etxkravmaga footer + Tyler TX + bottom rule. Four structural elements only.
-Dynamic layer (edit per carousel): 8 elements, all HTML, all from etkm-cta-architecture.
-
-### The 8 Dynamic Elements
-
-| # | Class | What it is | Source |
-|---|---|---|---|
-| 1 | .series-badge | Series name | Carousel series name |
-| 2 | .slide-counter | "XX / XX" | Total slide count |
-| 3 | .cta-setup | Setup line — arc before-state | etkm-cta-architecture arc language |
-| 4+5 | .cta-headline / .red | Transformation headline | etkm-cta-architecture Element 1 |
-| 6 | .cta-command | Direct CTA | etkm-cta-architecture Element 2 |
-| 7 | .cta-sub | Transitional CTA + DM keyword | etkm-cta-architecture Element 3 |
-| 8 | .cta-stakes | Stakes line | etkm-cta-architecture Element 4 |
-
-### CTA Derivation Rule
-Run Derivation Engine (etkm-cta-architecture Section 8) before writing any copy on elements 3-8.
-Extract four signals: problem layer, reader arc, funnel stage, implicit promise.
-Match to Language Bank (etkm-cta-architecture Section 3).
-The carousel arc determines every word. Never default to ETKM General without checking the arc.
-Survivor arc: omit .cta-stakes entirely — never negotiable.
-
-### Arc Quick Reference
-
-| Arc | Setup | Headline | Command | DM Keyword | Stakes |
-|---|---|---|---|---|---|
-| ETKM General | Stop Hoping. | START KNOWING. | Attend a Free Trial Class | CONFIDENT | Because waiting does not make the threat go away. |
-| Protector | You Already Decided They Matter. | NOW ACT ON IT. | Attend a Free Trial Class | FAMILY | Every week you wait is a week your family doesn't have this. |
-| Awakened | That Feeling Is Telling You Something. | TRUST IT. | Book Your Free Trial Class This Week | READY | The moment of clarity doesn't last. Act while it's loud. |
-| Fight Back ETX | You Don't Have to Feel Powerless. | TAKE BACK CONTROL. | Register for Fight Back ETX | SAFE | Omit |
-| Survivor | Arc-appropriate | Arc-appropriate | Arc-appropriate | Arc-appropriate | Always omit |
-
-### Production Steps
-1. Open etkm_final_slide_TYPE_Z_TEMPLATE.html
-2. Run CTA Derivation Engine (etkm-cta-architecture Section 8)
-3. Edit all 8 dynamic elements
-4. Run Gate 1 items 14-15
-5. Export as JPG
+Arc Quick Reference:
+- ETKM General: "Stop Hoping." / "START KNOWING." / "Attend a Free Trial Class" / CONFIDENT / stakes
+- Protector: "You Already Decided They Matter." / "NOW ACT ON IT." / FAMILY / stakes
+- Awakened: "That Feeling Is Telling You Something." / "TRUST IT." / "Book Your Free Trial Class" / READY / stakes
+- Fight Back ETX: "You Don't Have to Feel Powerless." / "TAKE BACK CONTROL." / SAFE / omit stakes
+- Survivor: arc-appropriate / always omit stakes
 
 ---
 
@@ -379,35 +302,36 @@ Survivor arc: omit .cta-stakes entirely — never negotiable.
 
 | Need | Location | ID |
 |---|---|---|
-| Full visual specs + pixel values | ETKM Carousel System — Design & Messaging Standards | 34e924c8 |
-| **Slide type specs (authoritative — Claude reads this)** | **ETKM Carousel Slide Type Library** | **350924c8-1673-815d-a299-d8f50b8c14ee** |
-| Content arc library | ETKM Carousel System Section 9 | 34e924c8 |
-| Production status tracker | ETKM Carousel System Section 12 | 34e924c8 |
-| Operational hub | ETKM Carousel Project Hub | 350924c8 |
+| **Carousel Source Protocol (routing table)** | **Carousel Source Protocol** | **350924c8-1673-81b1-983c-e0ab7a0a34e6** |
+| Slide type specs | ETKM Carousel Slide Type Library | 350924c8-1673-815d-a299-d8f50b8c14ee |
+| Full visual specs | ETKM Carousel System | 34e924c8 |
+| Production status | ETKM Carousel System Section 12 | 34e924c8 |
+| StoryBrand 2.0 Framework | Brand Intelligence Hub | 335924c8-1673-8105-bd94-db7f68bffcd8 |
+| Problem & Solution Maps | Brand Intelligence Hub | 335924c8-1673-815c-87f4-dd02d0c8d0eb |
+| Fear-Based Messaging | Brand Intelligence Hub | 335924c8-1673-8113-9d86-de99b1cf1f07 |
+| Story Arcs Master File | Brand Intelligence Hub | 335924c8-1673-814c-ae2e-e0ff833c8760 |
+| Messaging Themes & Principles | Brand Intelligence Hub | 335924c8-1673-8184-9412-d2cc89e3ba43 |
+| Quick Reference Index | Brand Intelligence Hub | 335924c8-1673-8144-a201-d7c0e4b35aee |
+| Book Intelligence Library | Content Bank database | 30aa3a08-c412-4eed-874a-537a8221ea1b |
 | CTA language bank | etkm-cta-architecture skill Section 3 | — |
 | CTA derivation engine | etkm-cta-architecture skill Section 8 | — |
-| Audience segments | etkm-audience-intelligence skill | — |
-| Brand voice | etkm-brand-foundation skill | — |
-
-**Note on the HTML library:** etkm_carousel_library_v4_FINAL.html is Nathan's visual Canva companion — all 26 types rendered with photo background. It is not for Claude Project Knowledge (too large). Open in browser when building in Canva.
 
 ---
 
 ## Non-Negotiables
 
 - Never build without a locked arc
+- Never write a single word of copy before Stages 1-7 are complete
 - Never present a slide with a known Gate 1 failure
-- Never use prohibited CTA language (Learn More / Get Started / Click Here / Sign Up)
+- Never use prohibited CTA language
 - Never make ETKM the hero
 - Never modify a Tier 1 design token
 - Never use #FF0000
 - Every slide A-Y carries the photo background — no exceptions
 - Type Z is the ONLY slide without a photo
 - Type Z is always the final slide — never omitted
-- Type E (old separate CTA) permanently retired — never use
-- CTA copy is always derived from etkm-cta-architecture — never invented, never generic by default
-- Always load etkm-cta-architecture — governs the final slide
-- Always run Gate 1 before Gate 2
-- Always run Gate 2 before handoff to Nathan
+- CTA copy always derived from etkm-cta-architecture — never improvised
+- Every body slide's content is traceable to a named source
+- Slide type is always the last decision — the beat and source determine type
+- Beat map is the spine — 11 positions, all beats present before arc map is approved
 - Survivor arc never carries a stakes line
-- When looking up slide type specs during a session: pull from Notion library page 350924c8-1673-815d-a299-d8f50b8c14ee via Notion MCP
