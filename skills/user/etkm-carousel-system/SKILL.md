@@ -1,15 +1,16 @@
 ---
 name: etkm-carousel-system
-version: 2.0
+version: 2.1
 updated: 2026-04-27
 description: >
-  Production ruleset for building ETKM Instagram carousels. V2.0: Complete
-  reorganization. Slide types regrouped by format: Structural (A-D),
-  Narrative (F-I), List Formats (J-K), Quote Formats (L-M), Data & Stats (N-P),
-  Protocol & Decision (Q-R), Framework & Model (S-T), Authority & Proof (U-W),
-  Pattern Interrupts (X-Y), Final Slide (Z). Type E retired (old CTA slide).
-  All slides A-Y carry photo background. Type Z is the single exception: pure
-  black, always final, CTA copy from etkm-cta-architecture only.
+  Production ruleset for building ETKM Instagram carousels. V2.1: Added Notion
+  Slide Type Library page (350924c8-1673-815d-a299-d8f50b8c14ee) to reference
+  map — this is now the authoritative type reference for Claude during sessions.
+  Slide types regrouped by format: Structural (A-D), Narrative (F-I), List
+  Formats (J-K), Quote Formats (L-M), Data & Stats (N-P), Protocol & Decision
+  (Q-R), Framework & Model (S-T), Authority & Proof (U-W), Pattern Interrupts
+  (X-Y), Final Slide (Z). All slides A-Y carry photo background. Type Z is the
+  single exception: pure black, always final, CTA copy from etkm-cta-architecture only.
 triggers:
   - "build a carousel"
   - "carousel slide"
@@ -33,10 +34,11 @@ loads_on_demand:
 
 # ETKM Carousel System
 
-**Version:** 2.0
+**Version:** 2.1
 **Last Updated:** 2026-04-27
-**Changes from V1.4:** Complete reorganization. All 25 body types (A-Y) now carry photo background — Type Z is the ONLY slide without a photo. Types regrouped by format category with new letter assignments. Type E (old separate CTA) permanently retired. One CTA in the system: Type Z only.
-**Library:** etkm_carousel_library_v4_FINAL.html (26 types A-Y + Z)
+**Changes from V2.0:** Added Notion Slide Type Library page to Section 14. This page (350924c8-1673-815d-a299-d8f50b8c14ee) is now the authoritative type reference Claude reads via Notion MCP during sessions. The HTML library (etkm_carousel_library_v4_FINAL.html) is Nathan's Canva visual companion — not for Claude's operational use.
+**Library (Notion):** ETKM Carousel Slide Type Library — 350924c8-1673-815d-a299-d8f50b8c14ee
+**Library (Visual):** etkm_carousel_library_v4_FINAL.html (Nathan's Canva reference only)
 **Template:** etkm_final_slide_TYPE_Z_TEMPLATE.html
 
 ---
@@ -102,7 +104,10 @@ Red accent rule: Maximum one line per slide in #CC0000.
 
 ## Section 5 — Slide Type Library
 
-### Complete Type Reference (A–Z)
+Reference the Notion Slide Type Library (350924c8-1673-815d-a299-d8f50b8c14ee) for full specs per type.
+Below is the operational summary for session use.
+
+### Complete Type Reference (A-Z)
 
 **GROUP 1: STRUCTURAL** — Position-fixed. Never interchangeable.
 
@@ -120,7 +125,7 @@ Red accent rule: Maximum one line per slide in #CC0000.
 | F | Principle / Body | The workhorse · responsive headline sizing · max 40 words |
 | G | Scenario Frame | Places viewer in a real-world situation · present tense always |
 | H | Before / After | Transformation arc in one slide · first-person identity language · student hero in both columns |
-| I | Misconception Chain | 3 connected beliefs → 1 outcome · nodes escalate in color · beliefs are villain not person |
+| I | Misconception Chain | 3 connected beliefs to 1 outcome · nodes escalate in color · beliefs are villain not person |
 
 **GROUP 3: LIST FORMATS** — Scannable items. #1 save-rate format category.
 
@@ -149,7 +154,7 @@ Red accent rule: Maximum one line per slide in #CC0000.
 | Type | Name | Job |
 |---|---|---|
 | Q | Three-Step Process | Exactly 3 steps — non-negotiable · sequential protocol · action verb leads each step |
-| R | Decision Tree | If X → Y / if not X → Z · root node #CC0000 · YES neutral · NO red · max 2 levels deep |
+| R | Decision Tree | If X to Y / if not X to Z · root node #CC0000 · YES neutral · NO red · max 2 levels deep |
 
 **GROUP 7: FRAMEWORK & MODEL** — Named mental models.
 
@@ -174,8 +179,7 @@ Red accent rule: Maximum one line per slide in #CC0000.
 | Y | Myth Buster | Widely held belief corrected · highest share-rate format · myth is villain not person |
 
 **TYPE Z: FINAL SLIDE — ALWAYS LAST**
-
-The ONLY slide in the system without a photo background. Pure black. GBRS/Jocko register. One CTA in the entire system — this is it.
+The ONLY slide without a photo background. Pure black. GBRS/Jocko register. One CTA in the system.
 See Section 13 for full spec.
 
 ---
@@ -227,7 +231,7 @@ See Section 13 for full spec.
 
 Hero rule: Student is always hero. ETKM is always guide. ETKM never the subject of a body slide sentence.
 Villain rule: The threat, false belief, or missed skill. Never another school. Never shame the audience.
-Guide formula: Empathy first (naming what the hero already feels), authority second (plan with confidence, not credentials).
+Guide formula: Empathy first, authority second. Never lead with credentials.
 Bridge line rule: Every body slide (F-Y) except the final principle slide ends with a bridge line. Opens a loop, never reveals the answer. Format: italic, Inter 400, 10px, #575757.
 CTA: Governed entirely by etkm-cta-architecture skill. See Section 13.
 
@@ -249,10 +253,10 @@ Arc locked before building. Arc map approved by Nathan before any HTML written.
 
 Hard stop rule: No slide presented to Nathan with a known Gate 1 failure. Rebuild before presenting. No exceptions.
 
-Claude Code (authoritative): Playwright renders every slide as PNG. Pixel-level overflow check. Values verified against rendered output.
+Claude Code (authoritative): Playwright renders every slide as PNG. Pixel-level overflow check.
 Chat: HTML source audit. Written QC report. Overflow estimated via font metrics — risks flagged explicitly.
 
-**15-item checklist:**
+15-item checklist:
 1. Red bar: left edge, 25px, #CC0000, full height
 2. Series badge: top-left, correct name, #CC0000 bg, #FFF text
 3. Slide counter: top-right, "01 / 09" format, #BBBBBB, zero-padded
@@ -282,7 +286,7 @@ Re-hook (B): Standalone cold. Inverts cover register. Names internal problem.
 Stakes (C): Guide authority without implying others inferior. Specific philosophical claim. Bridge line opens loop.
 Body (F-Y): Student is hero. One idea per slide. Bridge lines open loops. Red accent on most resonant phrase.
 Save magnet (D): Reference tool not recap. Passes 30-day test. Save cue explicit.
-Final slide (Z): CTA derived from correct arc. Five dynamic CTA elements present. Survivor arc stakes omitted. Badge matches series name.
+Final slide (Z): CTA derived from correct arc. All 8 dynamic elements present. Survivor arc stakes omitted. Badge matches series name.
 Full arc: StoryBrand hero's journey complete. Slide 2 works cold. No contradictions. Consistent voice.
 
 Judgment calls flagged explicitly with Claude's assessment. Nathan decides.
@@ -373,16 +377,19 @@ Survivor arc: omit .cta-stakes entirely — never negotiable.
 
 ## Section 14 — Notion Reference Map
 
-| Need | Location |
-|---|---|
-| Full visual specs | ETKM Carousel System (34e924c8) |
-| Content arc library | ETKM Carousel System Section 9 |
-| Production status | ETKM Carousel System Section 12 |
-| Slide type library | etkm_carousel_library_v4_FINAL.html |
-| CTA language bank | etkm-cta-architecture skill Section 3 |
-| CTA derivation engine | etkm-cta-architecture skill Section 8 |
-| Audience segments | etkm-audience-intelligence skill |
-| Brand voice | etkm-brand-foundation skill |
+| Need | Location | ID |
+|---|---|---|
+| Full visual specs + pixel values | ETKM Carousel System — Design & Messaging Standards | 34e924c8 |
+| **Slide type specs (authoritative — Claude reads this)** | **ETKM Carousel Slide Type Library** | **350924c8-1673-815d-a299-d8f50b8c14ee** |
+| Content arc library | ETKM Carousel System Section 9 | 34e924c8 |
+| Production status tracker | ETKM Carousel System Section 12 | 34e924c8 |
+| Operational hub | ETKM Carousel Project Hub | 350924c8 |
+| CTA language bank | etkm-cta-architecture skill Section 3 | — |
+| CTA derivation engine | etkm-cta-architecture skill Section 8 | — |
+| Audience segments | etkm-audience-intelligence skill | — |
+| Brand voice | etkm-brand-foundation skill | — |
+
+**Note on the HTML library:** etkm_carousel_library_v4_FINAL.html is Nathan's visual Canva companion — all 26 types rendered with photo background. It is not for Claude Project Knowledge (too large). Open in browser when building in Canva.
 
 ---
 
@@ -397,9 +404,10 @@ Survivor arc: omit .cta-stakes entirely — never negotiable.
 - Every slide A-Y carries the photo background — no exceptions
 - Type Z is the ONLY slide without a photo
 - Type Z is always the final slide — never omitted
-- Type E (old separate CTA) and the previous Type G are permanently retired — never use
+- Type E (old separate CTA) permanently retired — never use
 - CTA copy is always derived from etkm-cta-architecture — never invented, never generic by default
 - Always load etkm-cta-architecture — governs the final slide
 - Always run Gate 1 before Gate 2
 - Always run Gate 2 before handoff to Nathan
 - Survivor arc never carries a stakes line
+- When looking up slide type specs during a session: pull from Notion library page 350924c8-1673-815d-a299-d8f50b8c14ee via Notion MCP
