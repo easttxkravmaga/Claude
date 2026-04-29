@@ -1,13 +1,14 @@
 ---
 name: make-mcp-intelligence
-version: 1.0
+version: 2.0
 updated: 2026-04-29
 description: >
-  Load this skill for any task involving Make.com via MCP — triggering scenarios
-  from Claude chat, managing Make scenarios or webhooks, configuring the Make MCP
-  connector, or deciding whether a task belongs in Make. This is a routing skill:
-  the living intelligence lives in the Make Deep Reference Page in Notion. Always
-  fetch that page at session start before taking any Make action.
+  Platform intelligence for Make.com — how Make works, how its MCP server
+  operates, connection methods across all Claude surfaces, tool surface
+  architecture, authentication models, and operational constraints. Load this
+  skill whenever working with Make.com on any Claude surface. The living
+  intelligence for your specific Make account and scenarios lives in the Make
+  Deep Reference Page in Notion.
 triggers:
   - "Make MCP"
   - "Make scenario"
@@ -23,125 +24,139 @@ triggers:
   - "Make automation"
   - "configure Make"
   - "Make tool"
-  - "what scenarios are in Make"
   - "Make is not working"
   - "Make MCP not connecting"
-  - "Make session"
-  - "Make Deep Reference"
   - "make.com"
-  - "Make scenario registry"
   - "Make credentials"
   - "Make connection"
   - "Make execution"
   - "Make blueprint"
+  - "Make platform"
+  - "how does Make work"
+  - "Make MCP server"
+  - "Make OAuth"
+  - "Make token"
 ---
 
 # Make MCP Intelligence
 
 ## Purpose
 
-Make.com is the ETKM on-demand tool layer. Its role is to expose pre-built
-scenarios as MCP tools that Claude can trigger directly from chat, Claude Code,
-or the Anthropic API. This skill tells Claude how to connect to Make, when to
-use it, and how to operate it correctly. The authoritative living reference —
-account config, scenario registry, known errors, open issues, and session
-protocol — lives in the Make Deep Reference Page in Notion. This skill is the
-entry point. Notion is the intelligence.
+This skill documents how Make.com works as a platform — its MCP server
+architecture, authentication model, connection methods across every Claude
+surface, tool surface capabilities, and operational constraints. It is platform
+knowledge, not a runbook. Use it to understand what Make can and cannot do,
+how to connect to it, and how its MCP protocol behaves.
 
 ---
 
-## When to Load
+## Platform Architecture
 
-Load this skill whenever:
-- A Make scenario is being triggered, reviewed, built, or retired
-- The Make MCP connector is being configured or debugged on any Claude surface
-- A task involves Make webhooks, data stores, connections, or scenario management
-- A decision about whether a task belongs in Make needs to be made
-- The Make Deep Reference Page needs to be fetched or updated
-- Any phrase containing "Make", "make.com", "Make scenario", "Make MCP",
-  "Make toolbox", "Make webhook", or "Make data store" appears in the task
+Make exposes three distinct MCP surfaces. Understanding which one applies to
+a given use case is the foundational decision.
 
----
+### 1. Make MCP Server (full account-scoped)
+A cloud-hosted MCP server that exposes all active, on-demand scenarios in a
+user's account as callable tools — plus optional management tools for
+scenarios, connections, webhooks, data stores, teams, and organizations.
+Available on paid plans.
 
-## Core Instructions
+### 2. MCP Toolboxes (curated server)
+A second server type for sharing a controlled subset of scenarios. Each
+toolbox has a unique URL and one or more keys. Supports per-tool custom names,
+descriptions, and read-only vs. read-and-write annotations. Best when
+exposing AI tools without granting full account access.
 
-### Step 1 — Fetch the Make Deep Reference Page First
-
-Before taking any Make action, fetch the Notion intelligence page:
-
-**Notion Page ID:** `351924c8-1673-81ae-aa6b-f6224cfccf76`
-
-Fetch it via the Notion MCP tool. Read these sections before proceeding:
-1. **Open Issues** — surface any blockers relevant to the current task
-2. **Active Scenario Registry** — confirm the target scenario exists, is active,
-   and is MCP-ready (all four requirements met)
-3. **Last Verified date** — flag to Nate if >30 days old
-4. **Known Error Log** — check before diagnosing any failure independently
-
-Do not attempt to trigger, build, or modify any Make scenario without first
-completing this fetch-and-read sequence.
-
-### Step 2 — Confirm the Target Scenario is MCP-Ready
-
-A scenario must meet all four requirements before Claude can invoke it as an
-MCP tool:
-
-1. **Scheduling = On Demand (immediately)** — scheduled scenarios are invisible
-   to Make MCP
-2. **isActive = true** — inactive scenarios cannot be called
-3. **Description written** — Claude uses the description to select the right tool
-4. **Inputs and Outputs defined** — without these, Claude cannot pass arguments
-   or parse results
-
-If any of the four requirements are unmet, stop and flag to Nate. Do not
-attempt to invoke an unready scenario.
-
-### Step 3 — Connect to Make MCP
-
-Use the first applicable connection method for the current Claude surface:
-
-| Surface | Method | Config |
-|---|---|---|
-| claude.ai chat | Built-in connector (OAuth) | Settings → Connectors → Make |
-| Claude Desktop | Built-in connector or custom toolbox URL | Settings → Connectors → Make, or paste toolbox URL |
-| Claude Code | MCP token via CLI | `claude mcp add --transport http make https://us2.make.com/mcp/u/<TOKEN>/stateless` |
-| Anthropic API | `mcp_servers` parameter | See Pattern: API Integration below |
-
-**Transport:** Always use `/stateless` (Streamable HTTP). Fall back to `/stream`
-then `/sse` only if the client does not support Streamable HTTP.
-
-**Account identifiers (do not guess — use these exact values):**
-- Zone: `us2.make.com`
-- Organization ID: `1945651`
-- Team ID: `51888`
-- Plan: Pro (management tools available)
-
-### Step 4 — Execute the Task
-
-With the intelligence page read and the scenario confirmed MCP-ready, proceed.
-
-**To trigger a scenario from chat:**
-Describe the intent naturally. Claude selects the correct MCP tool and invokes
-it. If Claude selects the wrong tool, the scenario descriptions are insufficiently
-distinct — update them before retrying.
-
-**To manage scenarios, webhooks, or data stores:**
-Management tools are available on the Pro plan. Scope selection during OAuth
-must include "View and modify scenarios" and/or "View and modify connections,
-webhooks, data stores" as needed.
-
-**To handle a timeout (scenario runtime >25s OAuth / >40s token):**
-Make returns `{ executionId, scenarioId }`. The scenario continues running in
-Make for up to 40 minutes. Retrieve the result by calling the execution-result
-tool with the returned `executionId`. Never retry the scenario trigger — the
-original execution is still running.
+### 3. MCP Client (inside Make scenarios)
+Make scenarios can themselves call external MCP servers via an MCP Client
+module. This is Make acting as a consumer of MCP, not a provider — scenarios
+can reach into GitHub, Webflow, or other MCP-compatible services and
+re-expose them through Make's own MCP server.
 
 ---
 
-## Patterns
+## Authentication
 
-### Pattern: Anthropic API Integration
+Two authentication mechanisms. Pick based on context.
 
+### OAuth 2.1
+Interactive flow. Used by `mcp.make.com` and the built-in Claude connector.
+The user selects an organization and grants scopes on a consent screen:
+- **Run your scenarios** — minimum required scope
+- **View and modify scenarios** — needed for scenario management operations
+- **View and modify connections, webhooks, data stores** — needed for
+  infrastructure management
+
+OAuth is the recommended path for interactive Claude chat sessions.
+
+### MCP Token
+Static bearer token generated under Make Profile → API / MCP Access → Add
+Token → Type: MCP Token. Default scope is `mcp:use` (run-only). Additional
+management scopes available on paid plans. Can be scoped to a specific
+organization, team, or individual scenario via URL query parameters:
+- `?organizationId=<id>`
+- `?teamId=<id>`
+- `?scenarioId=<id>`
+
+Treat MCP tokens as API keys — rotate regularly, never commit to code.
+
+---
+
+## Connection Endpoints
+
+### OAuth endpoints
+- Primary (Streamable HTTP): `https://mcp.make.com`
+- Stream variant: `https://mcp.make.com/stream`
+- SSE variant: `https://mcp.make.com/sse`
+
+### MCP Token endpoints (zone-specific)
+- URL-embedded token: `https://<ZONE>/mcp/u/<TOKEN>/stateless`
+- Header auth: `https://<ZONE>/mcp/stateless` + `Authorization: Bearer <TOKEN>`
+
+### MCP Toolbox endpoint
+`https://<ZONE>/mcp/server/<TOOLBOX_ID>/t/<KEY>/stateless`
+
+### Transport priority
+Always prefer `/stateless` (Streamable HTTP). Fall back to `/stream` then
+`/sse` only if the client does not support Streamable HTTP. SSE is being
+deprecated industry-wide.
+
+### Zone
+Make accounts are assigned to a zone (e.g., `us1`, `us2`, `eu1`, `eu2`).
+The zone appears in the Make UI URL and in the API response under
+`organization.zone`. Always use the account's actual zone — never guess.
+
+---
+
+## Connecting Make MCP Across Claude Surfaces
+
+### claude.ai (web) — Built-in Connector
+The recommended path for chat sessions. Make is a first-party connector
+in claude.ai as of March 2026.
+1. Settings → Connectors → Browse Connectors → search "Make" → click +
+2. Complete Make's OAuth consent screen — select organization and scopes
+3. Claude now has access to Make's MCP tools in the chat session
+
+### Claude Desktop — Custom Connector
+Settings → Connectors → Add custom connector → paste the MCP server or
+toolbox URL. Use `/stateless` transport. For toolboxes, paste the full
+`…/t/<KEY>/stateless` URL.
+
+### Claude Code (CLI)
+```bash
+# OAuth
+claude mcp add --transport http make https://mcp.make.com
+
+# MCP Token via URL
+claude mcp add --transport http make https://<ZONE>.make.com/mcp/u/<TOKEN>/stateless
+
+# MCP Token via header
+claude mcp add --transport http make https://<ZONE>.make.com/mcp/stateless \
+  --header "Authorization: Bearer <TOKEN>"
+```
+Run `/mcp` inside Claude Code to verify the connection after adding.
+
+### Anthropic API (`mcp_servers` parameter)
 ```python
 import anthropic
 client = anthropic.Anthropic()
@@ -152,94 +167,147 @@ response = client.beta.messages.create(
     messages=[{"role": "user", "content": "YOUR PROMPT HERE"}],
     mcp_servers=[{
         "type": "url",
-        "url": "https://us2.make.com/mcp/stateless",
+        "url": "https://<ZONE>.make.com/mcp/stateless",
         "name": "make",
         "authorization_token": "YOUR_MAKE_MCP_TOKEN",
     }],
     betas=["mcp-client-2025-11-20"],
 )
 ```
+The `mcp-client-2025-11-20` beta header is required. Anthropic calls Make
+from its own cloud infrastructure — not the client machine. Not covered by
+Zero Data Retention. Not supported on Amazon Bedrock or Google Vertex.
 
-Note: Anthropic's MCP connector calls Make from Anthropic's cloud infrastructure.
-Not covered by Zero Data Retention. Not supported on Bedrock or Vertex.
+---
 
-### Pattern: MCP Toolbox for Scoped Access
+## Tool Surface
 
-When Claude should only see a curated subset of scenarios:
-1. Make UI → MCP Toolboxes → Create Toolbox
-2. Add specific scenarios, set name and description per scenario
-3. Copy toolbox URL: `https://us2.make.com/mcp/server/<TOOLBOX_ID>/t/<KEY>/stateless`
-4. Add as custom connector in Claude Desktop or pass as `mcp_servers` URL in API
+### Scenario tools
+Make dynamically generates one MCP tool per active, on-demand scenario in
+the connected account. Tool name, description, and input/output schema are
+derived entirely from the scenario's own configuration:
+- **Name** — from the scenario name (truncated to 56 chars by default;
+  override with `?maxToolNameLength=<32–160>`)
+- **Description** — from the scenario description field (Claude uses this
+  to decide when to invoke — write it carefully)
+- **Input schema** — from the scenario's defined Inputs panel
+- **Output schema** — from the scenario's defined Outputs panel
 
-### Pattern: Async Long-Running Scenario
+A scenario without a description or defined inputs/outputs is still callable
+but Claude cannot select it intelligently or parse its results reliably.
 
-For scenarios that take >25 seconds:
-1. Design the scenario to enqueue work and return a job ID immediately
-2. Build a separate status-check scenario that accepts the job ID
-3. Call kick-off → receive job ID → wait → call status-check → retrieve result
-Never build a single blocking scenario >25 seconds if it will be MCP-callable.
+### Management tools (paid plans, management scopes required)
+When the appropriate OAuth scopes or token scopes are granted, Make exposes
+a suite of management tools covering:
+- **Scenarios** — list, get, create, update, delete, activate, deactivate,
+  clone, run, get execution logs, retrieve execution results by executionId
+- **Connections** — list, view metadata
+- **Webhooks** — list, create, get URL, modify, delete
+- **Data stores** — list, view schema, read/write/delete records
+- **Data structures** — list, view
+- **Teams and Organizations** — list members, view roles
+- **Keys** — list, view
 
-### Pattern: Scenario Description Standard
+---
 
-Write every scenario description as a single action sentence:
-"Receives [inputs], does [action], returns [outputs]."
+## Scenario Visibility Rules
 
-Example: "Receives a student name, email, and phone number, creates a Person
-and Deal in Pipedrive, and returns the new deal ID."
+A scenario is only visible as an MCP tool when ALL of the following are true:
 
-Claude uses this description verbatim to select the correct tool. Treat scenario
-names and descriptions as an external API contract — renaming silently breaks
-MCP tool selection.
+1. **Scheduling = On Demand (immediately)** — scheduled or manually-triggered
+   scenarios do not appear as MCP tools
+2. **isActive = true** — inactive scenarios are invisible
+3. **Description present** — without it, Claude cannot reliably select the tool
+4. **Inputs and Outputs defined** — without these, Claude cannot pass arguments
+   or interpret results
+
+These four requirements are non-negotiable. A scenario missing any one of them
+will not function correctly as an MCP tool regardless of other configuration.
+
+---
+
+## Timeout Behavior
+
+Scenario-run tool calls have hard timeout thresholds:
+- **OAuth connection:** 25 seconds
+- **MCP token connection:** 40 seconds
+- **MCP toolbox scenarios:** 40 seconds
+- **Management tools (OAuth):** 30 seconds
+- **Management tools (stream/SSE):** up to 5 minutes 20 seconds
+
+**Critical:** When a scenario-run call times out, Make returns:
+```json
+{ "instruction": "...", "executionId": "abc123", "scenarioId": 12345 }
+```
+The scenario continues running in Make for up to 40 minutes. Retrieve the
+result by calling the execution-result tool with the `executionId`. Never
+retry the trigger — the original execution is still in progress.
+
+Design all MCP-callable scenarios to complete in under 25 seconds. For longer
+work, use a kick-off + poll pattern: scenario 1 enqueues the job and returns
+an ID immediately; scenario 2 accepts the ID and returns the result.
+
+---
+
+## What Make MCP Can and Cannot Do
+
+### Can do
+- Trigger any active, on-demand scenario as a structured tool call
+- Pass typed inputs and receive structured outputs
+- List, activate, deactivate, clone, and inspect scenarios (paid + scopes)
+- Create and manage webhooks, returning callable URLs
+- Read and write Make Data Store records as agent memory
+- Retrieve execution logs and async results by executionId
+
+### Cannot do
+- Expose scheduled or inactive scenarios as tools
+- Provide visual canvas inspection or bundle-by-bundle execution traces
+- Function inside Claude artifacts (artifacts cannot call MCP — use Make
+  webhooks directly from artifact code instead)
+- Operate on Amazon Bedrock or Google Vertex deployments of Claude
+- Be covered by Zero Data Retention when used via the Anthropic API
 
 ---
 
 ## What Not to Do
 
-- Never trigger a Make scenario without first fetching the Notion reference page
-- Never invoke a scenario that does not meet all four MCP-Ready requirements
-- Never use `/sse` transport when `/stateless` is available
-- Never use `us1.make.com` — the account zone is `us2.make.com`
-- Never retry a timed-out scenario trigger — retrieve by `executionId` instead
-- Never build a single scenario >25 seconds runtime for MCP use
-- Never expose the full Make account when only specific scenarios are needed —
-  use a toolbox
-- Never hardcode scenario names in prompts or instructions — they drift
-- Never attempt to author a complex scenario through the MCP management tool
-  surface — use the Make UI for visual scenario construction
-- Never push a scenario into production without a description and defined
-  inputs/outputs
+- Never assume a scenario is MCP-visible without verifying all four
+  visibility requirements
+- Never retry a timed-out scenario trigger — retrieve by executionId
+- Never use SSE transport when stateless is available
+- Never expose the full Make account when only specific scenarios are needed
+  — use a toolbox
+- Never build a single MCP-callable scenario with >25 second runtime
+- Never treat scenario names as stable contracts — renaming breaks tool
+  selection silently
+- Never attempt complex scenario authoring via the management tool surface
+  — use the Make UI or Make's Maia assistant for scenario construction
 
 ---
 
 ## Recovery
 
 **Scenario not visible as MCP tool:**
-Check all four MCP-Ready requirements. The most common failure is scheduling
-not set to On Demand (immediately) or scenario is inactive.
+Verify all four visibility requirements. Most common failure: scheduling not
+set to On Demand, or scenario is inactive.
 
-**Claude invokes wrong scenario:**
-Scenario descriptions are ambiguous or missing. Update descriptions per the
-Scenario Description Standard pattern above.
+**Claude selects wrong scenario:**
+Scenario descriptions are missing or ambiguous. Write descriptions as a
+single action sentence — "Receives [inputs], does [action], returns [outputs]."
 
 **Tool call returns executionId instead of result:**
-Scenario runtime exceeded timeout threshold. Use the async pattern — retrieve
-by executionId. Do not retry the trigger.
-
-**`isinvalid: true` on a scenario:**
-The scenario's connection credential has expired or been disconnected. Re-
-authenticate the connection in Make UI → Connections before attempting to run.
+Scenario exceeded timeout threshold. Retrieve result by executionId — do not
+retry the trigger.
 
 **Management tools not available:**
-Either the OAuth scope was not set to include management permissions, or the
-MCP token was generated with run-only scope. Re-authenticate with the correct
-scopes.
+OAuth scope or token scope does not include management permissions.
+Re-authenticate with the correct scopes selected.
 
-**Make MCP not connecting in Claude chat:**
-Verify the built-in Make connector is toggled ON in claude.ai Settings →
-Connectors. If it was connected but stopped working, disconnect and reconnect
-via OAuth.
+**Make MCP not connecting:**
+Verify the connector is active on the correct Claude surface. For built-in
+connector: check claude.ai Settings → Connectors → Make toggle is ON. For
+token-based: confirm the zone in the URL matches the account's actual zone.
 
-**Notion reference page not loading:**
-Use page ID `351924c8-1673-81ae-aa6b-f6224cfccf76` directly in the Notion
-fetch tool. If the page is inaccessible, work from the last known account
-values in this skill and flag the issue to Nate.
+**`isinvalid` scenario fails:**
+The scenario's underlying connection credential has expired. Re-authenticate
+the connection in Make UI → Connections before attempting to run.
