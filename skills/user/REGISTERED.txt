@@ -16,6 +16,7 @@ etkm-cta-architecture
 etkm-deliverable-qc
 etkm-leadgen-architecture
 etkm-marketing-engine
+make-mcp-intelligence
 etkm-notion-intelligence
 etkm-pdf-pipeline
 etkm-project-standard

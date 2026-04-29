@@ -16,7 +16,8 @@
 | `etkm-audience-intelligence` | `skills/user/etkm-audience-intelligence/SKILL.md` | 1.1 | 2026-04-26 | The routing brain for all ETKM audience-specific work |
 | `etkm-behavior-intelligence` | `skills/user/etkm-behavior-intelligence/SKILL.md` | 1.1 | 2026-04-26 | Load this skill when producing any ETKM output where behavioral influence, identity framing, or persuasion architecture is at play |
 | `etkm-brand-foundation` | `skills/user/etkm-brand-foundation/SKILL.md` | 1.2 | 2026-04-26 | Use this skill for ANY task involving ETKM brand identity, messaging architecture, tone of voice, or StoryBrand framework |
-| `etkm-brand-kit` | `skills/user/etkm-brand-kit/SKILL.md` | 3.1 | 2026-03-29 | Use this skill whenever producing any visual output for ETKM — HTML pages, PDFs, presentations, forms, social media image briefs, React artifacts, SV… |
+| `etkm-brand-kit` | `skills/user/etkm-brand-kit/SKILL.md` | 3.2 | 2026-04-26 | Use this skill whenever producing any visual output for ETKM — HTML pages, PDFs, presentations, forms, social media image briefs, React artifacts, SV… |
+| `etkm-carousel-system` | `skills/user/etkm-carousel-system/SKILL.md` | 2.3 | 2026-04-27 | Production ruleset for building ETKM Instagram carousels |
 | `etkm-content-ecosystem` | `skills/user/etkm-content-ecosystem/SKILL.md` | 1.0 | 2026-04-03 | The production routing skill for all ETKM content runs — from a single blog post to a full topic cluster package |
 | `etkm-crm-operations` | `skills/user/etkm-crm-operations/SKILL.md` | 1.3 | 2026-04-15 | The routing brain for all ETKM CRM and automation work |
 | `etkm-cta-architecture` | `skills/user/etkm-cta-architecture/SKILL.md` | 1.1 | 2026-04-26 | The single authority on CTA construction for every ETKM deliverable |
@@ -31,9 +32,11 @@
 | `etkm-training-program` | `skills/user/etkm-training-program/SKILL.md` | 2.1 | 2026-03-29 | Use this skill for ANY question or task related to the East Texas Krav Maga (ETKM) training program |
 | `etkm-web-production` | `skills/user/etkm-web-production/SKILL.md` | 1.0 | 2026-04-24 | Load this skill for ANY task that produces HTML or CSS for ETKM |
 | `etkm-workflow-registry` | `skills/user/etkm-workflow-registry/SKILL.md` | 2.2 | 2026-04-01 | Use this skill at the start of ANY session involving building, modifying, reviewing, or deploying any part of the ETKM system |
+| `make-mcp-intelligence` | `skills/user/make-mcp-intelligence/SKILL.md` | 1.0 | 2026-04-29 | Load this skill for any task involving Make.com via MCP — triggering scenarios from Claude chat, managing Make scenarios or webhooks, configuring the… |
 | `n8n-workflow-intelligence` | `skills/user/n8n-workflow-intelligence/SKILL.md` | 1.0 | 2026-04-23 | Bulletproof n8n intelligence layer for all three Claude surfaces — Chat, Cowork, and Code |
 | `nate-collaboration-workflow` | `skills/user/nate-collaboration-workflow/SKILL.md` | 3.3 | 2026-04-26 | How Claude and Nathan Lundstrom work together |
 | `skill-lifecycle` | `skills/user/skill-lifecycle/SKILL.md` | 1.2 | 2026-04-26 | Governs the full lifecycle of ETKM skill creation and updates — naming conventions, authoring standards, validation, push process, Claude.ai upload,… |
+| `square-integration-intelligence` | `skills/user/square-integration-intelligence/SKILL.md` | 1.0 | 2026-04-28 | Complete Square API intelligence for building any Square integration — payments, customers, invoices, subscriptions, webhooks, and the Pipedrive bidi… |
 
 ## Disk Mount Registration
 
@@ -59,13 +62,17 @@ These skills are uploaded to Claude.ai (Customize → Skills) and load automatic
 | `etkm-training-program` | yes | — |
 | `etkm-web-production` | yes | — |
 | `etkm-workflow-registry` | yes | — |
+| `make-mcp-intelligence` | yes | — |
 | `n8n-workflow-intelligence` | yes | — |
 | `nate-collaboration-workflow` | yes | — |
 | `skill-lifecycle` | yes | — |
 
 ### Pending Upload
 
-None — every skill in `skills/user/` is uploaded to Claude.ai.
+In repo at `skills/user/` but not yet uploaded to Claude.ai. To onboard them, run `python3 scripts/package_skills.py --pending` to produce ZIPs in `dist/skills/`, then upload each via Claude.ai → Customize → Skills. Mirror the upload back to `REGISTERED.txt` afterward. Full procedure: `docs/skill-upload-procedure.md`.
+
+- `etkm-carousel-system`
+- `square-integration-intelligence`
 
 ## Schema
 
