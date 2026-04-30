@@ -12,11 +12,21 @@
 
 | Skill | Location | Version | Updated | Purpose |
 |---|---|---|---|---|
+| `animejs` | `skills/animejs/SKILL.md` | 1.0 | 2026-04-30 | Anime.js adapter patterns for HyperFrames |
+| `css-animations` | `skills/css-animations/SKILL.md` | 1.0 | 2026-04-30 | CSS animation adapter patterns for HyperFrames |
+| `gsap` | `skills/gsap/SKILL.md` | 1.0 | 2026-04-30 | GSAP animation reference for HyperFrames |
+| `hyperframes-cli` | `skills/hyperframes-cli/SKILL.md` | 1.0 | 2026-04-30 | HyperFrames CLI tool — hyperframes init, lint, inspect, preview, render, transcribe, tts, doctor, browser, info, upgrade, compositions, docs, benchma… |
+| `hyperframes-registry` | `skills/hyperframes-registry/SKILL.md` | 1.0 | 2026-04-30 | Install and wire registry blocks and components into HyperFrames compositions |
+| `hyperframes` | `skills/hyperframes/SKILL.md` | 1.0 | 2026-04-30 | Create video compositions, animations, title cards, overlays, captions, voiceovers, audio-reactive visuals, and scene transitions in HyperFrames HTML |
 | `karpathy-coding-guidelines` | `skills/karpathy-coding-guidelines/SKILL.md` | 1.0 | 2026-04-26 | Behavioral guidelines to reduce common LLM coding mistakes |
+| `lottie` | `skills/lottie/SKILL.md` | 1.0 | 2026-04-30 | Lottie and dotLottie adapter patterns for HyperFrames |
+| `remotion-to-hyperframes` | `skills/remotion-to-hyperframes/SKILL.md` | 1.0 | 2026-04-30 | Translate a Remotion (React-based) video composition into a HyperFrames HTML composition |
+| `three` | `skills/three/SKILL.md` | 1.0 | 2026-04-30 | Three.js and WebGL adapter patterns for HyperFrames |
 | `etkm-audience-intelligence` | `skills/user/etkm-audience-intelligence/SKILL.md` | 1.1 | 2026-04-26 | The routing brain for all ETKM audience-specific work |
 | `etkm-behavior-intelligence` | `skills/user/etkm-behavior-intelligence/SKILL.md` | 1.1 | 2026-04-26 | Load this skill when producing any ETKM output where behavioral influence, identity framing, or persuasion architecture is at play |
 | `etkm-brand-foundation` | `skills/user/etkm-brand-foundation/SKILL.md` | 1.2 | 2026-04-26 | Use this skill for ANY task involving ETKM brand identity, messaging architecture, tone of voice, or StoryBrand framework |
-| `etkm-brand-kit` | `skills/user/etkm-brand-kit/SKILL.md` | 3.1 | 2026-03-29 | Use this skill whenever producing any visual output for ETKM — HTML pages, PDFs, presentations, forms, social media image briefs, React artifacts, SV… |
+| `etkm-brand-kit` | `skills/user/etkm-brand-kit/SKILL.md` | 3.2 | 2026-04-26 | Use this skill whenever producing any visual output for ETKM — HTML pages, PDFs, presentations, forms, social media image briefs, React artifacts, SV… |
+| `etkm-carousel-system` | `skills/user/etkm-carousel-system/SKILL.md` | 2.3 | 2026-04-27 | Production ruleset for building ETKM Instagram carousels |
 | `etkm-content-ecosystem` | `skills/user/etkm-content-ecosystem/SKILL.md` | 1.0 | 2026-04-03 | The production routing skill for all ETKM content runs — from a single blog post to a full topic cluster package |
 | `etkm-crm-operations` | `skills/user/etkm-crm-operations/SKILL.md` | 1.3 | 2026-04-15 | The routing brain for all ETKM CRM and automation work |
 | `etkm-cta-architecture` | `skills/user/etkm-cta-architecture/SKILL.md` | 1.1 | 2026-04-26 | The single authority on CTA construction for every ETKM deliverable |
@@ -31,9 +41,14 @@
 | `etkm-training-program` | `skills/user/etkm-training-program/SKILL.md` | 2.1 | 2026-03-29 | Use this skill for ANY question or task related to the East Texas Krav Maga (ETKM) training program |
 | `etkm-web-production` | `skills/user/etkm-web-production/SKILL.md` | 1.0 | 2026-04-24 | Load this skill for ANY task that produces HTML or CSS for ETKM |
 | `etkm-workflow-registry` | `skills/user/etkm-workflow-registry/SKILL.md` | 2.2 | 2026-04-01 | Use this skill at the start of ANY session involving building, modifying, reviewing, or deploying any part of the ETKM system |
+| `make-mcp-intelligence` | `skills/user/make-mcp-intelligence/SKILL.md` | 2.0 | 2026-04-29 | Platform intelligence for Make.com — how Make works, how its MCP server operates, connection methods across all Claude surfaces, tool surface archite… |
 | `n8n-workflow-intelligence` | `skills/user/n8n-workflow-intelligence/SKILL.md` | 1.0 | 2026-04-23 | Bulletproof n8n intelligence layer for all three Claude surfaces — Chat, Cowork, and Code |
 | `nate-collaboration-workflow` | `skills/user/nate-collaboration-workflow/SKILL.md` | 3.3 | 2026-04-26 | How Claude and Nathan Lundstrom work together |
 | `skill-lifecycle` | `skills/user/skill-lifecycle/SKILL.md` | 1.2 | 2026-04-26 | Governs the full lifecycle of ETKM skill creation and updates — naming conventions, authoring standards, validation, push process, Claude.ai upload,… |
+| `square-integration-intelligence` | `skills/user/square-integration-intelligence/SKILL.md` | 1.0 | 2026-04-28 | Complete Square API intelligence for building any Square integration — payments, customers, invoices, subscriptions, webhooks, and the Pipedrive bidi… |
+| `zapier` | `skills/user/zapier/SKILL.md` | 1.0 | — | Operational skill for all Zapier work in the ETKM stack |
+| `waapi` | `skills/waapi/SKILL.md` | 1.0 | 2026-04-30 | Web Animations API adapter patterns for HyperFrames |
+| `website-to-hyperframes` | `skills/website-to-hyperframes/SKILL.md` | 1.0 | 2026-04-30 | Capture a website and create a HyperFrames video from it |
 
 ## Disk Mount Registration
 
@@ -65,7 +80,12 @@ These skills are uploaded to Claude.ai (Customize → Skills) and load automatic
 
 ### Pending Upload
 
-None — every skill in `skills/user/` is uploaded to Claude.ai.
+In repo at `skills/user/` but not yet uploaded to Claude.ai. To onboard them, run `python3 scripts/package_skills.py --pending` to produce ZIPs in `dist/skills/`, then upload each via Claude.ai → Customize → Skills. Mirror the upload back to `REGISTERED.txt` afterward. Full procedure: `docs/skill-upload-procedure.md`.
+
+- `etkm-carousel-system`
+- `make-mcp-intelligence`
+- `square-integration-intelligence`
+- `zapier`
 
 ## Schema
 
