@@ -1,28 +1,28 @@
 ---
 name: etkm-marketing-engine
-version: 1.2
-updated: 2026-04-26
+version: 1.3
+updated: 2026-05-03
 description: >
-  The routing brain for all ETKM marketing, funnel, lead generation, content creation,
-  offer positioning, and nurture sequence work. Load this skill whenever building,
-  planning, reviewing, or troubleshooting any part of the ETKM marketing system —
-  including lead magnets, email sequences, content strategy, funnel architecture,
-  offer packaging, ad campaigns, or nurture flows. All frameworks, templates, offer
-  data, and sequence specs live in Notion databases — this skill tells Claude how to
-  use them. Trigger for: "funnel", "TOFU", "MOFU", "BOFU", "lead gen", "lead magnet",
-  "nurture sequence", "email sequence", "drip campaign", "offer stack", "content template",
-  "what to post", "content calendar", "hook template", "ad framework", "conversion",
-  "Grand Slam Offer", "value equation", "More/Better/New", "how do we get more leads",
-  "pricing", "membership tiers", "follow-up emails", "after they download", "re-engagement".
-  Replaces: etkm-funnel-master, etkm-leads-engine, etkm-lead-gen, etkm-content-templates,
-  etkm-grand-slam-offer, etkm-nurture-sequence.
+  The routing brain for all ETKM marketing, funnel, lead generation, content
+  creation, offer positioning, and nurture sequence work. Load this skill whenever
+  building, planning, reviewing, or troubleshooting any part of the ETKM marketing
+  system — including lead magnets, email sequences, content strategy, funnel
+  architecture, offer packaging, ad campaigns, or nurture flows. All frameworks,
+  templates, offer data, and sequence specs live in Notion databases — this skill
+  tells Claude how to use them. Trigger for: "funnel", "TOFU", "MOFU", "BOFU",
+  "lead gen", "lead magnet", "nurture sequence", "email sequence", "drip
+  campaign", "offer stack", "content template", "what to post", "content
+  calendar", "hook template", "ad framework", "conversion", "Grand Slam Offer",
+  "value equation", "More/Better/New", "how do we get more leads", "pricing",
+  "membership tiers", "follow-up emails", "after they download", "re-engagement".
+  Replaces:
 ---
 
 # ETKM Marketing Engine
 
-**Version:** 1.2
+**Version:** 1.3
 **Established:** 2026-03-29
-**Updated:** 2026-04-26
+**Updated:** 2026-05-03
 **Replaces:** etkm-funnel-master, etkm-leads-engine, etkm-lead-gen, etkm-content-templates, etkm-grand-slam-offer, etkm-nurture-sequence
 **Databases:** ETKM Marketing Frameworks, ETKM Offer Stack, ETKM Nurture Sequences (Notion → AI Resources → Skill Reference Data)
 
@@ -73,6 +73,17 @@ funnel framework.
 action. CTA construction, language, structure, and quality gates are governed there —
 not here. This skill determines which funnel stage the content serves; etkm-cta-architecture
 determines how the ask is built.
+
+**REFERENCE** the **Email Strategies, Principles & Tactical Playbook** (Notion → ETKM
+Content System → Brand Intelligence Hub) when writing any email copy, structuring a
+sequence, or making decisions about subject lines, preview text, body length, copy
+formulas, CTA placement, P.S. usage, or open-loop sequencing. This skill routes to the
+right sequence and funnel stage. The playbook governs the craft of writing and
+structuring the emails themselves — including copywriting formulas (PAS, AIDA, BAB,
+4Ps), the psychology behind subject lines and P.S. lines, open-loop technique for
+sequence continuity, spacing and timing research, and current engagement benchmarks.
+The playbook is brand-agnostic; apply etkm-brand-foundation and etkm-cta-architecture
+on top of it for ETKM-specific voice and CTA construction.
 
 ---
 
@@ -160,10 +171,18 @@ Every ETKM lead magnet follows this structure:
 
 ### Sequence Performance Standards
 
+**Note on open rates (2025–2026):** Apple Mail Privacy Protection (MPP) inflates
+reported open rates by pre-fetching email content regardless of whether the recipient
+opens it. Roughly 40–60% of reported opens may be machine-triggered. Open rate is now
+a directional signal for deliverability health, not a primary engagement KPI. Prioritize
+click-through rate, click-to-open rate, conversion rate, and revenue per recipient.
+Current benchmarks are maintained in the Email Strategies, Principles & Tactical Playbook
+(Notion → Brand Intelligence Hub).
+
 | Metric | Below Average | Target | Strong |
 |---|---|---|---|
-| Email open rate | < 20% | 25-35% | > 40% |
-| Click-through rate | < 2% | 3-6% | > 8% |
+| Email open rate (MPP-inflated) | < 25% | 35-43% | > 45% |
+| Click-through rate | < 2% | 2.5-4% | > 5% |
 | Lead to trial booking | < 5% | 8-15% | > 20% |
 | Trial booking to show-up | < 50% | 65-75% | > 80% |
 | Trial show-up to member | < 30% | 40-60% | > 65% |
@@ -243,6 +262,11 @@ Before delivering any marketing content:
 
 ## SECTION 6: CHANGELOG
 
+- V1.3 — 2026-05-03 — Added Email Strategies, Principles & Tactical Playbook
+  reference to Section 2 (load-alongside / reference guidance). Updated Sequence
+  Performance Standards with Apple MPP open-rate caveat, adjusted benchmarks to
+  reflect 2025-2026 MPP-inflated reality, added note to prioritize CTR/CTOR/conversion
+  over opens. Pointed benchmark maintenance to the playbook in Brand Intelligence Hub.
 - V1.2 — 2026-04-26 — Added etkm-cta-architecture to load-alongside guidance.
   Updated Content Rules CTA line to defer to etkm-cta-architecture. Updated
   quality gates to require CTA built per etkm-cta-architecture. Updated
