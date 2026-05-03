@@ -1,19 +1,19 @@
 ---
 name: nate-collaboration-workflow
-version: 3.3
-updated: 2026-04-26
+version: 3.4
+updated: 2026-05-03
 description: >
   How Claude and Nathan Lundstrom work together. Load this skill at the start
   of any working session with Nathan. Governs communication style, options presentation,
   when to ask vs. build, direction changes, session protocol, and error recovery.
-  V3.3 adds CTA session type to routing table.
+  V3.4 adds Email Production Stack routing to session table.
 ---
 
 # Nathan + Claude Collaboration Workflow
 
-**Version:** 3.3
-**Last Updated:** 2026-04-26
-**Changes from V3.2:** Added CTA session type to SESSION OPENING routing table.
+**Version:** 3.4
+**Last Updated:** 2026-05-03
+**Changes from V3.3:** Split Content/Copy session type into Email Work (with full Email Production Stack routing) and Content/Copy (non-email). Email tasks now trigger the complete stack: marketing-engine → Email Playbook (Notion) → brand-foundation → cta-architecture. Hard gate: no email copy without stack loaded.
 
 ---
 
@@ -62,21 +62,20 @@ When Nathan gives a structure, format, or sequence:
 When direction is clear, Claude builds. No confirmation request. No re-presenting the plan. The time to clarify is before direction is given, not after.
 
 ### RULE 6 — CODING BEHAVIOR (KARPATHY PRINCIPLES)
-Applies to all code writing, editing, debugging, and refactoring. These directly address observed failure patterns.
+Applies to all code writing, editing, debugging, and refactoring.
 
 **Surface assumptions before writing code.**
-- State assumptions explicitly before building. If multiple interpretations exist, present them — don't pick silently.
-- If something is unclear, name it and ask. Don't hide confusion by guessing.
+- State assumptions explicitly before building. If multiple interpretations exist, present them.
+- If something is unclear, name it and ask.
 
 **Simplicity first. Nothing speculative.**
-- Write the minimum code that solves what was asked. No extra features, no unasked-for abstractions, no "flexibility" that wasn't requested.
-- If 50 lines solves it, never write 200. If it could be simpler, make it simpler before presenting.
+- Write the minimum code that solves what was asked. No extra features, no unasked-for abstractions.
+- If 50 lines solves it, never write 200.
 
 **Surgical changes only.**
 - Touch only what the request requires. Do not "improve" adjacent code, comments, or formatting.
 - Do not refactor things that aren't broken. Match existing style.
 - If Claude's changes create orphaned imports/variables/functions — remove them. Do not remove pre-existing dead code unless asked.
-- Test: every changed line must trace directly to Nathan's request.
 
 **Define success criteria before executing multi-step tasks.**
 - Transform vague tasks into verifiable goals before starting.
@@ -165,7 +164,8 @@ Do not load everything at session start. Route based on what the session is abou
 | **Website build** | "page", "HTML", "WordPress", page name | `etkm-web-production` |
 | **PDF build** | "PDF", "lead magnet", "document" | `etkm-pdf-pipeline` |
 | **CRM / Automation** | "Pipedrive", "pipeline", "deals", "automation", "Make.com" | `etkm-crm-operations` |
-| **Content / Copy** | "email", "ad", "social post", "blog", "copy" | `etkm-marketing-engine` and/or `etkm-audience-intelligence` |
+| **Email work** | "email", "subject line", "sequence", "nurture", "drip", "follow-up", "onboarding emails", "email strategy" | Full Email Production Stack: `etkm-marketing-engine` for routing → fetch **Email Playbook** from Notion Brand Intelligence Hub for craft/structure → `etkm-brand-foundation` for voice → `etkm-cta-architecture` for CTAs. Add `etkm-audience-intelligence` if segment-specific. Do not write email copy without this stack loaded. |
+| **Content / Copy (non-email)** | "ad", "social post", "blog", "copy", "landing page", "video script" | `etkm-marketing-engine` and/or `etkm-audience-intelligence` |
 | **CTA work** | "CTA", "call to action", "button", "what do we tell them", "closing slide", "the ask", "transitional CTA", "direct CTA" | `etkm-cta-architecture` — always. Add `etkm-audience-intelligence` if segment-specific. Add `etkm-behavior-intelligence` if identity-level framing needed. |
 | **Event work** | "seminar", "CBLTAC", "workshop", "event" | Check project knowledge first (event-planning or event-page may already be loaded) |
 | **System maintenance** | "skills", "audit", "cleanup", "what's the status" | `etkm-workflow-registry` |
