@@ -1,6 +1,6 @@
 ---
 name: etkm-marketing-engine
-version: 1.3
+version: 1.4
 updated: 2026-05-03
 description: >
   The routing brain for all ETKM marketing, funnel, lead generation, content
@@ -9,7 +9,8 @@ description: >
   system — including lead magnets, email sequences, content strategy, funnel
   architecture, offer packaging, ad campaigns, or nurture flows. All frameworks,
   templates, offer data, and sequence specs live in Notion databases — this skill
-  tells Claude how to use them. Trigger for: "funnel", "TOFU", "MOFU", "BOFU",
+  tells Claude how to use them. etkm-cta-architecture MUST be loaded any time this
+  skill is loaded — no exceptions. Trigger for: "funnel", "TOFU", "MOFU", "BOFU",
   "lead gen", "lead magnet", "nurture sequence", "email sequence", "drip
   campaign", "offer stack", "content template", "what to post", "content
   calendar", "hook template", "ad framework", "conversion", "Grand Slam Offer",
@@ -20,7 +21,7 @@ description: >
 
 # ETKM Marketing Engine
 
-**Version:** 1.3
+**Version:** 1.4
 **Established:** 2026-03-29
 **Updated:** 2026-05-03
 **Replaces:** etkm-funnel-master, etkm-leads-engine, etkm-lead-gen, etkm-content-templates, etkm-grand-slam-offer, etkm-nurture-sequence
@@ -40,6 +41,7 @@ This skill tells Claude:
 - What rules govern lead generation, content creation, and nurture flows
 - How to apply the Hormozi frameworks ($100M Offers, $100M Leads) to ETKM
 - What quality gates apply before marketing content ships
+- That `etkm-cta-architecture` MUST be loaded alongside this skill — always, no exceptions
 
 ---
 
@@ -60,6 +62,14 @@ This skill tells Claude:
 - Visual design or brand standards (load etkm-brand-kit)
 - Event-specific planning (check project instructions for etkm-event-planning)
 
+**ALWAYS LOAD** `etkm-cta-architecture` whenever this skill is loaded. No exceptions.
+Every marketing session involves CTA decisions — even planning and strategy sessions
+shape downstream CTAs. CTA construction, language, structure, and quality gates are
+governed entirely by etkm-cta-architecture. This skill determines which funnel stage
+the content serves; etkm-cta-architecture determines how the ask is built. Claude does
+not make a judgment call on whether to load it. If the marketing engine is on, the CTA
+architecture is on.
+
 **Load ALONGSIDE** `etkm-audience-intelligence` when producing any segment-specific
 marketing content. This skill provides the framework; audience-intelligence provides
 the segment data.
@@ -68,11 +78,6 @@ the segment data.
 run — blog series, email series, PDFs, topic clusters, or packages. Content ecosystem
 governs production scope and depth; this skill routes the content to the correct
 funnel framework.
-
-**Load ALONGSIDE** `etkm-cta-architecture` for any content that includes a call to
-action. CTA construction, language, structure, and quality gates are governed there —
-not here. This skill determines which funnel stage the content serves; etkm-cta-architecture
-determines how the ask is built.
 
 **REFERENCE** the **Email Strategies, Principles & Tactical Playbook** (Notion → ETKM
 Content System → Brand Intelligence Hub) when writing any email copy, structuring a
@@ -166,8 +171,8 @@ Every ETKM lead magnet follows this structure:
 - MOFU: Never hard sell. Tell real stories. Prove they can do this. Low-risk next step.
 - BOFU: One CTA only. Value before ask. Urgency only if authentic — never manufactured.
 - All stages: Student is the hero. ETKM is the guide. Internal problem drives conversion.
-- **All CTAs:** Governed by `etkm-cta-architecture`. Do not construct CTA language,
-  structure, or slides without loading that skill.
+- **All CTAs:** Governed by `etkm-cta-architecture` (loaded automatically with this skill).
+  Do not construct CTA language, structure, or slides outside of that skill's standards.
 
 ### Sequence Performance Standards
 
@@ -189,7 +194,7 @@ Current benchmarks are maintained in the Email Strategies, Principles & Tactical
 
 **Troubleshooting by metric:**
 - Low open rate → Fix subject lines
-- Good opens, low clicks → Fix the CTA (load etkm-cta-architecture)
+- Good opens, low clicks → Fix the CTA (etkm-cta-architecture is already loaded)
 - Good clicks, no bookings → Fix the landing page (not a sequence problem)
 - Good bookings, low show-up → Fix Sequence C (pre-visit)
 - Good show-up, low conversion → Fix the offer or first class experience (not a sequence problem)
@@ -247,11 +252,12 @@ Before delivering any marketing content:
 
 - [ ] Funnel stage identified — content serves one stage only
 - [ ] Correct framework queried from Notion — not improvised
+- [ ] etkm-cta-architecture confirmed loaded (mandatory with this skill)
 - [ ] If segment-specific: etkm-audience-intelligence loaded and segment data queried
 - [ ] Internal problem addressed (for any content with a problem-solution component)
 - [ ] Student is the hero, ETKM is the guide — never reversed
 - [ ] CTA is singular and clear — one ask per piece
-- [ ] CTA built per etkm-cta-architecture — not improvised
+- [ ] CTA built per etkm-cta-architecture standards — not improvised
 - [ ] No manufactured urgency — only authentic scarcity
 - [ ] Offer details match the Offer Stack database exactly — no improvised pricing or inclusions
 - [ ] Sequence timing matches the Nurture Sequences database — no improvised schedules
@@ -262,6 +268,11 @@ Before delivering any marketing content:
 
 ## SECTION 6: CHANGELOG
 
+- V1.4 — 2026-05-03 — Changed etkm-cta-architecture from conditional load-alongside
+  to ALWAYS LOAD — mandatory whenever this skill is loaded, no exceptions. Updated
+  Section 1, Section 2, Section 3 Content Rules, Section 5 Quality Gates, and
+  frontmatter description to reflect mandatory CTA architecture loading. Claude no
+  longer makes a judgment call on whether to load CTA architecture.
 - V1.3 — 2026-05-03 — Added Email Strategies, Principles & Tactical Playbook
   reference to Section 2 (load-alongside / reference guidance). Updated Sequence
   Performance Standards with Apple MPP open-rate caveat, adjusted benchmarks to
