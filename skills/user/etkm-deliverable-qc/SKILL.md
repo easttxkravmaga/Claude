@@ -1,7 +1,7 @@
 ---
 name: etkm-deliverable-qc
-version: 2.1
-updated: 2026-03-14
+version: 2.2
+updated: 2026-05-04
 description: >
   Non-negotiable QC gate for ALL ETKM deliverables before they reach Nathan.
   Triggers any time a PDF, DOCX, HTML page, email sequence, slide deck, or printed
@@ -17,6 +17,7 @@ trigger: >
 dependencies:
   - etkm-brand-kit (visual standards reference for Gate 4)
   - etkm-brand-foundation (voice reference for Gate 5)
+  - etkm-visual-qc (visual layout self-audit — runs as Gate 1.6 on all visual outputs)
   - pdf2image + pillow (required for Gate 1.5 visual render check on PDFs)
 ---
 
@@ -31,7 +32,7 @@ Two incidents created this skill:
 
 **Incident 1 — 2026-03-13:** A Reading Companion PDF was delivered with the intro/header
 block repeating on every page, a chapter focus table with nearly every row truncated
-mid-sentence, chapters 12–14 missing entirely, and a blank final page. None of these
+mid-sentence, chapters 12-14 missing entirely, and a blank final page. None of these
 were subtle. All were visible on first read. The file shipped anyway.
 Root cause: content completion was treated as delivery readiness. They are not the same.
 
@@ -47,7 +48,7 @@ mandatory check items that will never be skipped.
 
 ---
 
-## The 8 QC Gates — Run In Order
+## The QC Gates — Run In Order
 
 ---
 
@@ -63,9 +64,34 @@ mandatory check items that will never be skipped.
 
 **KNOWN FAILURE — check first:**
 Cover content bleeding to interior pages. Caused by page template not switching correctly.
-Fix: ensure `NextPageTemplate('Normal')` flowable is inserted before the first `PageBreak()` in the story. Cover page placeholder must be an empty `Paragraph` object — never actual content.
+Fix: ensure NextPageTemplate('Normal') flowable is inserted before the first PageBreak() in the story. Cover page placeholder must be an empty Paragraph object — never actual content.
 
 **Failure here = do not proceed. Fix first.**
+
+---
+
+### GATE 1.6 — Visual Layout Self-Audit (ALL VISUAL OUTPUTS)
+*Does this output pass ETKM visual brand standards?*
+
+This gate runs on every output that has a visual layout: HTML pages, carousels, email templates,
+PDFs, SVGs, React/JSX artifacts. It does NOT run on plain text, pure code, or internal planning docs.
+
+**Load etkm-visual-qc and run the full protocol.**
+
+Route by output type:
+- Carousel: Section A + Section E
+- HTML / web component / SVG / React: Section B + Section E
+- Email template: Section C + Section E
+- PDF: Section D + Section E
+
+Section E (Universal Brand Standards) runs on all visual output types without exception.
+Section F (Messaging Compliance) runs on any output with visible copy directed at students or prospects.
+
+**Gate 1.6 report format (from etkm-visual-qc Section G):**
+Visual QC — [Output Type]: [X]/[total] pass. STATUS: PASS / FAIL
+
+**If Gate 1.6 FAILS:** Gate 4 (Brand and Visual Standards) automatically fails.
+Rebuild the failing elements. Re-run Gate 1.6. Do not advance to Gate 2 until Gate 1.6 passes.
 
 ---
 
@@ -104,9 +130,9 @@ Check where dark pixels appear in the right edge strip:
 - Dark pixels in the middle section = potential text overflow = investigate
 
 **KNOWN FAILURE — check first:**
-Table cells built with raw Python strings instead of `Paragraph` objects. ReportLab
+Table cells built with raw Python strings instead of Paragraph objects. ReportLab
 clips raw string content rather than wrapping it. Every table cell that contains more
-than ~8 words must use a `Paragraph` object with an explicit style.
+than ~8 words must use a Paragraph object with an explicit style.
 
 Fix pattern:
 ```python
@@ -152,10 +178,10 @@ in table cell, overflow, missing content in data file) and fix before delivery.
 - [ ] Are all cross-references, links, and internal references pointing to real content that exists in the document?
 - [ ] For the Field Manual specifically: are all 10 sections present including the Quick Reference Card back page?
 - [ ] For the Validation Brief specifically: are all 7 sections present including the "Your Next Step" closing?
-- [ ] For the Content Bank specifically: are all 6 banks (A–F) present with entries in each?
+- [ ] For the Content Bank specifically: are all 6 banks (A-F) present with entries in each?
 
 **KNOWN FAILURE — check first:**
-Chapter sequence gaps. In the original Reading Companion, chapters 12–14 were missing
+Chapter sequence gaps. In the original Reading Companion, chapters 12-14 were missing
 entirely from the chapter focus points table. Always count chapters against the book's
 actual table of contents.
 
@@ -164,11 +190,13 @@ actual table of contents.
 ### GATE 4 — Brand and Visual Standards
 *Does this look like an ETKM document?*
 
-Reference `etkm-brand-kit` skill for full standards. Key checks:
+Gate 1.6 (etkm-visual-qc) is the full execution protocol for this gate.
+If Gate 1.6 passed, Gate 4 passes for visual standard items.
+Run the key checks below as a confirmation layer:
 
 - [ ] Color palette: black (#000000/#111111), white (#FFFFFF), red (#CC0000), gray (#575757), light gray (#BBBBBB) only — no other colors
 - [ ] No gradients anywhere
-- [ ] Typography: Helvetica/Helvetica-Bold for PDFs. Barlow Condensed + Inter for HTML
+- [ ] Typography: Montserrat 900 headlines, Inter body (HTML) — Helvetica/Helvetica-Bold (PDFs)
 - [ ] One red accent element per section — not multiple
 - [ ] Headers and footers consistent on every interior page
 - [ ] Cover page uses Bold Black Foundation (black background, white type, red accent)
@@ -177,13 +205,14 @@ Reference `etkm-brand-kit` skill for full standards. Key checks:
 - [ ] Swiss International layout — asymmetric, high contrast, no decorative elements
 - [ ] Visual hierarchy is clear — reader can navigate without confusion
 - [ ] No style drift between sections — consistent throughout
+- [ ] No accent lines under section titles (AI hallmark — never acceptable)
 
 ---
 
 ### GATE 5 — Voice and Copy Quality
 *Does this sound like ETKM?*
 
-Reference `etkm-brand-foundation` skill for full standards. Key checks:
+Reference etkm-brand-foundation skill for full standards. Key checks:
 
 - [ ] Plain-spoken. Never clinical or academic.
 - [ ] Direct. No hedging language ("it could be argued that," "perhaps," "one might consider")
@@ -248,32 +277,30 @@ builder. Ask:
 When auditing multiple deliverables at once (e.g., a full book package):
 
 1. List every file in the batch
-2. Run all 8 gates against each file independently
+2. Run all gates against each file independently
 3. For each file, produce a findings report:
 
-```
 FILE: [filename]
 STATUS: FAIL
 
-GATE 1.5 — Visual Render Check
-  - Validation table row 3: right column text clipped at cell boundary
-  - Vocab table row 7: definition truncated mid-sentence
+GATE 1.6 — Visual Layout Self-Audit
+  - Section B3: Centered layout detected on interior section — Swiss doctrine requires asymmetric
+  - Section E6: #FF0000 found in button element — permanently retired, replace with #CC0000
 
 GATE 3 — Sequence and Completeness
   - Chapter focus points missing Ch. 12, 13, 14
 
-ACTION REQUIRED: Rebuild tables with Paragraph objects. Add missing chapters. Re-run QC.
-```
+ACTION REQUIRED: Fix layout and color violations. Add missing chapters. Re-run QC.
 
 4. Do not present any file to Nathan as complete until it has a PASS status
 5. Deliver a summary table showing all files and their status before any file links
 
-**Summary table format:**
+Summary table format:
 
-| File | Pages | Gate 1 | Gate 1.5 | Gate 2 | Gate 3 | Gate 4 | Gate 5 | Gate 6 | Gate 7 | Gate 8 | Status |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| 01_Field_Manual.pdf | 11 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | PASS |
-| 02_Validation_Brief.pdf | 7 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | PASS |
+| File | Pages | G1 | G1.6 | G1.5 | G2 | G3 | G4 | G5 | G6 | G7 | G8 | Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 01_Field_Manual.pdf | 11 | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS |
+| 02_Validation_Brief.pdf | 7 | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS |
 
 ---
 
@@ -305,16 +332,16 @@ permanent check item for all future deliverables.
 ## Quick Reference — Most Common Failures
 
 **Page template bleed** (cover content on interior pages)
-→ Missing `NextPageTemplate('Normal')` + `PageBreak()` transition
+→ Missing NextPageTemplate('Normal') + PageBreak() transition
 
 **Table cell text clipping**
-→ Raw strings in table cells instead of `Paragraph` objects
+→ Raw strings in table cells instead of Paragraph objects
 
 **Missing chapters or sections**
 → Source data file incomplete or section accidentally skipped in story builder
 
 **Blank trailing page**
-→ Empty `Paragraph` or `Spacer` at end of story triggering a new page
+→ Empty Paragraph or Spacer at end of story triggering a new page
 
 **Wrong URL** (easttxkravmaga.com instead of etxkravmaga.com)
 → Always verify URLs against Gate 6 checklist
@@ -323,6 +350,12 @@ permanent check item for all future deliverables.
 → Check if dark pixels are concentrated at top/bottom only (header/footer bars)
    vs. spread through middle (actual overflow). Middle = real problem.
 
+**#FF0000 in any visual output**
+→ Gate 1.6 / Gate 4 hard failure. Replace with #CC0000 everywhere.
+
+**Accent lines under section titles**
+→ Gate 1.6 / Gate 4 hard failure. Remove. This is an AI hallmark — never in ETKM output.
+
 ---
 
 ## Integration With etkm-book-intelligence
@@ -330,19 +363,21 @@ permanent check item for all future deliverables.
 When processing books through the Book Intelligence System, run this QC skill
 after every build step:
 
-```
-After build_01.py → QC Asset 01
-After build_02.py → QC Asset 02
-After build_03.py → QC Asset 03 (PDF and DOCX)
-After build_04.py → QC Asset 04 (HTML)
-All pass → package zip → deliver
-Any fail → fix → rebuild → re-run QC → do not skip re-check
-```
+After build_01.py: QC Asset 01
+After build_02.py: QC Asset 02
+After build_03.py: QC Asset 03 (PDF and DOCX)
+After build_04.py: QC Asset 04 (HTML)
+All pass: package zip, deliver
+Any fail: fix, rebuild, re-run QC, do not skip re-check
 
 Never batch-deliver without independent QC on each file.
 A passing Asset 01 does not mean Asset 02 passes.
 
 ---
-*Version 2.0 — Updated 2026-03-14*
+*Version 2.2 — Updated 2026-05-04*
+*Changes from V2.1: Added Gate 1.6 (Visual Layout Self-Audit) — fires etkm-visual-qc on all visual outputs.*
+*Added etkm-visual-qc to dependencies. Updated Gate 4 to reference Gate 1.6 as primary execution protocol.*
+*Updated batch audit summary table to include Gate 1.6 column. Added two new quick-reference failure entries.*
+*Version 2.1 — Updated 2026-03-14*
 *Incorporates visual render check (Gate 1.5) added after table clipping failure*
 *Maintained by: Nathan Lundstrom / East Texas Krav Maga*
