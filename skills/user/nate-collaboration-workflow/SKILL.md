@@ -1,19 +1,20 @@
 ---
 name: nate-collaboration-workflow
-version: 3.4
-updated: 2026-05-03
+version: 3.5
+updated: 2026-05-06
 description: >
   How Claude and Nathan Lundstrom work together. Load this skill at the start
   of any working session with Nathan. Governs communication style, options presentation,
   when to ask vs. build, direction changes, session protocol, and error recovery.
-  V3.4 adds Email Production Stack routing to session table.
+  V3.5 adds explicit etkm-visual-qc backstop to Rule 2 — visual QC by name required
+  before any visual output is delivered, regardless of which other skills are loaded.
 ---
 
 # Nathan + Claude Collaboration Workflow
 
-**Version:** 3.4
-**Last Updated:** 2026-05-03
-**Changes from V3.3:** Split Content/Copy session type into Email Work (with full Email Production Stack routing) and Content/Copy (non-email). Email tasks now trigger the complete stack: marketing-engine → Email Playbook (Notion) → brand-foundation → cta-architecture. Hard gate: no email copy without stack loaded.
+**Version:** 3.5
+**Last Updated:** 2026-05-06
+**Changes from V3.4:** Rule 2 updated — etkm-visual-qc named explicitly as the required visual QC protocol. This backstop ensures the visual audit runs on every visual output regardless of which project or production skills are loaded in the session.
 
 ---
 
@@ -42,9 +43,9 @@ Claude never starts building while content is still in draft. No exceptions.
 
 ### RULE 2 — LOAD BUILD SKILL BEFORE EVERY BUILD
 Before writing a single line of code for any production asset:
-1. Load the relevant build skill via MCP (e.g., `etkm-pdf-pipeline` for PDFs, `etkm-web-production` for HTML pages)
-2. Load `etkm-deliverable-qc` (already in Project Knowledge — confirm it is loaded)
-3. Run visual QC before presenting any file
+1. Load the relevant build skill via MCP (e.g., etkm-pdf-pipeline for PDFs, etkm-web-production for HTML pages)
+2. Load etkm-deliverable-qc (already in Project Knowledge — confirm it is loaded)
+3. Before presenting any visual output (HTML, carousel, email template, PDF with layout, SVG, React artifact) — load etkm-visual-qc and run the full protocol. Do not call present_files on any visual output until etkm-visual-qc STATUS: PASS
 
 ### RULE 3 — WHEN NATHAN SAYS IT'S FINE, IT'S DONE
 These phrases mean the work is complete. Stop and move forward:
@@ -81,7 +82,7 @@ Applies to all code writing, editing, debugging, and refactoring.
 - Transform vague tasks into verifiable goals before starting.
 - For multi-step builds, state a brief plan with a verify step for each stage and get confirmation before proceeding.
 
-Full reference: load `karpathy-coding-guidelines` skill for complete detail.
+Full reference: load karpathy-coding-guidelines skill for complete detail.
 
 ---
 
@@ -97,6 +98,7 @@ Full reference: load `karpathy-coding-guidelines` skill for complete detail.
 | Code request is ambiguous | Pick an interpretation silently | State assumption, ask if unclear |
 | Editing existing code | Refactor adjacent code | Touch only what was asked |
 | Multi-step build | Dive in without a plan | State steps + verify criteria, confirm, then build |
+| About to deliver any visual output | Present without QC | Load etkm-visual-qc, run protocol, STATUS: PASS first |
 
 ---
 
@@ -112,7 +114,7 @@ Full reference: load `karpathy-coding-guidelines` skill for complete detail.
 
 ## HOW TO PRESENT OPTIONS
 
-- 2–4 options maximum
+- 2-4 options maximum
 - Label each clearly
 - Lead with the tradeoff, not the description
 - Give a recommendation when Claude has one — state it directly
@@ -161,17 +163,18 @@ Do not load everything at session start. Route based on what the session is abou
 
 | Session Type | Signals | Load via MCP |
 |---|---|---|
-| **Website build** | "page", "HTML", "WordPress", page name | `etkm-web-production` |
-| **PDF build** | "PDF", "lead magnet", "document" | `etkm-pdf-pipeline` |
-| **CRM / Automation** | "Pipedrive", "pipeline", "deals", "automation", "Make.com" | `etkm-crm-operations` |
-| **Email work** | "email", "subject line", "sequence", "nurture", "drip", "follow-up", "onboarding emails", "email strategy" | Full Email Production Stack: `etkm-marketing-engine` for routing → fetch **Email Playbook** from Notion Brand Intelligence Hub for craft/structure → `etkm-brand-foundation` for voice → `etkm-cta-architecture` for CTAs. Add `etkm-audience-intelligence` if segment-specific. Do not write email copy without this stack loaded. |
-| **Content / Copy (non-email)** | "ad", "social post", "blog", "copy", "landing page", "video script" | `etkm-marketing-engine` and/or `etkm-audience-intelligence` |
-| **CTA work** | "CTA", "call to action", "button", "what do we tell them", "closing slide", "the ask", "transitional CTA", "direct CTA" | `etkm-cta-architecture` — always. Add `etkm-audience-intelligence` if segment-specific. Add `etkm-behavior-intelligence` if identity-level framing needed. |
-| **Event work** | "seminar", "CBLTAC", "workshop", "event" | Check project knowledge first (event-planning or event-page may already be loaded) |
-| **System maintenance** | "skills", "audit", "cleanup", "what's the status" | `etkm-workflow-registry` |
-| **Strategy / Planning** | "how should we", "what if", "let's think about" | `etkm-project-standard`, then load domain skills as the conversation narrows |
-| **Coding / Automation build** | "build", "script", "workflow", "n8n", "Python", "debug", "fix" | `karpathy-coding-guidelines` |
-| **Unclear** | No obvious signals | Ask one question: "What are we working on today?" |
+| Website build | "page", "HTML", "WordPress", page name | etkm-web-production |
+| PDF build | "PDF", "lead magnet", "document" | etkm-pdf-pipeline |
+| CRM / Automation | "Pipedrive", "pipeline", "deals", "automation", "Make.com" | etkm-crm-operations |
+| Email work | "email", "subject line", "sequence", "nurture", "drip", "follow-up", "onboarding emails", "email strategy" | Full Email Production Stack: etkm-marketing-engine for routing, fetch Email Playbook from Notion Brand Intelligence Hub for craft/structure, etkm-brand-foundation for voice, etkm-cta-architecture for CTAs. Add etkm-audience-intelligence if segment-specific. Do not write email copy without this stack loaded. |
+| Content / Copy (non-email) | "ad", "social post", "blog", "copy", "landing page", "video script" | etkm-marketing-engine and/or etkm-audience-intelligence |
+| CTA work | "CTA", "call to action", "button", "what do we tell them", "closing slide", "the ask", "transitional CTA", "direct CTA" | etkm-cta-architecture always. Add etkm-audience-intelligence if segment-specific. Add etkm-behavior-intelligence if identity-level framing needed. |
+| Carousel / Social media | "carousel", "instagram", "social media", "slides", "build slides" | etkm-carousel-system + etkm-visual-qc |
+| Event work | "seminar", "CBLTAC", "workshop", "event" | Check project knowledge first (event-planning or event-page may already be loaded) |
+| System maintenance | "skills", "audit", "cleanup", "what's the status" | etkm-workflow-registry |
+| Strategy / Planning | "how should we", "what if", "let's think about" | etkm-project-standard, then load domain skills as the conversation narrows |
+| Coding / Automation build | "build", "script", "workflow", "n8n", "Python", "debug", "fix" | karpathy-coding-guidelines |
+| Unclear | No obvious signals | Ask one question: "What are we working on today?" |
 
 If Nathan references prior work, use past chat search before responding — do not ask him to re-explain.
 
@@ -203,7 +206,7 @@ If Nathan references prior work, use past chat search before responding — do n
 - Every skill carries a version number (e.g., V1.0, V2.3)
 - When loading a skill via MCP, note the version
 - If a skill reference conflicts with a more recent instruction from Nathan, follow Nathan's instruction and flag the skill as potentially outdated
-- When editing any skill, increment the version number (e.g., V1.0 → V1.1)
+- When editing any skill, increment the version number (e.g., V1.0 to V1.1)
 
 ---
 
@@ -233,6 +236,7 @@ If Nathan references prior work, use past chat search before responding — do n
 - Never produce work Manus needs to interpret — specific enough to build from directly
 - Never let a session end with open decisions Nathan didn't know were open
 - Never produce generic output when ETKM-specific skills are available
+- Never deliver a visual output without running etkm-visual-qc first — STATUS: PASS required before present_files on any visual deliverable
 
 ---
 
@@ -243,7 +247,7 @@ If Nathan references prior work, use past chat search before responding — do n
 - Short messages can contain significant strategic shifts. Read carefully.
 - Nathan tests tools immediately after they're built. Have the fix ready, not the explanation.
 - When Nathan provides source content, absorb it fully and work from it immediately.
-- Nathan iterates fast. Best first version, expect 2–3 rounds of targeted corrections. Only touch what he flags.
+- Nathan iterates fast. Best first version, expect 2-3 rounds of targeted corrections. Only touch what he flags.
 - He will give Claude a smiley face sticker for exceptional work. Highest honor in the ETKM system.
 
 ---
