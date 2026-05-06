@@ -1,15 +1,12 @@
 ---
 name: etkm-carousel-system
-version: 2.3
-updated: 2026-04-27
+version: 2.4
+updated: 2026-05-06
 description: >
-  Production ruleset for building ETKM Instagram carousels. V2.3: Section 4
-  (Typography Hierarchy) updated with production canvas calibration standard.
-  All type sizing is calibrated to the 1080x1350 production canvas — not the
-  400x500 HTML preview. Display sizes are multiplied by 2.7 at export. Minimum
-  headline dominance rule added: largest headline must fill at least 40% of
-  slide width at production scale. This corrects the systematic undersizing
-  error identified in the Street Reality college carousel v1-v2 builds.
+  Production ruleset for building ETKM Instagram carousels. V2.4: Visual QC
+  enforcement added. etkm-visual-qc now fires automatically before any carousel
+  output is delivered. Gate 1 (Section 9) updated to reference etkm-visual-qc
+  Section A as its execution protocol. Non-Negotiables updated accordingly.
 triggers:
   - "build a carousel"
   - "carousel slide"
@@ -29,6 +26,7 @@ triggers:
 depends_on:
   - etkm-brand-foundation
   - etkm-cta-architecture
+  - etkm-visual-qc
 loads_on_demand:
   - etkm-audience-intelligence
   - etkm-behavior-intelligence
@@ -36,9 +34,9 @@ loads_on_demand:
 
 # ETKM Carousel System
 
-**Version:** 2.3
-**Last Updated:** 2026-04-27
-**Changes from V2.2:** Section 4 (Typography Hierarchy) updated with production canvas calibration standard. All sizing is calibrated to the 1080×1350 production canvas. The HTML preview (400×500) scales at 2.7× on export — type that looks correct in preview is systematically undersized at production scale. Section 4 now carries both display sizes and production canvas equivalents, plus the minimum headline dominance rule.
+**Version:** 2.4
+**Last Updated:** 2026-05-06
+**Changes from V2.3:** Visual QC enforcement added. etkm-visual-qc v1.0 added to depends_on. Section 9 (QC Gate 1) updated — etkm-visual-qc Section A is now the authoritative execution protocol for design compliance checks. Non-Negotiables updated with mandatory visual QC delivery gate.
 **Carousel Source Protocol (Notion):** 350924c8-1673-81b1-983c-e0ab7a0a34e6
 **Library (Notion):** ETKM Carousel Slide Type Library — 350924c8-1673-815d-a299-d8f50b8c14ee
 **Template:** etkm_final_slide_TYPE_Z_TEMPLATE.html
@@ -87,7 +85,7 @@ One photo per carousel. Same photo, same treatment, all body slides.
 
 ### The Calibration Rule
 
-All type is sized for the 1080×1350 production canvas. The HTML build environment renders slides at 400×500 (display). Playwright exports at 2.7× scale to produce 1080×1350. Type that looks correct in the 400px preview is systematically 35-50% undersized at the production scale the audience actually sees.
+All type is sized for the 1080x1350 production canvas. The HTML build environment renders slides at 400x500 (display). Playwright exports at 2.7x scale to produce 1080x1350. Type that looks correct in the 400px preview is systematically 35-50% undersized at the production scale the audience actually sees.
 
 **The operating rule:** Build in HTML at 400px display. Before exporting, verify every headline against the production canvas standard below — not the preview render.
 
@@ -187,7 +185,9 @@ Stage 9: Run CTA Derivation Engine (etkm-cta-architecture Section 8) — four si
 
 Hard stop rule: Rebuild any failing slide before presenting. No exceptions.
 
-15-item checklist:
+**Execution protocol: Load etkm-visual-qc and run Section A (Carousel Visual QC) + Section E (Universal Brand Standards) on every slide before delivery. The 15-item checklist below maps directly to etkm-visual-qc Section A. Do not present any carousel output without a passing etkm-visual-qc report.**
+
+15-item checklist (from etkm-visual-qc Section A):
 1. Red bar — 25px, #CC0000, full height
 2. Series badge — correct name, #CC0000 bg
 3. Slide counter — zero-padded, "01 / 11" format
@@ -204,9 +204,9 @@ Hard stop rule: Rebuild any failing slide before presenting. No exceptions.
 14. Type Z static layer — bg + bar + footer only
 15. Type Z dynamic layer — all 8 elements present, badge matches throughout
 
-**Typography production check (new in v2.3):** Before Gate 1 passes on any carousel, verify the largest headline on each body slide against Section 4 production canvas standards. If the headline fails the 40% dominance rule — flag as a Gate 1 failure and rebuild at correct size.
+**Typography production check:** Before Gate 1 passes on any carousel, verify the largest headline on each body slide against Section 4 production canvas standards. If the headline fails the 40% dominance rule — flag as a Gate 1 failure and rebuild at correct size.
 
-Gate 1 report: "Gate 1 QC: [X]/15 items pass. Typography production check: [pass/flag]."
+Gate 1 report: "Gate 1 QC: [X]/15 items pass. Typography production check: [pass/flag]. etkm-visual-qc STATUS: PASS / FAIL."
 
 ---
 
@@ -229,14 +229,15 @@ Final slide: Use etkm_final_slide_TYPE_Z_TEMPLATE.html — edit all 8 dynamic el
 
 ## Section 12 — Session Opening Protocol
 
-1. Load etkm-carousel-system v2.3
+1. Load etkm-carousel-system v2.4
 2. Load etkm-brand-foundation
 3. Load etkm-cta-architecture
-4. Load etkm-audience-intelligence if segment-specific
-5. Pull Carousel Source Protocol (350924c8-1673-81b1-983c-e0ab7a0a34e6)
-6. Pull production status (34e924c8 Section 12)
-7. Confirm segment and arc with Nathan
-8. State: "Skills loaded. Source Protocol pulled. Segment: [X]. Arc: [confirmed / needs confirmation]."
+4. Load etkm-visual-qc
+5. Load etkm-audience-intelligence if segment-specific
+6. Pull Carousel Source Protocol (350924c8-1673-81b1-983c-e0ab7a0a34e6)
+7. Pull production status (34e924c8 Section 12)
+8. Confirm segment and arc with Nathan
+9. State: "Skills loaded. Source Protocol pulled. Segment: [X]. Arc: [confirmed / needs confirmation]."
 
 ---
 
@@ -261,7 +262,7 @@ Arc Quick Reference:
 
 | Need | Location | ID |
 |---|---|---|
-| **Carousel Source Protocol** | **Carousel Source Protocol** | **350924c8-1673-81b1-983c-e0ab7a0a34e6** |
+| Carousel Source Protocol | Carousel Source Protocol | 350924c8-1673-81b1-983c-e0ab7a0a34e6 |
 | Slide type specs | ETKM Carousel Slide Type Library | 350924c8-1673-815d-a299-d8f50b8c14ee |
 | Full visual specs | ETKM Carousel System | 34e924c8 |
 | Production status | ETKM Carousel System Section 12 | 34e924c8 |
@@ -283,6 +284,7 @@ Arc Quick Reference:
 - Never write copy before Stages 1-7 complete
 - Never present a slide with a known Gate 1 failure
 - Typography production check runs before Gate 1 passes — undersized headlines are Gate 1 failures
+- **Before delivering any carousel output — load etkm-visual-qc, run Section A + Section E, produce the QC report. Do not call present_files until STATUS: PASS**
 - Never use prohibited CTA language
 - Never make ETKM the hero
 - Never modify a Tier 1 design token
