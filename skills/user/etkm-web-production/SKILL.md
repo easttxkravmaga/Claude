@@ -1,7 +1,7 @@
 ---
 name: etkm-web-production
-version: 1.0
-updated: 2026-04-24
+version: 1.1
+updated: 2026-05-06
 description: >
   Load this skill for ANY task that produces HTML or CSS for ETKM.
   Triggers: building WordPress page sections, landing pages, lead
@@ -13,13 +13,16 @@ description: >
 
 # ETKM Web Production — Governing Build Protocol
 
-**Version:** 1.0
+**Version:** 1.1
 **Built:** 2026-04-24
+**Updated:** 2026-05-06
+**Changes from V1.0:** Visual QC enforcement added. etkm-visual-qc now fires before any visual output is delivered. Step 5 (Pre-Ship QC Checklist) updated — etkm-visual-qc runs as the first action before the format-specific checklist. Session Opening Protocol updated to include etkm-visual-qc load.
 **Research basis:** Gemini Deep Research — HTML/CSS Production Standards 2026
 **Depends on:**
   - etkm-web-production/CSS-SYSTEM (all token values)
   - etkm-web-production/COMPONENT-LIBRARY (all component patterns)
   - etkm-web-production/OUTPUT-STANDARDS (output-type specific rules)
+  - etkm-visual-qc (visual layout self-audit — runs before every delivery)
 
 ---
 
@@ -141,8 +144,7 @@ Landing page StoryBrand sequence:
    active: transform back to baseline
    disabled: muted colors, cursor not-allowed
 
-6. RUN QC CHECKLIST
-   Every item passes before handoff
+6. RUN QC — SEE STEP 5
 
 ---
 
@@ -192,9 +194,20 @@ Specificity override without !important:
 
 ---
 
-## STEP 5 — PRE-SHIP QC CHECKLIST
+## STEP 5 — PRE-SHIP QC
 
 All items binary: PASS or FAIL. One FAIL = blocked delivery.
+
+**VISUAL QC — RUN FIRST (ALL VISUAL OUTPUTS)**
+Before running the format-specific checklist below, load etkm-visual-qc and run the appropriate sections:
+- HTML / WordPress / Landing Page / SVG / React: Section B + Section E
+- Email Template: Section C + Section E
+- Lead Magnet PDF: Section D + Section E
+- All outputs with visible copy: Section F (Messaging)
+
+Produce the Section G QC report. Do not proceed to present_files until STATUS: PASS.
+
+---
 
 UNIVERSAL (all output types):
 [ ] No H1 in injected HTML — starts at H2
@@ -319,7 +332,8 @@ For any ETKM web production task, load in this order:
 4. etkm-web-production/OUTPUT-STANDARDS (output-type rules)
 5. etkm-brand-foundation (messaging and voice)
 6. etkm-brand-kit (visual standards)
-7. etkm-deliverable-qc (final QC before handoff)
+7. etkm-visual-qc (visual layout self-audit — runs before delivery)
+8. etkm-deliverable-qc (final QC before handoff)
 
 ---
 
