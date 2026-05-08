@@ -1,0 +1,81 @@
+{% extends "_layout.html" %}
+{% set active = "home" %}
+{% block title %}Home — ETKM Social Publishing{% endblock %}
+{% block content %}
+<section class="etkm-page">
+  <p class="etkm-eyebrow">ETKM SOCIAL PUBLISHING</p>
+  <h1>Publishing App</h1>
+  <p class="etkm-subtitle">
+    Schedule and publish content to Facebook, Instagram, and LinkedIn.
+    Your account credentials below — then the Scheduler holds the calendar.
+  </p>
+
+  <div class="etkm-status">
+    <div class="etkm-status__row">
+      <span class="etkm-status__label">OAuth health</span>
+      <span class="etkm-status__value">
+        <a href="{{ url_for('dashboard') }}" style="color:inherit;text-decoration:none">
+          <span class="{{ status.oauth_class }}">{{ status.oauth_text }}</span>
+        </a>
+      </span>
+    </div>
+    <div class="etkm-status__row">
+      <span class="etkm-status__label">Queue depth</span>
+      <span class="etkm-status__value">{{ status.queue_text }}</span>
+    </div>
+    <div class="etkm-status__row">
+      <span class="etkm-status__label">Last published</span>
+      <span class="etkm-status__value">
+        {{ status.last_text }}{% if status.last_url %}<a href="{{ status.last_url }}" target="_blank" rel="noopener">view</a>{% endif %}
+      </span>
+    </div>
+  </div>
+
+  <div class="etkm-cards-row">
+    <a class="etkm-card-link" href="{{ url_for('linkedin_setup') }}">
+      <div class="etkm-card">
+        <div class="etkm-card__icon etkm-card__icon--linkedin">in</div>
+        <h3>LinkedIn</h3>
+        <p class="etkm-text-muted">Connect your LinkedIn profile or company page for automated posting.</p>
+      </div>
+    </a>
+    <a class="etkm-card-link" href="{{ url_for('meta_setup') }}">
+      <div class="etkm-card">
+        <div class="etkm-card__icon etkm-card__icon--meta">M</div>
+        <h3>Meta (Facebook &amp; Instagram)</h3>
+        <p class="etkm-text-muted">Connect your Facebook Page and Instagram Business Account.</p>
+      </div>
+    </a>
+    <a class="etkm-card-link" href="{{ url_for('dashboard') }}">
+      <div class="etkm-card">
+        <div class="etkm-card__icon etkm-card__icon--dashboard">⌘</div>
+        <h3>Dashboard</h3>
+        <p class="etkm-text-muted">View and manage all saved credentials, tokens, and expiry status.</p>
+      </div>
+    </a>
+  </div>
+
+  <h2>How it works</h2>
+  <div class="etkm-step">
+    <span class="etkm-step__num">1</span>
+    <div class="etkm-step__body">
+      <h3>Set up each platform</h3>
+      <p>Follow the setup guide for each platform to get your Client ID and Secret.</p>
+    </div>
+  </div>
+  <div class="etkm-step">
+    <span class="etkm-step__num">2</span>
+    <div class="etkm-step__body">
+      <h3>Authorize</h3>
+      <p>Click Authorize to start the OAuth flow. You will be redirected back here automatically after approval.</p>
+    </div>
+  </div>
+  <div class="etkm-step">
+    <span class="etkm-step__num">3</span>
+    <div class="etkm-step__body">
+      <h3>Schedule</h3>
+      <p>Credentials are saved encrypted. The Scheduler then publishes posts at their scheduled time.</p>
+    </div>
+  </div>
+</section>
+{% endblock %}

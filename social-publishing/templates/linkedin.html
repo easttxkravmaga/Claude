@@ -1,0 +1,102 @@
+{% extends "_layout.html" %}
+{% set active = "linkedin" %}
+{% block title %}LinkedIn Setup — ETKM Social Publishing{% endblock %}
+{% block content %}
+<section class="etkm-page">
+  <div style="display:flex;align-items:center;gap:16px;margin-bottom:8px;">
+    <div class="etkm-card__icon etkm-card__icon--linkedin" style="width:32px;height:32px;font-size:16px;">in</div>
+    <h1 style="margin:0;">LinkedIn API Setup</h1>
+  </div>
+  <p class="etkm-subtitle">Connect your LinkedIn account for automated posting.</p>
+
+  <div class="etkm-step">
+    <span class="etkm-step__num">1</span>
+    <div class="etkm-step__body">
+      <h3>Create a LinkedIn Developer App</h3>
+      <p>Go to the
+        <a href="https://www.linkedin.com/developers/apps/new" target="_blank" rel="noopener">LinkedIn Developer Portal</a>.
+        Create a new app, select your ETKM company page, and accept the terms.
+      </p>
+    </div>
+  </div>
+
+  <div class="etkm-step">
+    <span class="etkm-step__num">2</span>
+    <div class="etkm-step__body">
+      <h3>Request Products &amp; Scopes</h3>
+      <p>
+        In your app's Products tab, request access to <strong>Share on LinkedIn</strong> and
+        <strong>Sign In with LinkedIn using OpenID Connect</strong>.
+        Then under OAuth 2.0 settings, request the <code>offline_access</code> scope.
+      </p>
+      <p style="margin-top:8px;color:var(--etkm-orange-bright);">
+        ⚠ Without <code>offline_access</code> the token cannot be auto-refreshed and you'll have to re-authorize manually every 60 days.
+      </p>
+    </div>
+  </div>
+
+  <div class="etkm-step">
+    <span class="etkm-step__num">3</span>
+    <div class="etkm-step__body">
+      <h3>Add Redirect URL</h3>
+      <p>In the Auth tab under OAuth 2.0 settings, add this redirect URL:</p>
+      <div class="etkm-code" style="display:block;margin-top:6px;padding:10px;font-size:12px;word-break:break-all;">
+        {{ redirect_uri }}
+      </div>
+    </div>
+  </div>
+
+  <div class="etkm-step">
+    <span class="etkm-step__num">4</span>
+    <div class="etkm-step__body">
+      <h3>Enter Credentials &amp; Authorize</h3>
+      <p>Paste your Client ID and Client Secret below, then click Authorize.</p>
+    </div>
+  </div>
+
+  <div class="etkm-card">
+    <h3 style="margin-top:0;">Your App Credentials</h3>
+    <form id="linkedin-form" autocomplete="off">
+      <div class="etkm-field">
+        <label class="etkm-field__label">Client ID</label>
+        <input class="etkm-input etkm-input--mono" type="text" name="client_id" required />
+      </div>
+      <div class="etkm-field">
+        <label class="etkm-field__label">Client Secret</label>
+        <input class="etkm-input etkm-input--mono" type="password" name="client_secret" required />
+      </div>
+      <div id="linkedin-banner"></div>
+      <button type="submit" class="etkm-btn etkm-btn--linkedin etkm-btn--block">
+        Authorize with LinkedIn →
+      </button>
+    </form>
+  </div>
+</section>
+
+<script>
+document.getElementById('linkedin-form').addEventListener('submit', async (ev) => {
+  ev.preventDefault();
+  const fd = new FormData(ev.target);
+  const banner = document.getElementById('linkedin-banner');
+  banner.innerHTML = '';
+  try {
+    const r = await fetch('/api/oauth/linkedin/start', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        client_id: fd.get('client_id'),
+        client_secret: fd.get('client_secret'),
+      }),
+    });
+    const data = await r.json();
+    if (!r.ok || !data.ok) {
+      banner.innerHTML = '<div class="etkm-banner etkm-banner--error">' + (data.error || 'Failed to start') + '</div>';
+      return;
+    }
+    window.location = data.redirect;
+  } catch (e) {
+    banner.innerHTML = '<div class="etkm-banner etkm-banner--error">Network error: ' + e.message + '</div>';
+  }
+});
+</script>
+{% endblock %}

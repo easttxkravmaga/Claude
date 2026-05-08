@@ -1,0 +1,91 @@
+{% extends "_scheduler_base.html" %}
+{% block title %}Compose — ETKM Social Publishing{% endblock %}
+{% block tab_content %}
+<div class="etkm-card" id="compose-card" data-platform-limits='{{ platform_limits|tojson }}'>
+  <h2 class="etkm-card__title">Compose Post</h2>
+
+  <form id="compose-form" autocomplete="off">
+    <div class="etkm-fields-grid">
+      <div class="etkm-field">
+        <label class="etkm-field__label">Post Title (internal)</label>
+        <input class="etkm-input" type="text" name="title" required
+               placeholder="e.g. Women's Program Launch" />
+        <div class="etkm-field__hint">Internal label only — never published.</div>
+      </div>
+      <div class="etkm-field">
+        <label class="etkm-field__label">Campaign Tag</label>
+        <input class="etkm-input" type="text" name="campaign_tag"
+               placeholder="e.g. fight-back-spring-2026" />
+      </div>
+    </div>
+
+    <div class="etkm-field">
+      <label class="etkm-field__label">Platforms</label>
+      <div class="etkm-checkbox-row">
+        <label><input type="checkbox" name="platforms" value="facebook" /> Facebook</label>
+        <label><input type="checkbox" name="platforms" value="instagram" /> Instagram</label>
+        <label><input type="checkbox" name="platforms" value="linkedin" /> LinkedIn</label>
+      </div>
+      <div class="etkm-field__hint">Tick one or more. Each ticked platform gets its own row in All Posts.</div>
+    </div>
+
+    <div class="etkm-field">
+      <div class="etkm-counter" id="master-counter">—</div>
+      <label class="etkm-field__label">Master Caption</label>
+      <textarea class="etkm-textarea etkm-textarea--lg" name="master_caption" id="master-caption"
+                placeholder="Write your post here..."></textarea>
+      <div class="etkm-field__hint">
+        Auto-fills the per-platform caption boxes below when 2+ platforms are ticked.
+        Override per platform as needed.
+      </div>
+    </div>
+
+    <div id="per-platform-sections"></div>
+
+    <div class="etkm-field">
+      <label class="etkm-field__label">Media</label>
+      <div class="etkm-dropzone" id="media-drop">
+        <input type="file" id="media-file" accept="image/png,image/jpeg,image/gif,image/webp,video/mp4" hidden />
+        <div id="media-prompt">
+          <div>📎 Click to upload image or video</div>
+          <div class="etkm-dropzone__hint">PNG, JPG, GIF, WebP up to 20 MB · MP4 up to 200 MB</div>
+        </div>
+        <div id="media-progress" class="etkm-hidden" style="text-align:left;">
+          <div id="media-progress-label" class="etkm-text-muted" style="font-size:12px;margin-bottom:6px;">Uploading…</div>
+          <div style="width:100%;height:6px;background:var(--etkm-surface-3);border-radius:3px;overflow:hidden;">
+            <div id="media-progress-bar" style="height:100%;width:0%;background:var(--etkm-accent);transition:width 0.2s;"></div>
+          </div>
+        </div>
+        <div id="media-preview" class="etkm-hidden" style="text-align:left;"></div>
+      </div>
+      <div id="media-warning" class="etkm-hidden"></div>
+    </div>
+
+    <div class="etkm-fields-grid">
+      <div class="etkm-field">
+        <label class="etkm-field__label">Status</label>
+        <select class="etkm-select" name="status" id="status-select">
+          <option value="draft">Draft</option>
+          <option value="scheduled">Scheduled</option>
+        </select>
+      </div>
+      <div class="etkm-field">
+        <label class="etkm-field__label">Scheduled Date &amp; Time</label>
+        <input class="etkm-input" type="datetime-local" name="scheduled_at" id="scheduled-at"
+               value="{{ prefill_date or '' }}" />
+        <div class="etkm-field__hint">Required when Status = Scheduled.</div>
+      </div>
+    </div>
+
+    <div class="etkm-field">
+      <label><input type="checkbox" name="approved" /> Approved (required for the publisher to fire)</label>
+    </div>
+
+    <div id="compose-banner"></div>
+
+    <button class="etkm-btn etkm-btn--primary etkm-btn--block" type="submit">Save Post</button>
+  </form>
+</div>
+
+<script src="{{ url_for('static', filename='js/scheduler.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}ETKM Social Publishing{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/etkm.css') }}" />
+</head>
+<body>
+  <header class="etkm-nav">
+    <div class="etkm-nav__brand">
+      <span class="etkm-nav__logo">ETKM</span>
+      <span class="etkm-nav__sub">/ SOCIAL PUBLISHING</span>
+    </div>
+    <nav class="etkm-nav__tabs">
+      <a href="{{ url_for('home') }}" class="{{ 'is-active' if active=='home' }}">Home</a>
+      <a href="{{ url_for('scheduler') }}" class="{{ 'is-active' if active=='scheduler' }}">Scheduler</a>
+      <a href="{{ url_for('linkedin_setup') }}" class="{{ 'is-active' if active=='linkedin' }}">LinkedIn</a>
+      <a href="{{ url_for('meta_setup') }}" class="{{ 'is-active' if active=='meta' }}">Meta</a>
+      <a href="{{ url_for('dashboard') }}" class="{{ 'is-active' if active=='dashboard' }}">Dashboard</a>
+    </nav>
+  </header>
+  <main class="etkm-main">
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>
