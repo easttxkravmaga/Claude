@@ -1,0 +1,95 @@
+{% extends "_scheduler_base.html" %}
+{% block title %}All Posts — ETKM Social Publishing{% endblock %}
+{% block tab_content %}
+<div class="etkm-card">
+  <h2 class="etkm-card__title">All Posts</h2>
+
+  <form class="etkm-table__filter-row" method="get" action="{{ url_for('scheduler') }}">
+    <input type="hidden" name="tab" value="all" />
+    <select class="etkm-select" name="platform" style="max-width:180px;">
+      <option value="">All platforms</option>
+      <option value="facebook"  {{ 'selected' if request.args.get('platform') == 'facebook' }}>Facebook</option>
+      <option value="instagram" {{ 'selected' if request.args.get('platform') == 'instagram' }}>Instagram</option>
+      <option value="linkedin"  {{ 'selected' if request.args.get('platform') == 'linkedin' }}>LinkedIn</option>
+    </select>
+    <select class="etkm-select" name="status" style="max-width:180px;">
+      <option value="">All statuses</option>
+      {% for s in ['draft','scheduled','processing','posted','failed'] %}
+        <option value="{{ s }}" {{ 'selected' if request.args.get('status') == s }}>{{ s.capitalize() }}</option>
+      {% endfor %}
+    </select>
+    <button class="etkm-btn etkm-btn--small" type="submit">Filter</button>
+    <span class="etkm-table__count">{{ posts|length }} posts</span>
+  </form>
+
+  <table class="etkm-table">
+    <thead>
+      <tr>
+        <th>Title / Caption</th>
+        <th>Platform</th>
+        <th>Status</th>
+        <th>Scheduled</th>
+        <th>Errors</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in posts %}
+        <tr id="post-{{ p.id }}" data-post-id="{{ p.id }}">
+          <td>
+            <div class="etkm-table__title">{{ p.title }}</div>
+            <div class="etkm-table__caption">
+              {{ (p.caption or '')[:120] }}{% if (p.caption or '')|length > 120 %}…{% endif %}
+            </div>
+            {% if p.post_url %}
+              <div style="margin-top:4px;"><a href="{{ p.post_url }}" target="_blank" rel="noopener">View post →</a></div>
+            {% endif %}
+          </td>
+          <td>
+            {% set cls = 'etkm-pill--platform-fb' if p.platform == 'facebook' else ('etkm-pill--platform-ig' if p.platform == 'instagram' else 'etkm-pill--platform-li') %}
+            <span class="etkm-pill {{ cls }}">{{ p.platform }}</span>
+          </td>
+          <td>
+            {% set scls = {'posted':'green','scheduled':'blue','draft':'orange','failed':'red','processing':'orange','posting':'blue'}[p.status] %}
+            <span class="etkm-pill etkm-pill--{{ scls }}">{{ p.status }}</span><br/>
+            <span class="etkm-pill etkm-pill--{{ 'green' if p.approved else 'neutral' }}" style="margin-top:4px;">
+              {{ 'approved' if p.approved else 'unapproved' }}
+            </span>
+          </td>
+          <td>
+            {% if p.scheduled_at %}
+              <span class="etkm-mono" style="font-size:12px;">{{ p.scheduled_at[:16].replace('T',' ') }}</span>
+            {% else %}
+              <span class="etkm-text-faded">—</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if p.error_message %}
+              <span class="etkm-pill etkm-pill--red" title="{{ p.error_message }}">error</span>
+            {% else %}
+              <span class="etkm-text-faded">—</span>
+            {% endif %}
+          </td>
+          <td>
+            <div class="etkm-table__actions">
+              {% if p.status == 'failed' %}
+                <button class="etkm-btn etkm-btn--icon" data-action="retry" title="Retry">↻</button>
+              {% endif %}
+              {% if not p.approved %}
+                <button class="etkm-btn etkm-btn--icon" data-action="approve" title="Approve">✓</button>
+              {% endif %}
+              <button class="etkm-btn etkm-btn--icon etkm-btn--danger" data-action="delete" title="Delete">🗑</button>
+            </div>
+          </td>
+        </tr>
+      {% else %}
+        <tr><td colspan="6" class="etkm-text-faded" style="text-align:center;padding:32px;">
+          No posts yet. <a href="{{ url_for('scheduler', tab='compose') }}">Compose your first post →</a>
+        </td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<script src="{{ url_for('static', filename='js/scheduler.js') }}"></script>
+{% endblock %}

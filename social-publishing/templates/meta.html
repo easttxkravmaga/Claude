@@ -3,8 +3,109 @@
 {% block title %}Meta Setup — ETKM Social Publishing{% endblock %}
 {% block content %}
 <section class="etkm-page">
-  <h1>Meta API Setup</h1>
+  <div style="display:flex;align-items:center;gap:16px;margin-bottom:8px;">
+    <div class="etkm-card__icon etkm-card__icon--meta" style="width:32px;height:32px;font-size:16px;">M</div>
+    <h1 style="margin:0;">Meta API Setup</h1>
+  </div>
   <p class="etkm-subtitle">Connect Facebook Page and Instagram Business Account.</p>
-  <p class="etkm-note">Scaffold. Phase D wires the short→long token exchange.</p>
+
+  <div class="etkm-step">
+    <span class="etkm-step__num">1</span>
+    <div class="etkm-step__body">
+      <h3>Create a Meta Developer App</h3>
+      <p>
+        Go to <a href="https://developers.facebook.com/apps/" target="_blank" rel="noopener">Meta for Developers</a>.
+        Create a new app with type <strong>Business</strong>, named <em>ETKM Social Agent</em>.
+      </p>
+    </div>
+  </div>
+
+  <div class="etkm-step">
+    <span class="etkm-step__num">2</span>
+    <div class="etkm-step__body">
+      <h3>Add Products</h3>
+      <p>In your app dashboard, add: <strong>Instagram Graph API</strong> and <strong>Facebook Login for Business</strong>.</p>
+    </div>
+  </div>
+
+  <div class="etkm-step">
+    <span class="etkm-step__num">3</span>
+    <div class="etkm-step__body">
+      <h3>Get a Short-Lived Token</h3>
+      <p>
+        Go to the
+        <a href="https://developers.facebook.com/tools/explorer/" target="_blank" rel="noopener">Graph API Explorer</a>.
+        Select your app, add these permissions, then click Generate Access Token:
+      </p>
+      <div class="etkm-code" style="display:block;margin-top:6px;padding:10px;font-size:12px;line-height:1.6;">
+        pages_show_list · pages_read_engagement · pages_manage_posts ·
+        instagram_basic · instagram_content_publish · business_management
+      </div>
+    </div>
+  </div>
+
+  <div class="etkm-step">
+    <span class="etkm-step__num">4</span>
+    <div class="etkm-step__body">
+      <h3>Paste Credentials Below</h3>
+      <p>
+        Enter your App ID, App Secret, and the short-lived token. We'll exchange it for a permanent
+        Page Access Token automatically.
+      </p>
+    </div>
+  </div>
+
+  <div class="etkm-card">
+    <h3 style="margin-top:0;">Exchange Token</h3>
+    <form id="meta-form" autocomplete="off">
+      <div class="etkm-field">
+        <label class="etkm-field__label">App ID</label>
+        <input class="etkm-input etkm-input--mono" type="text" name="app_id" required />
+      </div>
+      <div class="etkm-field">
+        <label class="etkm-field__label">App Secret</label>
+        <input class="etkm-input etkm-input--mono" type="password" name="app_secret" required />
+      </div>
+      <div class="etkm-field">
+        <label class="etkm-field__label">Short-Lived User Access Token</label>
+        <input class="etkm-input etkm-input--mono" type="text" name="short_lived_token" required
+               placeholder="EAAo2..." />
+        <div class="etkm-field__hint">From Graph API Explorer · expires in ~1 hour, paste it fresh.</div>
+      </div>
+      <div id="meta-banner"></div>
+      <button type="submit" class="etkm-btn etkm-btn--meta etkm-btn--block">
+        Exchange for Long-Lived Token →
+      </button>
+    </form>
+  </div>
 </section>
+
+<script>
+document.getElementById('meta-form').addEventListener('submit', async (ev) => {
+  ev.preventDefault();
+  const fd = new FormData(ev.target);
+  const banner = document.getElementById('meta-banner');
+  banner.innerHTML = '<div class="etkm-banner etkm-banner--info">Exchanging token, this may take 5-10 seconds...</div>';
+  try {
+    const r = await fetch('/api/oauth/meta/exchange', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        app_id: fd.get('app_id'),
+        app_secret: fd.get('app_secret'),
+        short_lived_token: fd.get('short_lived_token'),
+      }),
+    });
+    const data = await r.json();
+    if (!r.ok || !data.ok) {
+      banner.innerHTML = '<div class="etkm-banner etkm-banner--error">' + (data.error || 'Exchange failed') + '</div>';
+      return;
+    }
+    banner.innerHTML = '<div class="etkm-banner etkm-banner--success">Connected. Redirecting to Dashboard...</div>';
+    setTimeout(() => { window.location = data.redirect || '/dashboard'; }, 1000);
+  } catch (e) {
+    banner.innerHTML = '<div class="etkm-banner etkm-banner--error">Network error: ' + e.message + '</div>';
+  }
+});
+</script>
 {% endblock %}

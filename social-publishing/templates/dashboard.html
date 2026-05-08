@@ -2,9 +2,56 @@
 {% set active = "dashboard" %}
 {% block title %}Dashboard — ETKM Social Publishing{% endblock %}
 {% block content %}
-<section class="etkm-page">
-  <h1>Credential Dashboard</h1>
-  <p class="etkm-subtitle">All saved OAuth tokens · auto-refreshes every 6 hours.</p>
-  <p class="etkm-note">Scaffold. Phase E renders credential cards with refresh controls.</p>
+<section class="etkm-page etkm-page--wide">
+  <div class="etkm-row" style="align-items:flex-start;">
+    <div style="flex:1;">
+      <h1>Credential Dashboard</h1>
+      <p class="etkm-subtitle">All saved OAuth tokens · auto-refreshes every 6 hours.</p>
+    </div>
+    <div class="etkm-row">
+      <span id="scheduler-pill" class="etkm-pill etkm-pill--neutral">Scheduler idle</span>
+      <button class="etkm-btn etkm-btn--small" id="refresh-all">Refresh All Expiring</button>
+      <button class="etkm-btn etkm-btn--small" onclick="window.location.reload()">Reload</button>
+    </div>
+  </div>
+
+  <div class="etkm-banner etkm-banner--info">
+    The background scheduler checks for tokens expiring within 7 days every 6 hours and refreshes them
+    automatically. You will receive an in-app notification on success or failure. Use "Refresh Now" to
+    trigger a manual refresh on any credential.
+  </div>
+
+  {% set total = (grouped.linkedin|length) + (grouped.meta|length) %}
+  {% if total == 0 %}
+    <div class="etkm-card" style="text-align:center;padding:48px;">
+      <p style="margin-bottom:16px;color:var(--etkm-text-muted)">No credentials yet.</p>
+      <a href="{{ url_for('linkedin_setup') }}" class="etkm-btn">Set up LinkedIn</a>
+      <a href="{{ url_for('meta_setup') }}" class="etkm-btn">Set up Meta</a>
+    </div>
+  {% endif %}
+
+  {% if grouped.linkedin|length > 0 %}
+  <div class="etkm-cred-section">
+    <div class="etkm-cred-section__head">
+      <span style="color:var(--etkm-blue-li);">in</span> LINKEDIN ({{ grouped.linkedin|length }})
+    </div>
+    {% for c in grouped.linkedin %}
+      {% include '_credential_card.html' %}
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if grouped.meta|length > 0 %}
+  <div class="etkm-cred-section">
+    <div class="etkm-cred-section__head">
+      <span style="color:var(--etkm-purple);">M</span> META — FACEBOOK &amp; INSTAGRAM ({{ grouped.meta|length }})
+    </div>
+    {% for c in grouped.meta %}
+      {% include '_credential_card.html' %}
+    {% endfor %}
+  </div>
+  {% endif %}
 </section>
+
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 {% endblock %}

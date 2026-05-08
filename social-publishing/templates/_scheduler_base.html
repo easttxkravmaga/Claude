@@ -1,0 +1,26 @@
+{% extends "_layout.html" %}
+{% set active = "scheduler" %}
+{% block content %}
+<section class="etkm-page etkm-page--full">
+  <h1>Social Media Scheduler</h1>
+  <p class="etkm-subtitle">
+    Plan, compose, and sync content across Facebook, Instagram, and LinkedIn.
+  </p>
+
+  <div class="etkm-stats">
+    <span class="etkm-pill etkm-pill--neutral">{{ stats.total }} total</span>
+    <span class="etkm-pill etkm-pill--orange">{{ stats.draft }} draft</span>
+    <span class="etkm-pill etkm-pill--blue">{{ stats.scheduled }} scheduled</span>
+    <span class="etkm-pill etkm-pill--green">{{ stats.approved }} approved</span>
+  </div>
+
+  <nav class="etkm-tabs" role="tablist">
+    <a href="{{ url_for('scheduler', tab='calendar') }}"  class="{{ 'is-active' if tab=='calendar' }}">Calendar</a>
+    <a href="{{ url_for('scheduler', tab='all') }}"       class="{{ 'is-active' if tab=='all' }}">All Posts</a>
+    <a href="{{ url_for('scheduler', tab='compose') }}"   class="{{ 'is-active' if tab=='compose' }}">Compose</a>
+    <a href="{{ url_for('scheduler', tab='ai') }}"        class="{{ 'is-active' if tab=='ai' }}">AI Generator</a>
+  </nav>
+
+  {% block tab_content %}{% endblock %}
+</section>
+{% endblock %}

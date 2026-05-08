@@ -1,0 +1,56 @@
+{% extends "_scheduler_base.html" %}
+{% block title %}Calendar — ETKM Social Publishing{% endblock %}
+{% block tab_content %}
+<div class="etkm-card">
+  <h2 class="etkm-card__title">Content Calendar</h2>
+
+  <div class="etkm-cal__legend">
+    <span><span class="etkm-cal__legend-dot" style="background:var(--etkm-pink-fb)"></span>Facebook</span>
+    <span><span class="etkm-cal__legend-dot" style="background:var(--etkm-pink-ig)"></span>Instagram</span>
+    <span><span class="etkm-cal__legend-dot" style="background:var(--etkm-blue-li)"></span>LinkedIn</span>
+  </div>
+
+  <div class="etkm-cal__toolbar">
+    <div class="etkm-cal__toolbar__group">
+      <a class="etkm-btn etkm-btn--small" href="{{ url_for('scheduler', tab='calendar', month=calendar.today) }}">Today</a>
+      <a class="etkm-btn etkm-btn--small" href="{{ url_for('scheduler', tab='calendar', month=calendar.prev) }}">‹ Back</a>
+      <a class="etkm-btn etkm-btn--small" href="{{ url_for('scheduler', tab='calendar', month=calendar.next_) }}">Next ›</a>
+    </div>
+    <span class="etkm-cal__title">{{ calendar.month_name }} {{ calendar.year }}</span>
+    <div class="etkm-cal__toolbar__group">
+      <a class="etkm-btn etkm-btn--small" href="{{ url_for('scheduler', tab='all') }}">Agenda</a>
+    </div>
+  </div>
+
+  <div class="etkm-cal">
+    <div class="etkm-cal__grid">
+      {% for d in ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'] %}
+        <div class="etkm-cal__head">{{ d }}</div>
+      {% endfor %}
+      {% for week in calendar.weeks %}
+        {% for cell in week %}
+          <a class="etkm-cal__cell {{ '' if cell.in_month else 'etkm-cal__cell--other' }} {{ 'etkm-cal__cell--today' if cell.is_today }}"
+             href="{{ url_for('scheduler', tab='compose', date=cell.iso + 'T09:00') }}"
+             style="text-decoration:none;color:inherit;display:block;">
+            <div class="etkm-cal__date">{{ cell.day }}</div>
+            <div class="etkm-cal__events">
+              {% for ev in cell.events %}
+                {% set bg = 'var(--etkm-pink-fb)' if ev.platform == 'facebook' else ('var(--etkm-pink-ig)' if ev.platform == 'instagram' else 'var(--etkm-blue-li)') %}
+                <span class="etkm-cal__event"
+                      style="background:{{ bg }};color:#fff;"
+                      onclick="event.preventDefault();event.stopPropagation();window.location='{{ url_for('scheduler', tab='all') }}#post-{{ ev.id }}'">
+                  [{{ ev.platform[:2]|upper }}] {{ ev.caption }}
+                </span>
+              {% endfor %}
+            </div>
+          </a>
+        {% endfor %}
+      {% endfor %}
+    </div>
+  </div>
+
+  <p class="etkm-text-faded" style="font-size:12px;margin-top:12px;">
+    Click any empty date to compose a post for that day at 9:00 AM. Adjust the time on the Compose form.
+  </p>
+</div>
+{% endblock %}
