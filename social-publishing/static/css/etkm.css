@@ -1,0 +1,130 @@
+/* ETKM Social Publishing — brand kit baseline (Phase C scaffold) */
+
+:root {
+  --etkm-bg: #000000;
+  --etkm-surface: #111111;
+  --etkm-surface-2: #0d0d0d;
+  --etkm-border: #222222;
+  --etkm-border-strong: #333333;
+  --etkm-text: #ffffff;
+  --etkm-text-muted: rgba(255, 255, 255, 0.6);
+  --etkm-text-faded: rgba(255, 255, 255, 0.5);
+  --etkm-accent: #cc0000;
+  --etkm-accent-bright: #ff3333;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--etkm-bg);
+  color: var(--etkm-text);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter",
+               "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* Header / nav */
+.etkm-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: 56px;
+  background: var(--etkm-bg);
+  border-bottom: 1px solid var(--etkm-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.etkm-nav__brand {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+.etkm-nav__logo {
+  color: var(--etkm-accent);
+}
+
+.etkm-nav__sub {
+  color: var(--etkm-text-faded);
+  font-weight: 600;
+}
+
+.etkm-nav__tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.etkm-nav__tabs a {
+  color: var(--etkm-text-faded);
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: color 0.15s, background 0.15s;
+}
+
+.etkm-nav__tabs a:hover {
+  color: var(--etkm-text);
+}
+
+.etkm-nav__tabs a.is-active {
+  background: var(--etkm-surface);
+  color: var(--etkm-text);
+  border: 1px solid var(--etkm-border-strong);
+}
+
+/* Main */
+.etkm-main {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+}
+
+.etkm-page {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.etkm-page h1 {
+  margin: 8px 0 12px;
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.etkm-eyebrow {
+  color: var(--etkm-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 12px;
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+
+.etkm-subtitle {
+  color: var(--etkm-text-muted);
+  font-size: 16px;
+  margin: 0 0 24px;
+}
+
+.etkm-note {
+  color: var(--etkm-text-muted);
+  font-size: 13px;
+  background: var(--etkm-surface-2);
+  border: 1px solid var(--etkm-border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 24px 0;
+}
