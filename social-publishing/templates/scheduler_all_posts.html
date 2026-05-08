@@ -78,6 +78,9 @@
               {% if not p.approved %}
                 <button class="etkm-btn etkm-btn--icon" data-action="approve" title="Approve">✓</button>
               {% endif %}
+              {% if p.status in ['draft','scheduled'] %}
+                <button class="etkm-btn etkm-btn--icon" data-action="publish" title="Publish now">↗</button>
+              {% endif %}
               <button class="etkm-btn etkm-btn--icon etkm-btn--danger" data-action="delete" title="Delete">🗑</button>
             </div>
           </td>

@@ -161,6 +161,195 @@
     });
     scheduledAt.disabled = statusSelect.value !== 'scheduled';
 
+    // ── Media upload (image direct, video signed URL) ──────────────────────
+    const drop = document.getElementById('media-drop');
+    const fileInput = document.getElementById('media-file');
+    const prompt = document.getElementById('media-prompt');
+    const progress = document.getElementById('media-progress');
+    const progressBar = document.getElementById('media-progress-bar');
+    const progressLabel = document.getElementById('media-progress-label');
+    const preview = document.getElementById('media-preview');
+    const warning = document.getElementById('media-warning');
+
+    let mediaState = {
+      gcs_path: null,
+      mime: null,
+      size: null,
+      media_type: 'none',
+      duration_sec: null,
+      aspect_ratio: null,
+    };
+
+    function setProgress(pct, label) {
+      progress.classList.remove('etkm-hidden');
+      prompt.classList.add('etkm-hidden');
+      progressBar.style.width = pct + '%';
+      if (label) progressLabel.textContent = label;
+    }
+    function clearProgress() { progress.classList.add('etkm-hidden'); }
+
+    function showPreview(html) {
+      prompt.classList.add('etkm-hidden');
+      progress.classList.add('etkm-hidden');
+      preview.classList.remove('etkm-hidden');
+      preview.innerHTML = html + ' <button type="button" id="media-remove" class="etkm-btn etkm-btn--small" style="margin-left:8px;">Remove</button>';
+      document.getElementById('media-remove').addEventListener('click', resetMedia);
+    }
+
+    function resetMedia() {
+      mediaState = {gcs_path: null, mime: null, size: null, media_type: 'none', duration_sec: null, aspect_ratio: null};
+      preview.classList.add('etkm-hidden');
+      prompt.classList.remove('etkm-hidden');
+      progress.classList.add('etkm-hidden');
+      warning.classList.add('etkm-hidden');
+      warning.innerHTML = '';
+      fileInput.value = '';
+    }
+
+    function checkAspectWarning() {
+      const sel = selectedPlatforms();
+      if (
+        mediaState.media_type === 'video' &&
+        sel.includes('instagram') &&
+        mediaState.aspect_ratio &&
+        mediaState.aspect_ratio !== '9:16'
+      ) {
+        warning.classList.remove('etkm-hidden');
+        warning.innerHTML = '<div class="etkm-banner etkm-banner--error">⚠ Instagram Reels expect 9:16 vertical video. This video is ' + mediaState.aspect_ratio + ' — Instagram will publish it with black bars on the sides. Re-export at 1080×1920 to fix.</div>';
+      } else {
+        warning.classList.add('etkm-hidden');
+        warning.innerHTML = '';
+      }
+    }
+
+    drop.addEventListener('click', (e) => {
+      if (e.target === drop || e.target.closest('#media-prompt')) {
+        fileInput.click();
+      }
+    });
+
+    fileInput.addEventListener('change', async () => {
+      const file = fileInput.files && fileInput.files[0];
+      if (!file) return;
+      const isVideo = file.type === 'video/mp4';
+      const isImage = file.type.startsWith('image/');
+      if (!isVideo && !isImage) {
+        showBanner('error', 'Unsupported file type. Use PNG, JPG, GIF, WebP, or MP4.');
+        resetMedia();
+        return;
+      }
+
+      try {
+        if (isImage) await uploadImage(file);
+        else await uploadVideo(file);
+        checkAspectWarning();
+      } catch (e) {
+        showBanner('error', `Upload failed: ${e.message}`);
+        resetMedia();
+      }
+    });
+
+    async function uploadImage(file) {
+      if (file.size > 20 * 1024 * 1024) throw new Error('Image exceeds 20 MB');
+      setProgress(10, 'Uploading image...');
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('slug', file.name);
+      const r = await fetch('/api/media/upload-image', {method: 'POST', body: fd});
+      const data = await r.json();
+      if (!r.ok || !data.ok) throw new Error(data.error || 'upload failed');
+      mediaState = {
+        gcs_path: data.gcs_path,
+        mime: data.mime,
+        size: data.size,
+        media_type: 'image',
+        duration_sec: null,
+        aspect_ratio: null,
+      };
+      const reader = new FileReader();
+      reader.onload = () => showPreview(`<img src="${reader.result}" style="max-width:320px;max-height:240px;border-radius:6px;" />`);
+      reader.readAsDataURL(file);
+    }
+
+    async function uploadVideo(file) {
+      if (file.size > 200 * 1024 * 1024) throw new Error('Video exceeds 200 MB');
+      setProgress(0, 'Requesting upload URL...');
+      const signResp = await fetch('/api/media/sign-upload-url', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({filename: file.name, content_type: file.type, size: file.size}),
+      });
+      const signData = await signResp.json();
+      if (!signResp.ok || !signData.ok) throw new Error(signData.error || 'signing failed');
+
+      // Read browser-side metadata before upload (HTML5 video element exposes
+      // duration + dimensions once metadata loads)
+      const clientMeta = await readVideoMetadata(file);
+
+      // Upload directly to GCS via XHR for progress events
+      await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('PUT', signData.upload_url);
+        xhr.setRequestHeader('Content-Type', file.type);
+        xhr.upload.addEventListener('progress', (ev) => {
+          if (ev.lengthComputable) {
+            const pct = Math.round((ev.loaded / ev.total) * 90);  // reserve last 10% for finalize
+            setProgress(pct, `Uploading… ${Math.round(ev.loaded / 1024 / 1024)} / ${Math.round(file.size / 1024 / 1024)} MB`);
+          }
+        });
+        xhr.onload = () => xhr.status >= 200 && xhr.status < 300 ? resolve() : reject(new Error('GCS upload failed status ' + xhr.status));
+        xhr.onerror = () => reject(new Error('Network error during upload'));
+        xhr.send(file);
+      });
+
+      setProgress(95, 'Reading metadata...');
+      const finResp = await fetch('/api/media/finalize', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({gcs_path: signData.gcs_path, client_meta: clientMeta}),
+      });
+      const finData = await finResp.json();
+      if (!finResp.ok || !finData.ok) throw new Error(finData.error || 'finalize failed');
+
+      mediaState = {
+        gcs_path: finData.gcs_path,
+        mime: finData.mime,
+        size: finData.size,
+        media_type: 'video',
+        duration_sec: finData.duration_sec,
+        aspect_ratio: finData.aspect_ratio,
+      };
+
+      const objectUrl = URL.createObjectURL(file);
+      showPreview(
+        `<video src="${objectUrl}" controls muted style="max-width:320px;max-height:240px;border-radius:6px;background:#000;"></video>` +
+        `<div class="etkm-text-faded" style="font-size:12px;margin-top:6px;">` +
+          `${finData.duration_sec || '?'} sec · ${finData.aspect_ratio || '?'} · ${Math.round((finData.size || 0) / 1024 / 1024)} MB` +
+        `</div>`
+      );
+    }
+
+    function readVideoMetadata(file) {
+      return new Promise((resolve) => {
+        const v = document.createElement('video');
+        v.preload = 'metadata';
+        v.onloadedmetadata = () => {
+          resolve({
+            duration_sec: Math.round(v.duration),
+            width: v.videoWidth,
+            height: v.videoHeight,
+          });
+          URL.revokeObjectURL(v.src);
+        };
+        v.onerror = () => resolve({});
+        v.src = URL.createObjectURL(file);
+      });
+    }
+
+    // Re-check warning whenever platform selection changes
+    platformBoxes.forEach(b => b.addEventListener('change', checkAspectWarning));
+
+    // ── Form submit ────────────────────────────────────────────────────────
     form.addEventListener('submit', async (ev) => {
       ev.preventDefault();
       const fd = new FormData(form);
@@ -178,6 +367,14 @@
         status: fd.get('status'),
         scheduled_at: fd.get('scheduled_at') || null,
         approved: fd.get('approved') === 'on',
+        media: {
+          media_type: mediaState.media_type,
+          gcs_path: mediaState.gcs_path,
+          mime: mediaState.mime,
+          size: mediaState.size,
+          duration_sec: mediaState.duration_sec,
+          aspect_ratio: mediaState.aspect_ratio,
+        },
       };
       try {
         const r = await fetch('/api/posts', {
@@ -212,6 +409,9 @@
             r = await fetch(`/api/posts/${id}/approve`, {method: 'POST'});
           } else if (action === 'retry') {
             r = await fetch(`/api/posts/${id}/retry`, {method: 'POST'});
+          } else if (action === 'publish') {
+            if (!confirm('Publish this post immediately? It will be queued for the next 60-second worker cycle.')) return;
+            r = await fetch(`/api/posts/${id}/publish`, {method: 'POST'});
           }
           const data = await r.json();
           if (!r.ok || !data.ok) throw new Error(data.error || 'Action failed');

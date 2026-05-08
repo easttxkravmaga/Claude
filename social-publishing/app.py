@@ -20,6 +20,8 @@ from auth import linkedin as li_auth
 from auth import meta as meta_auth
 from db import SessionLocal, init_db
 import jobs
+from media import gcs as gcs_helper
+from media import inspect as media_inspect
 from models import (
     Batch,
     BatchSource,
@@ -431,6 +433,122 @@ def create_app() -> Flask:
             s.commit()
             s.refresh(p)
             return jsonify({"ok": True, "post": _serialize_post(p)})
+
+    @app.route("/api/posts/<int:post_id>/publish", methods=["POST"])
+    @require_basic_auth
+    def posts_publish_now(post_id: int):
+        """Mark for immediate publish.  Worker picks it up on the next 60-sec cycle.
+
+        Synchronous publish would risk browser timeouts on IG Reels (encoding can
+        take 30-120 sec).  Updating status + scheduled_at to now is the right
+        shape; user sees feedback within 60 sec.
+        """
+        with SessionLocal() as s:
+            p = s.get(Post, post_id)
+            if not p:
+                abort(404)
+            p.scheduled_at = datetime.utcnow()
+            p.status = PostStatus.scheduled
+            p.approved = True
+            p.error_message = None
+            p.retry_count = 0
+            s.commit()
+            s.refresh(p)
+            return jsonify({"ok": True, "post": _serialize_post(p)})
+
+    # ── Media uploads ────────────────────────────────────────────────────────
+    @app.route("/api/media/upload-image", methods=["POST"])
+    @require_basic_auth
+    def media_upload_image():
+        f = request.files.get("file")
+        if not f:
+            return jsonify({"ok": False, "error": "file is required"}), 400
+        content_type = (f.mimetype or "").lower()
+        allowed = {"image/png", "image/jpeg", "image/jpg", "image/gif", "image/webp"}
+        if content_type not in allowed:
+            return jsonify({"ok": False, "error": f"unsupported image type: {content_type}"}), 400
+
+        data = f.read()
+        if len(data) > 20 * 1024 * 1024:
+            return jsonify({"ok": False, "error": "image exceeds 20 MB limit"}), 400
+
+        ext = media_inspect.infer_extension(content_type) or "bin"
+        now = datetime.utcnow()
+        slug = gcs_helper.slugify(request.form.get("slug") or f.filename or "image")
+        object_name = gcs_helper.object_path(now.year, now.month, "img", slug, ext)
+        gcs_helper.upload_bytes(object_name, data, content_type)
+
+        return jsonify({
+            "ok": True,
+            "gcs_path": gcs_helper.gcs_uri(object_name),
+            "mime": content_type,
+            "size": len(data),
+            "media_type": "image",
+        })
+
+    @app.route("/api/media/sign-upload-url", methods=["POST"])
+    @require_basic_auth
+    def media_sign_upload_url():
+        data = request.get_json(force=True, silent=True) or {}
+        filename = (data.get("filename") or "").strip()
+        content_type = (data.get("content_type") or "").lower()
+        size = int(data.get("size") or 0)
+
+        if content_type != "video/mp4":
+            return jsonify({"ok": False, "error": "only video/mp4 is supported in v1"}), 400
+        if size <= 0 or size > 200 * 1024 * 1024:
+            return jsonify({"ok": False, "error": "video must be 1 byte to 200 MB"}), 400
+
+        ext = "mp4"
+        now = datetime.utcnow()
+        slug = gcs_helper.slugify(filename or "video")
+        object_name = gcs_helper.object_path(now.year, now.month, "vid", slug, ext)
+
+        upload_url = gcs_helper.signed_put_url(object_name, content_type, expires_minutes=15)
+        return jsonify({
+            "ok": True,
+            "upload_url": upload_url,
+            "gcs_path": gcs_helper.gcs_uri(object_name),
+            "expires_in_minutes": 15,
+        })
+
+    @app.route("/api/media/finalize", methods=["POST"])
+    @require_basic_auth
+    def media_finalize():
+        """Called after the browser PUTs a video to GCS.  Reads the blob's
+        metadata + runs ffprobe via a signed read URL to extract duration +
+        dimensions + aspect ratio."""
+        data = request.get_json(force=True, silent=True) or {}
+        gcs_path = (data.get("gcs_path") or "").strip()
+        if not gcs_path:
+            return jsonify({"ok": False, "error": "gcs_path is required"}), 400
+
+        try:
+            meta = gcs_helper.get_blob_metadata(gcs_path)
+        except Exception as e:
+            return jsonify({"ok": False, "error": f"object not found: {e}"}), 404
+
+        # Allow the client to supply browser-detected metadata as a fallback / hint.
+        client_meta = data.get("client_meta") or {}
+        signed_read = gcs_helper.signed_get_url(gcs_path, expires_minutes=10)
+        probe = media_inspect.probe_video(signed_read)
+
+        duration = probe.get("duration_sec") or client_meta.get("duration_sec")
+        width = probe.get("width") or client_meta.get("width")
+        height = probe.get("height") or client_meta.get("height")
+        aspect = probe.get("aspect_ratio") or media_inspect.gcd_aspect(width or 0, height or 0)
+
+        return jsonify({
+            "ok": True,
+            "gcs_path": gcs_path,
+            "mime": meta.get("content_type"),
+            "size": meta.get("size"),
+            "media_type": "video",
+            "duration_sec": duration,
+            "width": width,
+            "height": height,
+            "aspect_ratio": aspect,
+        })
 
     return app
 

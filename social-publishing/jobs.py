@@ -3,9 +3,10 @@ import threading
 from datetime import datetime, timedelta
 
 from apscheduler.schedulers.background import BackgroundScheduler
+from sqlalchemy import select
 
 from db import SessionLocal
-from models import OAuthCredential, Post, PostStatus, Provider, RefreshStatus
+from models import OAuthCredential, Platform, Post, PostStatus, Provider, RefreshStatus
 
 
 log = logging.getLogger(__name__)
@@ -37,6 +38,7 @@ def _set_busy(value: bool) -> None:
         _busy = value
 
 
+# ── Token refresh sweep ────────────────────────────────────────────────────────
 def token_refresh_sweep() -> None:
     from auth import linkedin as li_auth, meta as meta_auth
 
@@ -69,6 +71,99 @@ def token_refresh_sweep() -> None:
         _set_busy(False)
 
 
+# ── Post publisher ─────────────────────────────────────────────────────────────
+def _provider_for_platform(platform: Platform) -> Provider:
+    return Provider.linkedin if platform == Platform.linkedin else Provider.meta
+
+
+def _credential_for(session, platform: Platform) -> OAuthCredential | None:
+    return session.scalar(
+        select(OAuthCredential).where(
+            OAuthCredential.provider == _provider_for_platform(platform)
+        )
+    )
+
+
+_MAX_RETRIES = 3
+
+
+def _publish_one(session, post: Post) -> None:
+    """Publish a single Post row.  Updates fields in place; caller commits."""
+    from publishers import dispatch, IGProcessingPending, PublishError
+
+    cred = _credential_for(session, post.platform)
+    if not cred:
+        post.status = PostStatus.failed
+        post.error_message = (
+            f"No credentials for {post.platform.value}. "
+            f"Set up the {post.platform.value} integration first."
+        )
+        return
+
+    post.status = PostStatus.posting
+    session.flush()  # surface the 'posting' state if anyone polls
+
+    try:
+        platform_post_id, post_url = dispatch(post, cred)
+    except IGProcessingPending as p:
+        post.status = PostStatus.processing
+        post.platform_post_id = p.creation_id  # stash so we can poll next cycle
+        post.error_message = None
+        return
+    except PublishError as e:
+        post.retry_count = (post.retry_count or 0) + 1
+        if post.retry_count >= _MAX_RETRIES:
+            post.status = PostStatus.failed
+            post.error_message = str(e)
+        else:
+            post.status = PostStatus.scheduled  # let next cycle retry
+            post.error_message = str(e)
+        return
+    except Exception as e:
+        log.exception("Unexpected publisher exception for post id=%s", post.id)
+        post.status = PostStatus.failed
+        post.error_message = f"Unexpected error: {e}"
+        return
+
+    post.status = PostStatus.posted
+    post.posted_at = datetime.utcnow()
+    post.platform_post_id = platform_post_id
+    post.post_url = post_url
+    post.error_message = None
+
+
+def _continue_processing(session, post: Post) -> None:
+    """For posts in status='processing' (IG ingest pending) — re-check the container."""
+    from publishers import continue_ig_processing, IGProcessingPending, PublishError
+
+    cred = _credential_for(session, post.platform)
+    if not cred:
+        post.status = PostStatus.failed
+        post.error_message = "Credential disappeared while post was processing."
+        return
+
+    try:
+        platform_post_id, post_url = continue_ig_processing(post, cred)
+    except IGProcessingPending:
+        return  # still pending, leave row as 'processing'
+    except PublishError as e:
+        post.retry_count = (post.retry_count or 0) + 1
+        if post.retry_count >= _MAX_RETRIES:
+            post.status = PostStatus.failed
+            post.error_message = str(e)
+        else:
+            post.status = PostStatus.scheduled  # restart from container creation
+            post.platform_post_id = None
+            post.error_message = str(e)
+        return
+
+    post.status = PostStatus.posted
+    post.posted_at = datetime.utcnow()
+    post.platform_post_id = platform_post_id
+    post.post_url = post_url
+    post.error_message = None
+
+
 def publish_due_posts() -> None:
     global _last_publish_check_at
     _set_busy(True)
@@ -76,25 +171,50 @@ def publish_due_posts() -> None:
         _last_publish_check_at = datetime.utcnow()
         with SessionLocal() as session:
             now = datetime.utcnow()
-            due = session.query(Post).filter(
-                Post.status == PostStatus.scheduled,
-                Post.approved.is_(True),
-                Post.scheduled_at.isnot(None),
-                Post.scheduled_at <= now,
-            ).limit(20).all()
 
+            # 1. Drive any posts in 'processing' state forward
+            processing = session.scalars(
+                select(Post).where(Post.status == PostStatus.processing).limit(20)
+            ).all()
+            for post in processing:
+                _continue_processing(session, post)
+            session.commit()
+
+            # 2. Publish newly-due scheduled posts
+            due = session.scalars(
+                select(Post).where(
+                    Post.status == PostStatus.scheduled,
+                    Post.approved.is_(True),
+                    Post.scheduled_at.isnot(None),
+                    Post.scheduled_at <= now,
+                ).limit(20)
+            ).all()
             for post in due:
-                # Phase F fills the publisher dispatch in. For now: log and skip.
-                log.info(
-                    "Publisher placeholder: would publish post id=%s platform=%s",
-                    post.id, post.platform,
-                )
+                _publish_one(session, post)
+            session.commit()
+
     except Exception:
         log.exception("Publish-due-posts sweep failed")
     finally:
         _set_busy(False)
 
 
+def publish_now(post_id: int) -> None:
+    """Synchronous publish — used by /api/posts/<id>/publish.
+
+    The route writes the result; we just dispatch.  Worth noting: IG Reels
+    may return IGProcessingPending which leaves the post in 'processing'
+    state and the worker picks it up next cycle.
+    """
+    with SessionLocal() as session:
+        post = session.get(Post, post_id)
+        if not post:
+            return
+        _publish_one(session, post)
+        session.commit()
+
+
+# ── Scheduler lifecycle ────────────────────────────────────────────────────────
 def start() -> BackgroundScheduler:
     global _scheduler
     if _scheduler is not None:

@@ -45,12 +45,20 @@
     <div class="etkm-field">
       <label class="etkm-field__label">Media</label>
       <div class="etkm-dropzone" id="media-drop">
-        <div>📎 Image or video upload</div>
-        <div class="etkm-dropzone__hint">PNG, JPG, GIF, WebP up to 20 MB · MP4 up to 200 MB</div>
-        <div class="etkm-dropzone__hint" style="margin-top:8px;color:var(--etkm-orange-bright)">
-          Phase F wires this. Posts can save without media for now.
+        <input type="file" id="media-file" accept="image/png,image/jpeg,image/gif,image/webp,video/mp4" hidden />
+        <div id="media-prompt">
+          <div>📎 Click to upload image or video</div>
+          <div class="etkm-dropzone__hint">PNG, JPG, GIF, WebP up to 20 MB · MP4 up to 200 MB</div>
         </div>
+        <div id="media-progress" class="etkm-hidden" style="text-align:left;">
+          <div id="media-progress-label" class="etkm-text-muted" style="font-size:12px;margin-bottom:6px;">Uploading…</div>
+          <div style="width:100%;height:6px;background:var(--etkm-surface-3);border-radius:3px;overflow:hidden;">
+            <div id="media-progress-bar" style="height:100%;width:0%;background:var(--etkm-accent);transition:width 0.2s;"></div>
+          </div>
+        </div>
+        <div id="media-preview" class="etkm-hidden" style="text-align:left;"></div>
       </div>
+      <div id="media-warning" class="etkm-hidden"></div>
     </div>
 
     <div class="etkm-fields-grid">
