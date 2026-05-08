@@ -27,7 +27,7 @@ posts back to the App's database.
 
 ### Validation
 
-- `program` must be one of the seven ETKM program tags from Notion: `Adult Krav Maga`, `Women Self-Defense`, `Youth Program`, `LE / Security`, `Seminars`, `Fight Back ETX`, `General ETKM`
+- `program` is **free-text** (1-120 chars). The Compose form provides 5 quick-fill buttons (Adult Krav Maga, Women's Self-Defense, Youth Program, LE / Security, General) that pre-fill this field, but the user can type anything else. No coupling to Notion's tag list.
 - `tone` must be one of: `Direct & confident`, `Educational`, `Inspirational`, `Conversational`
 - `goal` 10-500 chars, free text
 - `platforms` non-empty subset of `["facebook", "instagram", "linkedin"]`
@@ -248,7 +248,112 @@ The system prompt is identical across every call. Cache hit drops input cost to 
 - **No auto-approve.** Every generated post lands as `status="draft", approved=false`. Nathan must explicitly approve before the publisher will fire.
 - **No mid-run preview.** No streaming. The user submits the form, sees a spinner, gets the redirect when complete. Total time 8-25 sec.
 - **No fine-grained schedule control.** Posts default to 9 AM on their generated date. Nathan adjusts time per post in Compose if needed.
-- **No platform-specific rewriting.** Each platform gets its own draft from Claude, generated independently. Cross-platform consistency is Claude's job, not the App's.
+
+---
+
+# Per-Platform Caption Tailor (B2)
+
+A separate, on-demand endpoint that rewrites a single caption to match one platform's conventions. Powers the "Tailor for X" buttons in Compose.
+
+## Endpoint
+
+`POST /api/ai/tailor-caption`
+
+### Request body
+
+```json
+{
+  "master_caption": "Train hard. Stay sharp. Real readiness comes from showing up. #ETKMfamily",
+  "target_platform": "instagram",
+  "program": "Adult Krav Maga",
+  "tone": "Direct & confident"
+}
+```
+
+`program` and `tone` are optional context — if omitted, Claude uses the brand voice rules without program-specific framing.
+
+### Response
+
+```json
+{
+  "ok": true,
+  "tailored_caption": "Real readiness doesn't come from gear or talk. It comes from showing up — every week, on the mat, doing the work.\n\nTrain hard. Stay sharp.\n\n#ETKMfamily #SelfDefense #KravMaga #TylerTX [...12 more hashtags]"
+}
+```
+
+On Claude API error: 502 with `{"ok": false, "error": "..."}`.
+
+## Claude call
+
+### Model
+
+`claude-sonnet-4-6`. Same as the Campaign Generator.
+
+### System prompt
+
+Same `ETKM_BRAND_VOICE_SYSTEM_PROMPT` as the Campaign Generator (defined earlier in this doc) — plus this addition for the Tailor endpoint:
+
+```
+TAILORING MODE:
+
+You will be given a master caption and a target platform. Rewrite the master
+caption to fit the target platform's conventions:
+
+- Facebook: 80-200 words. Story arc preferred. 2-4 hashtags max. Links allowed
+  but discouraged in caption (use "link in bio" or "DM us").
+- Instagram: 50-150 words. Hook in line 1. 8-15 hashtags appended at the end
+  (separated by a blank line from the body). NEVER include URLs in the caption.
+- LinkedIn: 100-300 words. Professional or community-relevant framing. 3-5
+  hashtags inline at the end. URLs ARE allowed for LinkedIn.
+
+Preserve the master caption's intent and core message. Don't introduce new
+claims or facts. Don't change the call-to-action.
+
+Return ONLY the rewritten caption text. No JSON, no preamble, no commentary.
+The full output is the new caption.
+```
+
+### User prompt template
+
+```
+TARGET PLATFORM: {target_platform}
+PROGRAM CONTEXT: {program or "general ETKM"}
+TONE: {tone or "Direct & confident"}
+
+MASTER CAPTION:
+{master_caption}
+
+Rewrite the master caption for {target_platform}. Return only the new caption.
+```
+
+### Parsing
+
+The response is plain text. Strip leading/trailing whitespace; that's the tailored caption. No JSON parsing.
+
+## Cost per call
+
+| Item | Estimate |
+|---|---|
+| System prompt | ~700 input tokens (cached) |
+| User prompt | ~80 input tokens |
+| Output | ~200 output tokens |
+| Cost | ~$0.005 per tailor (with prompt caching) |
+
+If Nathan tailors 10 captions per week × 3 platforms = 30 calls × $0.005 = $0.15/month. Negligible.
+
+## Failure modes
+
+| Failure | Cause | Handling |
+|---|---|---|
+| Claude returns prohibited word | System prompt failure | Server-side scan; if hit, retry with explicit "DO NOT use the word X" amendment. Max 2 retries. If still hits, return 502 with the offending word in the error. |
+| Caption exceeds platform limit | Rare given prompt | Server-side truncate to platform max minus 50 chars; append `…`. |
+| Anthropic 5xx | Transient | Retry once after 2s; on second failure return 502. |
+
+## What it deliberately does NOT do
+
+- No multi-platform tailoring in one call (each platform is one call — keeps the prompt focused, results consistent)
+- No streaming — Compose just shows a spinner on the button
+- No automatic save — the tailored caption populates the per-platform caption box; user clicks Save Post when ready
 
 ---
 

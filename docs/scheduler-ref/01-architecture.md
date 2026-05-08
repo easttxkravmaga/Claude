@@ -57,14 +57,16 @@ Index: `(provider, label)` unique.
 ### `posts`
 
 One row per scheduled or published post. A row that targets multiple platforms
-(e.g. FB + IG) creates one row per platform on save (matches the Manus pattern
-and the existing All Posts view).
+(e.g. FB + IG) creates one row per platform on save, all sharing a common
+`post_group_id`. Group-level edit/delete operations affect all rows in the
+group; per-platform overrides are supported via the per-row `caption` field.
 
 | Column | Type | Notes |
 |---|---|---|
 | `id` | INT PK | |
+| `post_group_id` | UUID | Shared by all platform rows created from one Compose save. Generated server-side on insert. Indexed. Even single-platform posts get a group ID for future-proofing. |
 | `title` | VARCHAR(200) | Internal title — never published |
-| `caption` | TEXT | Post body. FB cap ~63,206 chars; IG cap 2,200; LI cap 3,000. Compose UI validates. |
+| `caption` | TEXT | Post body. FB cap ~63,206 chars; IG cap 2,200; LI cap 3,000. Compose UI validates. Each row's caption may differ if user used per-platform override (B1). |
 | `platform` | ENUM(`facebook`, `instagram`, `linkedin`) | |
 | `media_type` | ENUM(`none`, `image`, `video`) DEFAULT `none` | |
 | `media_gcs_path` | VARCHAR(2048) NULL | `gs://etkm-social-media-assets/<filename>` — internal reference |
@@ -84,7 +86,7 @@ and the existing All Posts view).
 | `updated_at` | TIMESTAMPTZ | |
 | `posted_at` | TIMESTAMPTZ NULL | When publish actually succeeded |
 
-Indexes: `(status, scheduled_at)`, `(campaign_tag)`, `(platform, posted_at)`.
+Indexes: `(status, scheduled_at)`, `(campaign_tag)`, `(platform, posted_at)`, `(post_group_id)`.
 
 ### `batches`
 
@@ -143,32 +145,38 @@ Detailed UI behavior per page is in `02-ui-spec.md`. Detailed publish flows are 
 | GET | `/scheduler` | Scheduler shell, Calendar tab default |
 | GET | `/scheduler?tab=all` | All Posts tab |
 | GET | `/scheduler?tab=compose` | Compose tab |
-| GET | `/scheduler?tab=batch` | Batch Upload tab |
+| GET | `/scheduler?tab=compose&date=YYYY-MM-DDTHH:MM` | Compose tab pre-filled with that scheduled time (B3 — clicking an empty calendar cell links here) |
 | GET | `/scheduler?tab=ai` | AI Generator tab |
 | GET | `/linkedin` | LinkedIn setup wizard |
 | GET | `/meta` | Meta setup wizard |
 | GET | `/dashboard` | Credential Dashboard |
+
+Note: `/scheduler?tab=batch` was in the original spec but the Batch Upload tab is dropped from v1. The underlying batch import API (`POST /api/posts/batch`) is retained for future automation.
 
 ### API routes (JSON, basic-auth gated)
 
 | Method | Path | Purpose |
 |---|---|---|
 | **Posts** | | |
-| GET | `/api/posts` | List. Query: `?platform=&status=&campaign_tag=&limit=&offset=` |
-| POST | `/api/posts` | Create one (Compose form) |
-| GET | `/api/posts/<id>` | Read |
-| PATCH | `/api/posts/<id>` | Edit |
-| DELETE | `/api/posts/<id>` | Delete (and best-effort delete of GCS media if no other post references it) |
+| GET | `/api/posts` | List. Query: `?platform=&status=&campaign_tag=&group_id=&limit=&offset=` |
+| POST | `/api/posts` | Create. Body: `{title, master_caption, platforms: ["facebook", "instagram"], per_platform_captions: {instagram: "..."}, ...}`. Server creates one row per platform with the master caption (or per-platform override if provided), all sharing a generated `post_group_id`. Returns the group ID and the array of created rows. |
+| GET | `/api/posts/<id>` | Read one row |
+| GET | `/api/posts/group/<group_id>` | Read all rows in a group |
+| PATCH | `/api/posts/<id>` | Edit one row only |
+| PATCH | `/api/posts/group/<group_id>` | Edit all rows in a group at once (e.g. reschedule the whole group) |
+| DELETE | `/api/posts/<id>` | Delete one row only |
+| DELETE | `/api/posts/group/<group_id>` | Delete all rows in a group |
 | POST | `/api/posts/<id>/publish` | Publish immediately, regardless of `scheduled_at` |
 | POST | `/api/posts/<id>/approve` | `approved=true` |
 | POST | `/api/posts/<id>/retry` | Reset `status=scheduled` and clear `error_message` for retry |
-| POST | `/api/posts/batch` | Multi-row CSV/XLSX import. Body: `{name, rows:[...]}`. Media URLs in CSV must be public HTTPS URLs (already-hosted images/videos) since CSV can't carry binary. |
+| POST | `/api/posts/batch` | (Retained for future automation; no UI tab in v1.) Multi-row CSV/XLSX import. Body: `{name, rows:[...]}`. Media URLs must be public HTTPS URLs. |
 | **Media** | | |
 | POST | `/api/media/upload-image` | Direct image upload to GCS (≤ 20 MB) |
 | POST | `/api/media/sign-upload-url` | Signed PUT URL for video upload |
 | POST | `/api/media/finalize` | Post-upload metadata read |
 | **AI Generator** | | |
 | POST | `/api/ai/generate-campaign` | Body shape in `05-ai-generator.md`. Creates N draft posts per platform. |
+| POST | `/api/ai/tailor-caption` | (B2) Body: `{master_caption, target_platform: "facebook"\|"instagram"\|"linkedin", program?, tone?}`. Returns a platform-tailored rewrite. Used by the "Tailor for X" buttons in Compose. Detail in `05-ai-generator.md`. |
 | **OAuth — LinkedIn** | | |
 | GET | `/api/oauth/linkedin/authorize` | 302 → LinkedIn consent screen with `offline_access` scope |
 | GET | `/api/oauth/linkedin/callback` | Code exchange, store credentials |

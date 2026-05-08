@@ -68,6 +68,14 @@ simplification over the Manus version.
 | 7 | AI Generator | Keep — wired to Claude Sonnet 4.6. Generated drafts written to the App's database (not Notion). |
 | 8 | Notion integration | None. Removed entirely. |
 | 9 | Brand kit | Full ETKM brand kit applies — black background (`#000`/`#111`), white text, single red accent (`#CC0000`), Swiss layout, no light surfaces, no prohibited words, strip all "Made with Manus" branding. |
+| 10 | Compose platform field | **Multi-select** (FB / IG / LI checkboxes). One save creates N rows under a shared `post_group_id`, one per ticked platform. |
+| 11 | Per-platform caption editing | **Yes (B1).** When 2+ platforms ticked, Compose shows a caption box per platform. Master caption auto-fills; per-platform override supported. |
+| 12 | AI "Tailor for X" buttons | **Yes (B2).** New endpoint `POST /api/ai/tailor-caption` — Claude rewrites a master caption per platform with appropriate length, hooks, hashtag count. |
+| 13 | Click empty calendar cell → Compose | **Yes (B3).** Calendar tab opens Compose pre-filled with the clicked date+time. |
+| 14 | Batch Upload tab | **Dropped from v1.** AI Generator + multi-select Compose cover the use cases. Underlying API endpoint kept for future automation; no UI tab. |
+| 15 | AI Generator Program/Topic field | **Free-text** with 5 quick-fill buttons (Adult, Women's Self-Defense, Youth, LE/Security, General). No coupling to Notion's tag list. |
+| 16 | Source code location | **Subdirectory `social-publishing/`** in this repo, alongside `backend/`. Same monorepo, separate Cloud Run service. |
+| 17 | Re-authorization after deploy | **Required.** Existing Manus credentials cannot migrate (bound to the dead Manus hostname). Nathan re-authorizes LinkedIn + Meta against the new Cloud Run hostname once. |
 
 ---
 

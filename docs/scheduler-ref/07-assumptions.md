@@ -7,6 +7,45 @@ Each entry: what was assumed, why, what to do if wrong, urgency to resolve.
 
 ---
 
+## RESOLVED — 2026-05-08
+
+Nathan confirmed all 5 high-priority items plus 3 bonus improvements and 1 reduction. All resolutions below override the original assumption text. Spec docs (`01-architecture.md`, `02-ui-spec.md`, `05-ai-generator.md`) updated to match.
+
+### Resolutions
+
+| # | Item | Decision |
+|---|---|---|
+| **A1 / A16** | Single-platform per post / single-select Compose | **Multi-select platform with fan-out.** Compose form shows FB / IG / LI as checkboxes. One save creates N rows under a shared `post_group_id` (UUID), one row per ticked platform, all with the same scheduled time. Edit/delete actions operate on the group by default; per-platform overrides supported. |
+| **A12** | Notion-mirrored 7-value Program tag dropdown | **Free-text Program / Topic field with 5 quick-fill buttons** (Adult Krav Maga, Women's Self-Defense, Youth Program, LE / Security, General). User can type anything else. No coupling to Notion's tag list. |
+| **A14** | Re-authorization post-deploy | **Confirmed.** Documented in handoff; one-time ~5 minute task when the new Cloud Run hostname goes live. |
+| **A20** | Subdirectory vs. separate repo | **Subdirectory `social-publishing/` in this repo.** Same gcloud commands, shared brand kit/skills, single source of truth for ETKM tooling. |
+
+### Bonus improvements added (B1, B2, B3)
+
+| # | Improvement | Spec'd in |
+|---|---|---|
+| **B1** | **Per-platform caption editing.** When 2+ platforms ticked, Compose shows a per-platform caption box for each. Master caption auto-fills all three; user can override per-platform. | `02-ui-spec.md` |
+| **B2** | **AI "Tailor for X" buttons.** Click "Tailor for Instagram" → Claude rewrites the master caption with platform-appropriate length, hooks, and hashtag count. New endpoint `POST /api/ai/tailor-caption`. | `02-ui-spec.md`, `05-ai-generator.md` |
+| **B3** | **Click empty calendar cell → Compose pre-filled with that date+time.** | `02-ui-spec.md` Calendar tab |
+
+### Reduction
+
+- **Batch Upload tab dropped from v1.** AI Generator + multi-select Compose cover the use cases. Underlying API endpoint (`POST /api/posts/batch`) kept for future automation but no UI tab. Saves ~half a day of build work. |
+
+### Net build cost
+
+| | Original spec | After resolution |
+|---|---|---|
+| Sessions to build | ~5 | ~7 |
+| Pages in Scheduler | 5 tabs | 4 tabs (Calendar, All Posts, Compose, AI Generator) |
+| Compose UX | Single-select platform | Multi-select with per-platform caption editing + AI Tailor |
+
+---
+
+The original assumption entries below are kept for audit. Items marked **RESOLVED** above override their original text.
+
+---
+
 ## A1 — Single-platform per post (matches Manus)
 
 **Assumed:** Each post row targets exactly one platform. Posts that should hit FB + IG + LI become three separate rows with the same caption.

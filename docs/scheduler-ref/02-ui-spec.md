@@ -110,11 +110,13 @@ Single column, 720 px max-width, centered.
 
 ### Tab bar
 
-Five tabs: **Calendar** (default), **All Posts**, **Compose**, **Batch Upload**, **AI Generator**.
+Four tabs: **Calendar** (default), **All Posts**, **Compose**, **AI Generator**.
+
+(The Manus build had a fifth tab, **Batch Upload**, which is dropped from v1 — the AI Generator and multi-select Compose cover its use cases. The underlying batch import API endpoint is retained for future automation.)
 
 Active tab: white text on `#111111` with 1px `#333333` border. Inactive: 50% opacity white. No animation on tab switch — instant.
 
-URL pattern: `/scheduler?tab=<calendar|all|compose|batch|ai>`. Server-rendered per tab.
+URL pattern: `/scheduler?tab=<calendar|all|compose|ai>`. Server-rendered per tab.
 
 ---
 
@@ -126,8 +128,10 @@ URL pattern: `/scheduler?tab=<calendar|all|compose|batch|ai>`. Server-rendered p
   - Left: `Today` `Back` `Next` buttons
   - Center: month/year label, e.g. `May 2026`
   - Right: view toggle — `Month` (default), `Week`, `Day`, `Agenda`
-- Body: FullCalendar.js v6 month grid. Each cell shows date number top-left and any scheduled posts as colored event chips with platform tag prefix and truncated caption — `[INSTAGRAM] Calm down...`, `[FACEBOOK] Calm down...`. Click chip → opens that post in the Compose tab pre-filled (edit mode).
-- Empty cells: render as `#0d0d0d` to distinguish from current month at `#111111`.
+- Body: FullCalendar.js v6 month grid. Each cell shows date number top-left and any scheduled posts as colored event chips with platform tag prefix and truncated caption — `[INSTAGRAM] Calm down...`, `[FACEBOOK] Calm down...`.
+- **Click chip** → opens that post in the Compose tab pre-filled (edit mode).
+- **Click empty cell** (B3) → opens Compose tab pre-filled with that date+time (defaulted to 9:00 AM on the clicked date). URL: `/scheduler?tab=compose&date=YYYY-MM-DDT09:00`. Saves a tab switch when scheduling.
+- Empty cells: render as `#0d0d0d` to distinguish from current month at `#111111`. Hover state: cursor pointer, slight `#1a1a1a` overlay to signal click-to-compose.
 
 ---
 
@@ -157,19 +161,45 @@ URL pattern: `/scheduler?tab=<calendar|all|compose|batch|ai>`. Server-rendered p
 ### Tab 3 — Compose
 
 - Card title: `Compose Post`
-- Form fields, two-column layout where indicated:
+- Multi-section form. The **top section** is the master form. The **per-platform sections** appear conditionally based on which platforms are ticked.
+
+#### Master section (always visible)
 
   | Field | Type | Notes |
   |---|---|---|
-  | Post Title (internal) | Text input, single line | Placeholder: `e.g. FB — Women's Program Launch`. Required. Never published. |
-  | Platform | Dropdown | `Facebook` / `Instagram` / `LinkedIn`. Single-select for v1 (matches Manus). Multi-platform fan-out is a v2 feature — flagged in 07-assumptions. |
-  | Caption | Textarea, autoresize | Right-aligned char counter showing remaining chars based on platform: FB 63,206 / IG 2,200 / LI 3,000. Counter turns red at <10% remaining. |
-  | Media | Drop zone | See Media Upload UX below. |
-  | Campaign Tag | Text input | Placeholder: `e.g. fight-back-spring-2026`. Free text. |
+  | Post Title (internal) | Text input, single line | Placeholder: `e.g. Women's Program Launch`. Required. Never published. Used as the parent label across all platform rows in the group. |
+  | Platforms | Three checkboxes side-by-side | `Facebook` · `Instagram` · `LinkedIn`. **Multi-select.** At least one must be ticked. The set of ticked platforms determines which per-platform sections appear below. |
+  | Master Caption | Textarea, autoresize | Right-aligned char counter showing the lowest platform limit among ticked platforms (e.g. if FB+IG ticked, shows "X chars left for IG (2,200 max)"). Counter turns red at <10% remaining. **This is the single source caption that auto-fills the per-platform sections** unless overridden. |
+  | Media | Drop zone | See Media Upload UX below. Single media file applies to all ticked platforms. |
+  | Campaign Tag | Text input | Placeholder: `e.g. fight-back-spring-2026`. Free text. Applied to all rows in the post group. |
   | Status | Dropdown | `Draft` (default) / `Scheduled` |
-  | Scheduled Date & Time | Datetime picker | Required when `Status = Scheduled`. Disabled (grayed) when `Status = Draft`. Validates "must be in future". |
-  | Approved | Checkbox | Required to be true for the publisher to fire the post. Defaults false. Shown alongside Status. |
-  | Save Post | Primary button (red, full-width) | POSTs to `/api/posts` |
+  | Scheduled Date & Time | Datetime picker | Required when `Status = Scheduled`. Disabled when `Status = Draft`. Validates "must be in future". Pre-filled from `?date=` URL param when arriving from a Calendar click (B3). All ticked platforms publish at this same time. |
+  | Approved | Checkbox | Required true for the publisher to fire. Defaults false. Applied to all rows in the group. |
+  | Save Post | Primary button (red, full-width) | POSTs to `/api/posts` with the master caption, ticked platforms, and per-platform overrides. Server creates one row per ticked platform under a shared `post_group_id`. |
+
+#### Per-platform sections (B1)
+
+When **2 or more** platforms are ticked, three collapsible sections appear under the Master Caption — one per ticked platform. (When only 1 platform is ticked, the master caption ships as-is with no per-platform section needed.)
+
+Each per-platform section, in order Facebook → Instagram → LinkedIn:
+
+  | Section element | Notes |
+  |---|---|
+  | Section header | Platform icon (color-coded) + label `Facebook caption` / `Instagram caption` / `LinkedIn caption`. Right side: a `Tailor for {Platform}` button (small, secondary style, with a sparkle icon). |
+  | Caption textarea | Pre-filled with the Master Caption on first load. Editable. Char counter showing platform-specific limit (FB 63,206 / IG 2,200 / LI 3,000). |
+  | Hashtag inline note | Small grey text under the textarea: `Facebook posts get 2-4 hashtags. Use #ETKMfamily.` etc — guidance, not enforcement. |
+
+**Tailor for X button behavior (B2):**
+- Click → POSTs to `/api/ai/tailor-caption` with `{master_caption, target_platform, program?, tone?}`
+- Button shows spinner; disabled during call (typically 3-8 sec)
+- On success → tailored caption replaces the textarea content. Inline toast: `Tailored for {Platform}.` Auto-dismisses 3 sec.
+- On failure → red inline error: `Tailor failed. Try again or write the caption manually.`
+- Tailor never auto-saves the post; user clicks Save Post when ready.
+
+**Save behavior:**
+- Server reads `master_caption` plus any per-platform caption overrides
+- For each ticked platform: if `per_platform_captions[platform]` differs from `master_caption`, that row uses the override; else it uses the master
+- All rows share `post_group_id`, `scheduled_at`, `media_*`, `campaign_tag`, `approved`, `status`
 
 #### Media Upload UX
 
@@ -192,37 +222,16 @@ URL pattern: `/scheduler?tab=<calendar|all|compose|batch|ai>`. Server-rendered p
 
 ---
 
-### Tab 4 — Batch Upload
+### Tab 4 — AI Generator
 
-- Card title: `Batch Upload`
-- Column reference panel (info box at top, `#0d0d0d` bg, white text, mono):
-  ```
-  title, caption*, platform* (facebook/instagram/linkedin),
-  scheduledAt (YYYY-MM-DDTHH:MM), campaignTag,
-  mediaUrl, status (draft/scheduled), approved (true/false)
-  * required | Accepts .xlsx or .csv files
-  ```
-  *Note:* `mediaUrl` in CSV must be a public HTTPS URL of an already-hosted image or video — CSV cannot carry binary. Local file batches are not supported in v1; use Compose for those.
-
-- Batch Name input: `e.g. March 2026 Campaign`. Required.
-- Upload File or Paste CSV input:
-  - Left: textarea (mono, 12 rows), placeholder shows a sample row:
-    `title,caption,platform,scheduledAt,campaignTag,mediaUrl,status,approved`
-    `March Post,Your caption here,facebook,2026-03-01T09:00,,,scheduled,true`
-  - Right: `Upload .xlsx or .csv` button (file picker) — fills the textarea on selection
-- `Preview Rows` button — POSTs to `/api/posts/batch?dryRun=true`. Returns parsed rows + per-row validation errors. Renders a preview table below before commit.
-- `Commit N rows` button (red, primary) — POSTs without `dryRun`, creates posts, returns to All Posts tab filtered to the new batch.
-
----
-
-### Tab 5 — AI Generator
+(The Manus build had a Batch Upload tab in this slot. Dropped from v1 — the AI Generator and multi-select Compose cover its use cases. Underlying API endpoint `POST /api/posts/batch` is retained for future automation.)
 
 - Card title: `AI Campaign Generator`
 - Form fields (two-column where indicated):
 
   | Field | Type | Notes |
   |---|---|---|
-  | Program / Topic | Dropdown | Loaded from ETKM program list: `Adult Krav Maga` (default), `Women Self-Defense`, `Youth Program`, `LE / Security`, `Seminars`, `Fight Back ETX`, `General ETKM`. Mirrors the Notion `Program Tag` field exactly. |
+  | Program / Topic | **Text input + 5 quick-fill buttons** | Free-text input, 1-120 chars. Below the input, a row of 5 small secondary buttons: `Adult Krav Maga` · `Women's Self-Defense` · `Youth Program` · `LE / Security` · `General`. Click a button → fills the text input with that value. User can also type anything else (e.g. "CBLTAC course", "summer camp"). No coupling to Notion's tag list. |
   | Tone | Dropdown | `Direct & confident` (default), `Educational`, `Inspirational`, `Conversational`. The brand voice rules apply regardless. |
   | Campaign Goal | Textarea, 3 rows | Placeholder: `e.g. Drive sign-ups for the March Fight Back ETX workshop` |
   | Platforms | Checkbox row | Facebook / Instagram / LinkedIn — at least one required |
@@ -394,6 +403,17 @@ When no credentials saved: `No credentials yet. Set up LinkedIn or Meta to get s
 | Plaintext token fields visible in Dashboard | Tokens masked by default, server-side decrypt only on reveal |
 | Notion column on All Posts table (every row "error") | Removed entirely. Errors column is error-only-on-real-error. |
 | No aspect-ratio warning on video upload | Inline warning when uploading non-9:16 video to Instagram |
+
+## Product improvements over the Manus build
+
+| Manus had | Publishing App has |
+|---|---|
+| Single-select platform per post (had to recompose to post to FB+IG+LI) | **Multi-select** Platforms checkbox group; one save creates N rows under a shared `post_group_id` |
+| One caption shared across all platforms | **B1: Per-platform caption editing.** When 2+ platforms ticked, each platform gets its own caption box pre-filled from the master, editable per platform |
+| No way to adapt copy per platform | **B2: AI "Tailor for X" buttons** in each per-platform section. Claude rewrites the master caption with platform-appropriate length, hooks, hashtag count |
+| Calendar tab was view-only | **B3: Click empty cell** opens Compose pre-filled with that date+time |
+| Batch Upload tab (CSV/XLSX) | **Dropped.** AI Generator and multi-select Compose cover the use cases. CSV import API endpoint retained for future automation. |
+| Notion-mirrored Program/Topic dropdown (7 fixed values) | Free-text Program/Topic field with 5 quick-fill buttons + type-anything override |
 
 ---
 
