@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from apscheduler.schedulers.background import BackgroundScheduler
 
 from db import SessionLocal
-from models import OAuthCredential, Post, PostStatus
+from models import OAuthCredential, Post, PostStatus, Provider, RefreshStatus
 
 
 log = logging.getLogger(__name__)
@@ -38,6 +38,8 @@ def _set_busy(value: bool) -> None:
 
 
 def token_refresh_sweep() -> None:
+    from auth import linkedin as li_auth, meta as meta_auth
+
     global _last_token_refresh_at
     _set_busy(True)
     try:
@@ -50,14 +52,17 @@ def token_refresh_sweep() -> None:
             ).all()
 
             for cred in expiring:
-                # Phase D fills these in:
-                #   from auth.linkedin import refresh as refresh_linkedin
-                #   from auth.meta import refresh as refresh_meta
-                # For now: log and skip.
-                log.info(
-                    "Token refresh placeholder: would refresh %s id=%s",
-                    cred.provider, cred.id,
-                )
+                try:
+                    if cred.provider == Provider.linkedin:
+                        li_auth.refresh(cred)
+                    elif cred.provider == Provider.meta:
+                        meta_auth.refresh(cred)
+                except Exception as e:
+                    log.exception("Refresh failed for credential id=%s", cred.id)
+                    cred.last_refresh_status = RefreshStatus.failed
+                    cred.last_refresh_error = str(e)[:500]
+                    cred.last_refresh_at = datetime.utcnow()
+            session.commit()
     except Exception:
         log.exception("Token refresh sweep failed")
     finally:
